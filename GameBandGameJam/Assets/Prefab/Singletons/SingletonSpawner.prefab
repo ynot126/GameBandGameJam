@@ -46,3 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   singletonPrefabs:
   - {fileID: 4757738066809455437, guid: 0533b804030fae541b57961c1a13c34f, type: 3}
+  - {fileID: 8559224776410952476, guid: 9a20b18948300844782abe1c79cb0ca0, type: 3}

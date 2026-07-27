@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerControllerPrefab: {fileID: 4109264221245626821, guid: 31db1dd1652d2e44988270c9c6fec215, type: 3}
   playerSpawnPoint: {fileID: 2018196155}
+  gameCameraController: {fileID: 1754697792}
 --- !u!4 &707662344
 Transform:
   m_ObjectHideFlags: 0
@@ -267,6 +268,7 @@ GameObject:
   - component: {fileID: 1754697789}
   - component: {fileID: 1754697788}
   - component: {fileID: 1754697791}
+  - component: {fileID: 1754697792}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -392,6 +394,23 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &1754697792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1754697787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aed99b96fe5ba846b36d6a2abfd4d39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  positionOffset: {x: 0, y: 8, z: -10}
+  positionLerpPercentage: 0.15
+  snapDistance: 25
+  rotationEulerAngles: {x: 30, y: 0, z: 0}
+  rotationLerpPercentage: 0.15
 --- !u!1 &2018196154
 GameObject:
   m_ObjectHideFlags: 0

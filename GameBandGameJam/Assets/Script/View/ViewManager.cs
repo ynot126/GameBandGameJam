@@ -11,11 +11,6 @@ public class ViewManager : Singleton<ViewManager>
 
     public BaseView TopView => _viewStack.Count > 0 ? _viewStack.Peek() : null;
     public int StackCount => _viewStack.Count;
-    
-    public override void Initialize()
-    {
-        
-    }
     /// <summary>
     /// Pushes a view by instantiating the given prefab.
     /// The current top view receives OnEnterBackground.

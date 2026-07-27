@@ -422,6 +422,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   titleViewPrefab: {fileID: 5996595230947582360, guid: 811da7fd0c733c945868ee91dbb4940f, type: 3}
+  shortCutViewPrefab: {fileID: 4892705468155816810, guid: 2ed94625eee196541baab650c28e0f71, type: 3}
+  gameStageConfig: {fileID: 11400000, guid: fbe070671fda20e4f84c154636b61cbe, type: 2}
 --- !u!4 &1720172704
 Transform:
   m_ObjectHideFlags: 0

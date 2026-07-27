@@ -17,8 +17,5 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
         
         // Optional: Persist across scene loads
         DontDestroyOnLoad(gameObject);
-        Initialize();
     }
-
-    public abstract void Initialize();
 }

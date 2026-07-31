@@ -10,6 +10,9 @@ public class GameStageDrive : MonoBehaviour
     
     [Header("Camera")]
     [SerializeField] GameCameraController gameCameraController = null!;
+    
+    [Header("View")]
+    [SerializeField] GameView gameViewPrefab = null!;
 
     Player player = null!;
     public void Start()
@@ -22,11 +25,20 @@ public class GameStageDrive : MonoBehaviour
     {
         player = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
         player.Initialize(GameDataManager.Instance.GetPlayerData());
+        
     }
 
     async UniTask StartAsync()
     {
         await UniTask.Yield();
+        
+        // GameView
+        var gameView = Instantiate(gameViewPrefab);
+        gameView.UpdateHealthText(player.CurrentHealth, player.MaxHealth);
+        player.OnHealthChanged += () => gameView.UpdateHealthText(player.CurrentHealth, player.MaxHealth);
+        ViewManager.Instance.PushView(gameView);
+        
+        // start Camera
         gameCameraController.StartTrackingPlayer(player.transform);
     }
 }

@@ -151,6 +151,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 1404482955530246748, guid: 31db1dd1652d2e44988270c9c6fec215, type: 3}
   playerSpawnPoint: {fileID: 2018196155}
   gameCameraController: {fileID: 1754697792}
+  gameViewPrefab: {fileID: 6971037489039616866, guid: f9791668847f8384388470ae26a07dfa, type: 3}
 --- !u!4 &707662344
 Transform:
   m_ObjectHideFlags: 0

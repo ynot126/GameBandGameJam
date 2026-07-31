@@ -5,13 +5,13 @@ using UnityEngine;
 public class GameStageDrive : MonoBehaviour
 {
     [Header("Player")]
-    [SerializeField] PlayerController playerControllerPrefab = null!;
+    [SerializeField] Player playerPrefab = null!;
     [SerializeField] Transform playerSpawnPoint = null!;
     
     [Header("Camera")]
     [SerializeField] GameCameraController gameCameraController = null!;
 
-    PlayerController playerController = null!;
+    Player player = null!;
     public void Start()
     {
         Initialize();
@@ -20,13 +20,13 @@ public class GameStageDrive : MonoBehaviour
 
     void Initialize()
     {
-        playerController = Instantiate(playerControllerPrefab, playerSpawnPoint.position, Quaternion.identity);
-        playerController.Initialize();
+        player = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
+        player.Initialize(GameDataManager.Instance.GetPlayerData());
     }
 
     async UniTask StartAsync()
     {
         await UniTask.Yield();
-        gameCameraController.StartTrackingPlayer(playerController);
+        gameCameraController.StartTrackingPlayer(player.transform);
     }
 }

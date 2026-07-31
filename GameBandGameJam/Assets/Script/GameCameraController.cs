@@ -12,22 +12,22 @@ public class GameCameraController : MonoBehaviour
     [SerializeField] Vector3 rotationEulerAngles = new(30f, 0f, 0f);
     [SerializeField, Range(0f, 1f)] float rotationLerpPercentage = 0.15f;
 
-    PlayerController? trackedPlayer;
+    Transform? trackedPlayerTransform;
     bool trackingPlayer;
 
     void Update()
     {
-        if (!trackingPlayer || trackedPlayer == null)
+        if (!trackingPlayer || !trackedPlayerTransform)
         {
             return;
         }
 
-        UpdatePlayerTracking(trackedPlayer.transform.position);
+        UpdatePlayerTracking(trackedPlayerTransform.transform.position);
     }
 
-    public void StartTrackingPlayer(PlayerController playerController)
+    public void StartTrackingPlayer(Transform playerTransform)
     {
-        trackedPlayer = playerController;
+        trackedPlayerTransform = playerTransform;
         trackingPlayer = true;
     }
 

@@ -1,0 +1,13 @@
+---
+description: Project-wide Unity C# architecture and coding standards
+alwaysApply: true
+---
+
+# Unity C# Standards
+
+- Do not use Unity's `Awake` or `Start` lifecycle methods. Use an explicit `Initialize` pattern instead, with initialization invoked by the composition root or owning system.
+- Do not use the C# `private` access modifier. Omit it where C# makes members private by default.
+- Always use the `var` keyword when declaring local variables (prefer type inference over explicit types).
+- Use `event Action` or `event Action<T>` to communicate across components and keep systems decoupled. Prefer events over direct dependencies when publishing state changes or notifications.
+- Add `#nullable enable` at the top of every newly created C# script.
+- If a requirement is unclear or materially ambiguous, ask a focused clarifying question before implementing it.

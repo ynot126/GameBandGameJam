@@ -38,7 +38,11 @@ public class Player : MonoBehaviour, IDamageable
         damageData.detectionRadius = attackArea;
         damageData.layerMask = layerMask;
         
-        damageAreaHandler.GetDamageables(damageData);
+        var damageables = damageAreaHandler.GetDamageables(damageData);
+        foreach (var dam in damageables)
+        {
+            dam.Damage(20);
+        }
     }
     public void Damage(int damage)
     {

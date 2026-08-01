@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -13,8 +14,12 @@ public class GameStageDrive : MonoBehaviour
     
     [Header("View")]
     [SerializeField] GameView gameViewPrefab = null!;
+    
+    [Header("Enemy")]
+    [SerializeField] List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
 
     Player player = null!;
+    List<Enemy> enemies =  new List<Enemy>();
     public void Start()
     {
         Initialize();
@@ -40,5 +45,18 @@ public class GameStageDrive : MonoBehaviour
         
         // start Camera
         gameCameraController.StartTrackingPlayer(player.transform);
+
+        SpawnEnemy().Forget();
+    }
+
+    async UniTask SpawnEnemy()
+    {
+        enemies = new List<Enemy>();
+        foreach (var spawn in spawnPoints)
+        {
+            var enemy =spawn.Spawn();
+            enemies.Add(enemy);
+        }
+        await UniTask.Yield();
     }
 }

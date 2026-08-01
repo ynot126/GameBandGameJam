@@ -46,17 +46,17 @@ public class GameStageDrive : MonoBehaviour
         // start Camera
         gameCameraController.StartTrackingPlayer(player.transform);
 
-        SpawnEnemy().Forget();
-    }
-
-    async UniTask SpawnEnemy()
-    {
+        // Spawn enemy
         enemies = new List<Enemy>();
         foreach (var spawn in spawnPoints)
         {
-            var enemy =spawn.Spawn();
-            enemies.Add(enemy);
+            SpawnEnemy(spawn).Forget();
         }
-        await UniTask.Yield();
+    }
+
+    async UniTask SpawnEnemy(SpawnPoint spawnPoint)
+    {
+        var enemy = await spawnPoint.Spawn();
+        enemies.Add(enemy);
     }
 }

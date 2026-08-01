@@ -1,4 +1,5 @@
 #nullable enable
+using Cysharp.Threading.Tasks;
 using NaughtyAttributes;
 using UnityEditor;
 using UnityEngine;
@@ -8,9 +9,11 @@ public class SpawnPoint : MonoBehaviour
 {
     [SerializeField] Enemy enemyPrefab = null!;
 
-    public Enemy Spawn()
+    public async UniTask<Enemy> Spawn()
     {
         var enemy = Instantiate(enemyPrefab);
+        enemy.Initialize();
+        await enemy.SpawnAnimation();
         return enemy;
     }
     #if UNITY_EDITOR

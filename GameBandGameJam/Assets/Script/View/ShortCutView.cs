@@ -16,12 +16,12 @@ public class ShortCutView : BaseView
     {
         foreach (var gameStage in gameStageConfig.gameStages)
         {
-            var scene = gameStage.Value;
-            if (!scene)
+            var sceneName = gameStage.Value;
+            if (string.IsNullOrEmpty(sceneName))
                 continue;
 
             var button = Instantiate(buttonPrefab, buttonContainer);
-            button.Text.text = scene.name;
+            button.Text.text = sceneName;
             button.Button.onClick.AddListener(
                 () => OnShortCutButtonPressed?.Invoke(gameStage.Key));
         }

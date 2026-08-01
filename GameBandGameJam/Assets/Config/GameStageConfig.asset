@@ -15,4 +15,4 @@ MonoBehaviour:
   gameStages:
     pairs:
     - key: 100
-      value: {fileID: 102900000, guid: 2706e84e0515fd741ae433d99ce51841, type: 3}
+      value: GameStageSceneBase

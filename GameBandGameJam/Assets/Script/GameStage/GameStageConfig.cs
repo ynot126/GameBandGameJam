@@ -1,28 +1,35 @@
-using UnityEditor;
+#nullable enable
 using UnityEngine;
 using NaughtyAttributes;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-[CreateAssetMenu(fileName = "GameStageConfig", 
+[CreateAssetMenu(fileName = "GameStageConfig",
    menuName = "Configs/GameStageConfig")]
 public class GameStageConfig : ScriptableObject
 {
-   public EnumDictionary<GameStageType , SceneAsset> gameStages = new EnumDictionary<GameStageType , SceneAsset>();
+   public EnumDictionary<GameStageType, string> gameStages = new EnumDictionary<GameStageType, string>();
 
    [Button]
    void OnValidate()
    {
+#if UNITY_EDITOR
       foreach (var gameStage in gameStages)
       {
-         var sceneAsset = gameStage.Value;
-         if (sceneAsset == null)
+         var sceneName = gameStage.Value;
+         if (string.IsNullOrEmpty(sceneName))
             continue;
 
-         var scenePath = AssetDatabase.GetAssetPath(sceneAsset);
          var isEnabledInBuild = false;
 
          foreach (var buildScene in EditorBuildSettings.scenes)
          {
-            if (buildScene.path == scenePath && buildScene.enabled)
+            if (!buildScene.enabled)
+               continue;
+
+            var buildSceneName = System.IO.Path.GetFileNameWithoutExtension(buildScene.path);
+            if (buildSceneName == sceneName)
             {
                isEnabledInBuild = true;
                break;
@@ -32,9 +39,10 @@ public class GameStageConfig : ScriptableObject
          if (!isEnabledInBuild)
          {
             Debug.LogWarning(
-               $"Scene '{sceneAsset.name}' assigned to {gameStage.Key} is not enabled in Build Settings.",
+               $"Scene '{sceneName}' assigned to {gameStage.Key} is not enabled in Build Settings.",
                this);
          }
       }
+#endif
    }
 }

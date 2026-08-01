@@ -13,8 +13,8 @@ public class TitleView : BaseView
    public void Initialize()
    {
       startButton.onClick.AddListener(()=> OnStartButtonPressed?.Invoke());
-      
-#if UNITY_EDITOR
+          
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
       shortCutButton.onClick.AddListener(()=> OnShortCutButtonPressed?.Invoke());
 #else
       shortCutButton.gameObject.SetActive(false);

@@ -20,7 +20,7 @@ public class EnumDictionary<TKey, TValue> : EnumDictionaryBase, ISerializationCa
     public static readonly TKey[] allKeys = Enum.GetValues(typeof(TKey)).OfType<TKey>().OrderBy(x => x).ToArray();
 
     [SerializeField]
-    internal List<KeyValuePairStruct> pairs; // We are using a list here so that manipulating it would be easy.
+    public List<KeyValuePairStruct> pairs; // We are using a list here so that manipulating it would be easy.
 
     private Dictionary<TKey, TValue> dict = new();
 
@@ -92,7 +92,7 @@ public class EnumDictionary<TKey, TValue> : EnumDictionaryBase, ISerializationCa
     }
 
     [Serializable]
-    internal struct KeyValuePairStruct
+    public struct KeyValuePairStruct
     {
         public TKey key;
         public TValue value;

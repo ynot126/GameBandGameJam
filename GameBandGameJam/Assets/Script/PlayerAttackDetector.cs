@@ -6,7 +6,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class DamageAreaHandler : MonoBehaviour
+public class PlayerAttackDetector : MonoBehaviour
 {
     const float IndicatorDurationSeconds = 0.2f;
 
@@ -39,7 +39,7 @@ public class DamageAreaHandler : MonoBehaviour
         indicatorCts = new CancellationTokenSource();
         var token = indicatorCts.Token;
 
-        sphereIndicator.position = center;
+        sphereIndicator.position = center+ Vector3.up*0.5f;
         // Default Unity sphere mesh has radius 0.5, so diameter scale matches OverlapSphere radius.
         sphereIndicator.localScale = Vector3.one * (radius * 2f);
         sphereIndicator.gameObject.SetActive(true);

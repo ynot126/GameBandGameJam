@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable
 {
+    [Header("Components")]
     [SerializeField] PlayerController playerController = null!;
-    [SerializeField] DamageAreaHandler damageAreaHandler = null!;
+    [SerializeField] PlayerAttackDetector playerAttackDetector = null!;
+    [SerializeField] CollisionDetector collisionDetector = null!;
     
     [Header("Attack Config")]
     [SerializeField] float attackDistance;
@@ -25,6 +27,9 @@ public class Player : MonoBehaviour, IDamageable
         playerController.Initialize(playerData.speed);
         playerController.OnFloorClicked += HandlePlayerClickInput;
         currentHealth = playerData.maxHealth;
+        maxHealth = playerData.maxHealth;
+        
+        playerAttackDetector.Initialize();
     }
 
     void HandlePlayerClickInput(Vector3 worldPosition)
@@ -38,9 +43,10 @@ public class Player : MonoBehaviour, IDamageable
         damageData.detectionRadius = attackArea;
         damageData.layerMask = layerMask;
         
-        var damageables = damageAreaHandler.GetDamageables(damageData);
+        var damageables = playerAttackDetector.GetDamageables(damageData);
         foreach (var dam in damageables)
         {
+            if (ReferenceEquals(dam , this)) continue;
             dam.Damage(20);
         }
     }

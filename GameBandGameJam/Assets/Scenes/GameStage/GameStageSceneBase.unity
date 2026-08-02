@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &284446639 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8805031266356844686, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+  m_PrefabInstance: {fileID: 1063901607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f3b18659b89ab4fbbda3761154368f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &300331290
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,7 +211,7 @@ MonoBehaviour:
   gameViewPrefab: {fileID: 6971037489039616866, guid: f9791668847f8384388470ae26a07dfa, type: 3}
   spawnPoints:
   - {fileID: 300331291}
-  stageDoor: {fileID: 0}
+  stageDoor: {fileID: 284446639}
 --- !u!4 &707662344
 Transform:
   m_ObjectHideFlags: 0

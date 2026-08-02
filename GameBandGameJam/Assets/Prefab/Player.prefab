@@ -139,6 +139,7 @@ MonoBehaviour:
   playerController: {fileID: 4109264221245626821}
   playerAttackDetector: {fileID: 8069846256834731082}
   collisionDetector: {fileID: 5627855489857298626}
+  damageNumberPrefab: {fileID: 3421854495893843226, guid: 4b18700542abb3a4382aae20c35a9c46, type: 3}
   attackDistance: 1
   attackArea: 0.5
   layerMask:

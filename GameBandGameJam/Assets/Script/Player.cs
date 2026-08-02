@@ -8,6 +8,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] PlayerController playerController = null!;
     [SerializeField] PlayerAttackDetector playerAttackDetector = null!;
     [SerializeField] CollisionDetector collisionDetector = null!;
+    [SerializeField] DamageNumberVisual damageNumberPrefab = null!;
     
     [Header("Attack Config")]
     [SerializeField] float attackDistance;
@@ -48,6 +49,8 @@ public class Player : MonoBehaviour, IDamageable
         {
             if (ReferenceEquals(dam , this)) continue;
             dam.Damage(20);
+            var damageNumber = Instantiate(damageNumberPrefab);
+            damageNumber.Initialize(attackCenter, 20);
         }
     }
     public void Damage(int damage)

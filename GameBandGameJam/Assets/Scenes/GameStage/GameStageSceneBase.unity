@@ -200,6 +200,7 @@ MonoBehaviour:
   gameViewPrefab: {fileID: 6971037489039616866, guid: f9791668847f8384388470ae26a07dfa, type: 3}
   spawnPoints:
   - {fileID: 300331291}
+  stageDoor: {fileID: 0}
 --- !u!4 &707662344
 Transform:
   m_ObjectHideFlags: 0
@@ -385,6 +386,63 @@ Transform:
   - {fileID: 300331292}
   m_Father: {fileID: 707662344}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1063901607
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4583801314646179463, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
+      propertyPath: m_Name
+      value: GameStageDoor
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
 --- !u!1 &1127102568
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,3 +822,4 @@ SceneRoots:
   - {fileID: 707662344}
   - {fileID: 1127102569}
   - {fileID: 768797637}
+  - {fileID: 1063901607}

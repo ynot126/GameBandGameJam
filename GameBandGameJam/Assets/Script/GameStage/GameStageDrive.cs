@@ -17,6 +17,9 @@ public class GameStageDrive : MonoBehaviour
     
     [Header("Enemy")]
     [SerializeField] List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
+    
+    [Header("Stage Component")]
+    [SerializeField] StageDoor stageDoor = null!;
 
     Player player = null!;
     List<Enemy> enemies =  new List<Enemy>();
@@ -31,6 +34,8 @@ public class GameStageDrive : MonoBehaviour
         player = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
         player.Initialize(GameDataManager.Instance.GetPlayerData());
         
+        stageDoor.Initialize();
+        stageDoor.OnEnterDoor += HandleStageDoorEnter;
     }
 
     async UniTask StartAsync()
@@ -58,5 +63,10 @@ public class GameStageDrive : MonoBehaviour
     {
         var enemy = await spawnPoint.Spawn();
         enemies.Add(enemy);
+    }
+
+    void HandleStageDoorEnter()
+    {
+        Debug.Log("Stage Door Enter");
     }
 }

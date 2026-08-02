@@ -5,10 +5,11 @@ using UnityEngine;
 public class StageDoor : MonoBehaviour
 {
     [SerializeField] CollisionDetector collisionDetector = null!;
-
+    [SerializeField] NextStageVisual nextStageVisualPrefab = null!;
     public event Action? OnEnterDoor;
 
     bool isPlayerInArea;
+    NextStageVisual? activeNextStageVisual;
 
     public void Initialize()
     {
@@ -31,17 +32,45 @@ public class StageDoor : MonoBehaviour
 
     void HandleTriggerEnter(Collider other)
     {
-        if (other.GetComponentInParent<Player>() != null)
+        if (other.GetComponentInParent<Player>() == null)
         {
-            isPlayerInArea = true;
+            return;
         }
+
+        isPlayerInArea = true;
+        ShowNextStageVisual();
     }
 
     void HandleTriggerExit(Collider other)
     {
-        if (other.GetComponentInParent<Player>() != null)
+        if (other.GetComponentInParent<Player>() == null)
         {
-            isPlayerInArea = false;
+            return;
         }
+
+        isPlayerInArea = false;
+        HideNextStageVisual();
+    }
+
+    void ShowNextStageVisual()
+    {
+        if (activeNextStageVisual != null)
+        {
+            return;
+        }
+
+        activeNextStageVisual = Instantiate(nextStageVisualPrefab);
+        activeNextStageVisual.Initialize(transform.position);
+    }
+
+    void HideNextStageVisual()
+    {
+        if (activeNextStageVisual == null)
+        {
+            return;
+        }
+
+        Destroy(activeNextStageVisual.gameObject);
+        activeNextStageVisual = null;
     }
 }

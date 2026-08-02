@@ -38,6 +38,7 @@ public class MainDrive : MonoBehaviour
         titleView.Initialize();
         titleView.OnStartButtonPressed += HandleTitleViewStartButton;
         titleView.OnShortCutButtonPressed += HandleTitleViewShortCutButton;
+        titleView.OnQuitButtonPressed += HandleTitleViewQuitButton;
         return titleView;
     }
 
@@ -50,6 +51,15 @@ public class MainDrive : MonoBehaviour
     {
         var shortCutView = CreateShortCutView();
         ViewManager.Instance.PushView(shortCutView);
+    }
+
+    void HandleTitleViewQuitButton()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
     #endregion
 

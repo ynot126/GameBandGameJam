@@ -209,6 +209,7 @@ MonoBehaviour:
   playerSpawnPoint: {fileID: 2018196155}
   gameCameraController: {fileID: 1754697792}
   gameViewPrefab: {fileID: 6971037489039616866, guid: f9791668847f8384388470ae26a07dfa, type: 3}
+  twoHandChooseViewPrefab: {fileID: 1536939229062319034, guid: 84e86c0b53b18f54aa4af47e6a815cbd, type: 3}
   spawnPoints:
   - {fileID: 300331291}
   stageDoor: {fileID: 284446639}

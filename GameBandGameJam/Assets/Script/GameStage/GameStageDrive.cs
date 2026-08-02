@@ -14,6 +14,7 @@ public class GameStageDrive : MonoBehaviour
     
     [Header("View")]
     [SerializeField] GameView gameViewPrefab = null!;
+    [SerializeField] TwoHandChooseView twoHandChooseViewPrefab = null!;
     
     [Header("Enemy")]
     [SerializeField] List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
@@ -67,6 +68,24 @@ public class GameStageDrive : MonoBehaviour
 
     void HandleStageDoorEnter()
     {
-        Debug.Log("Stage Door Enter");
+        var twoHandView = CreateTwoHandView();
+        ViewManager.Instance.PushView(twoHandView);
     }
+
+    #region TwoHandView
+
+    TwoHandChooseView CreateTwoHandView()
+    {
+        var view = Instantiate(twoHandChooseViewPrefab);
+        view.Initialize();
+        view.OnSelect += HandleTwoHandleSelect;
+        return view;
+    }
+
+    void HandleTwoHandleSelect()
+    {
+        Debug.Log("A hand is selected");
+        ViewManager.Instance.PopView();
+    }
+    #endregion
 }

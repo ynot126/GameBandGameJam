@@ -37,6 +37,8 @@ public class GameStageDrive : MonoBehaviour
         
         stageDoor.Initialize();
         stageDoor.OnEnterDoor += HandleStageDoorEnter;
+
+        ApplySkill();
     }
 
     async UniTask StartAsync()
@@ -72,6 +74,18 @@ public class GameStageDrive : MonoBehaviour
         ViewManager.Instance.PushView(twoHandView);
     }
 
+    void ApplySkill()
+    {
+        foreach (var skill in GameDataManager.Instance.GetPlayerData().skills)
+        {
+            var s =SkillLibrary.Instance.GetSkill(skill);
+            if (s!= null)
+            {
+                s.Initialize(player);
+                s.ApplySkill();
+            }
+        }
+    }
     #region TwoHandView
 
     TwoHandChooseView CreateTwoHandView()

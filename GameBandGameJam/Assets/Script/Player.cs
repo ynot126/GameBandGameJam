@@ -19,6 +19,7 @@ public class Player : MonoBehaviour, IDamageable
     PlayerData playerData = null!;
     int currentHealth;
     int maxHealth;
+    int damageTokenMultipler = 1;
     public int CurrentHealth=> currentHealth;
     public int MaxHealth=> maxHealth;
     
@@ -55,14 +56,19 @@ public class Player : MonoBehaviour, IDamageable
     }
     public void Damage(int damage)
     {
+        damage *= damageTokenMultipler;
         currentHealth -=damage;
         OnHealthChanged?.Invoke();
         if (currentHealth <= 0)
             Death();
     }
-
     void Death()
     {
         Debug.Log("Player is dead");
+    }
+
+    public void DoubleTakenDamage()
+    {
+        damageTokenMultipler++;
     }
 }

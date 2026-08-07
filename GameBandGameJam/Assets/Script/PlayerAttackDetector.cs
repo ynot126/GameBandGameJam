@@ -6,6 +6,10 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
+// legacy
+// use CombatHitbox instead
+// tony will be so sad because his script is now obsolete
+
 public class PlayerAttackDetector : MonoBehaviour
 {
     const float IndicatorDurationSeconds = 0.2f;

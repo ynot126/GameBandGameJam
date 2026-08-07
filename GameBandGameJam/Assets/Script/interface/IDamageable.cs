@@ -1,4 +1,8 @@
+#nullable enable
+using UnityEngine;
+
 public interface IDamageable
 {
-    public void Damage(int damage);
+    void Damage(int damage);
+    void ApplyHit(in HitPayload payload, Vector3 hitDirection);
 }

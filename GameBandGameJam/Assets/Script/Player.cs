@@ -6,69 +6,111 @@ public class Player : MonoBehaviour, IDamageable
 {
     [Header("Components")]
     [SerializeField] PlayerController playerController = null!;
+    [SerializeField] PlayerCombat playerCombat = null!;
+    [SerializeField] CombatHitbox combatHitbox = null!;
+    [SerializeField] PlayerAnimatorDriver animatorDriver = null!;
     [SerializeField] PlayerAttackDetector playerAttackDetector = null!;
     [SerializeField] CollisionDetector collisionDetector = null!;
     [SerializeField] DamageNumberVisual damageNumberPrefab = null!;
-    
-    [Header("Attack Config")]
-    [SerializeField] float attackDistance;
-    [SerializeField] float attackArea;
+
+    [Header("Combat Config")]
     [SerializeField] LayerMask layerMask;
+
     public event Action? OnHealthChanged;
-    
+
     PlayerData playerData = null!;
     int currentHealth;
     int maxHealth;
     int damageTokenMultipler = 1;
-    public int CurrentHealth=> currentHealth;
-    public int MaxHealth=> maxHealth;
-    
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
+
     public void Initialize(PlayerData aPlayerData)
     {
-        playerData = aPlayerData;  
-        playerController.Initialize(playerData.speed);
-        playerController.OnFloorClicked += HandlePlayerClickInput;
+        playerData = aPlayerData;
         currentHealth = playerData.maxHealth;
         maxHealth = playerData.maxHealth;
-        
-        playerAttackDetector.Initialize();
+
+        var body = GetComponent<Rigidbody>();
+        if (body != null)
+        {
+            body.isKinematic = true;
+        }
+
+        EnsureCombatComponents();
+
+        playerController.Initialize(playerData.speed);
+        if (playerAttackDetector != null)
+        {
+            playerAttackDetector.Initialize();
+        }
+
+        playerCombat.Initialize(
+            playerController,
+            combatHitbox,
+            animatorDriver,
+            damageNumberPrefab,
+            layerMask);
     }
 
-    void HandlePlayerClickInput(Vector3 worldPosition)
-    {
-        var damageData = new DamageDetectionData();
-        var direction = worldPosition - transform.position;
-        direction.Normalize();
-        var attackCenter = transform.position+ (direction*attackDistance);
-        
-        damageData.detectionCenter = attackCenter;
-        damageData.detectionRadius = attackArea;
-        damageData.layerMask = layerMask;
-        
-        var damageables = playerAttackDetector.GetDamageables(damageData);
-        foreach (var dam in damageables)
-        {
-            if (ReferenceEquals(dam , this)) continue;
-            dam.Damage(20);
-            var damageNumber = Instantiate(damageNumberPrefab);
-            damageNumber.Initialize(attackCenter, 20);
-        }
-    }
     public void Damage(int damage)
     {
         damage *= damageTokenMultipler;
-        currentHealth -=damage;
+        currentHealth -= damage;
         OnHealthChanged?.Invoke();
         if (currentHealth <= 0)
+        {
             Death();
+        }
     }
-    void Death()
+
+    public void ApplyHit(in HitPayload payload, Vector3 hitDirection)
     {
-        Debug.Log("Player is dead");
+        Damage(payload.Damage);
     }
 
     public void DoubleTakenDamage()
     {
         damageTokenMultipler++;
+    }
+
+    void EnsureCombatComponents()
+    {
+        if (playerController == null)
+        {
+            playerController = GetComponent<PlayerController>();
+        }
+
+        if (playerCombat == null)
+        {
+            playerCombat = GetComponent<PlayerCombat>();
+            if (playerCombat == null)
+            {
+                playerCombat = gameObject.AddComponent<PlayerCombat>();
+            }
+        }
+
+        if (combatHitbox == null)
+        {
+            combatHitbox = GetComponent<CombatHitbox>();
+            if (combatHitbox == null)
+            {
+                combatHitbox = gameObject.AddComponent<CombatHitbox>();
+            }
+        }
+
+        if (animatorDriver == null)
+        {
+            animatorDriver = GetComponent<PlayerAnimatorDriver>();
+            if (animatorDriver == null)
+            {
+                animatorDriver = gameObject.AddComponent<PlayerAnimatorDriver>();
+            }
+        }
+    }
+
+    void Death()
+    {
+        Debug.Log("Player is dead");
     }
 }

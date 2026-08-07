@@ -703,11 +703,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aed99b96fe5ba846b36d6a2abfd4d39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionOffset: {x: 0, y: 8, z: -10}
-  positionLerpPercentage: 0.15
-  snapDistance: 25
-  rotationEulerAngles: {x: 30, y: 0, z: 0}
-  rotationLerpPercentage: 0.15
+  positionOffset: {x: 5, y: 10.6, z: -5}
+  positionLerpPercentage: 0.223
+  snapDistance: 21.4
+  rotationEulerAngles: {x: 53.4, y: -45, z: 0}
+  rotationLerpPercentage: 0.135
 --- !u!1 &2018196154
 GameObject:
   m_ObjectHideFlags: 0

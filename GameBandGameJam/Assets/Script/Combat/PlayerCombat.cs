@@ -21,7 +21,6 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Combo")]
     [SerializeField] float comboResetWindow = 0.45f;
-    [SerializeField] float prefixCommitDelay = 0.16f;
     [SerializeField] float chaseOffset = 1.5f;
     [SerializeField] KeyCode lightKey = KeyCode.J;
     [SerializeField] KeyCode heavyKey = KeyCode.K;
@@ -30,7 +29,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] AttackDefinition[] attacks = Array.Empty<AttackDefinition>();
 
     readonly InputBuffer inputBuffer = new();
-    readonly ComboEvaluator comboEvaluator = new();
+    readonly ComboStepper comboStepper = new();
     readonly AttackDash attackDash = new();
     readonly ChaseTeleport chaseTeleport = new();
     readonly CombatSequencer sequencer = new();
@@ -41,10 +40,13 @@ public class PlayerCombat : MonoBehaviour
     bool isBusy;
     bool isAttackPlaying;
     bool isKinematicMotionActive;
-    float pendingCommitAt;
+    AttackInputType? queuedFollowUp;
+    float queuedFollowUpTime;
+    float attackLockoutUntil;
 
     public bool IsBusy => isBusy;
     public bool IsKinematicMotionActive => isKinematicMotionActive;
+    public bool IsAttackLockedOut => Time.time < attackLockoutUntil;
 
     public event Action<AttackId>? OnAttackExecuted;
     public event Action? OnCombatReset;
@@ -80,7 +82,7 @@ public class PlayerCombat : MonoBehaviour
         EnsureDefaultConfig();
 
         inputBuffer.Initialize(comboResetWindow);
-        comboEvaluator.Initialize(recipes);
+        comboStepper.Reset();
         attackDash.Initialize(transform);
         chaseTeleport.Initialize(transform, playerColliders, chaseOffset);
         sequencer.Initialize(chaseTeleport);
@@ -139,52 +141,53 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
+        ExpireStaleQueuedFollowUp();
         PollAttackInput();
-
-        // Ambiguous prefix timer: force-commit the short recipe when the delay elapses.
-        if (pendingCommitAt > 0f && Time.time >= pendingCommitAt)
-        {
-            pendingCommitAt = 0f;
-            ForceCommitBufferedRecipe();
-        }
-
-        TryCommitTimedOutBuffer();
     }
 
     void PollAttackInput()
     {
-        if (isBusy || !inputBuffer.IsOpen)
-        {
-            return;
-        }
-
         if (!TryReadAttackInput(out var input))
         {
             return;
         }
 
-        if (!inputBuffer.TryRegister(input, Time.time))
+        if (!CanAcceptCombatInput(input))
         {
             return;
         }
 
-        // Unambiguous match (not a prefix of a longer recipe) → execute immediately.
-        if (comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: false, out var attackId))
+        // During startup/active frames: queue follow-up for the cancel window.
+        if (isAttackPlaying && isBusy)
         {
-            pendingCommitAt = 0f;
-            inputBuffer.Clear();
-            ExecuteAttack(attackId).Forget();
+            QueueFollowUp(input);
             return;
         }
 
-        // Exact match that is also a longer-recipe prefix (e.g. H vs HHLH) → wait.
-        if (comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out _))
+        // Cancel window open, or idle between strings.
+        if (isAttackPlaying && !isBusy)
         {
-            pendingCommitAt = Time.time + prefixCommitDelay;
+            TryCommitComboInput(input);
             return;
         }
 
-        pendingCommitAt = 0f;
+        if (isBusy || !inputBuffer.IsOpen)
+        {
+            return;
+        }
+
+        TryCommitComboInput(input);
+    }
+
+    bool CanAcceptCombatInput(AttackInputType input)
+    {
+        if (!IsAttackLockedOut)
+        {
+            return true;
+        }
+
+        // Finisher lockout: Dash may cancel out; Light/Heavy may not.
+        return input == AttackInputType.D;
     }
 
     bool TryReadAttackInput(out AttackInputType input)
@@ -215,47 +218,96 @@ public class PlayerCombat : MonoBehaviour
         return false;
     }
 
-    void ForceCommitBufferedRecipe()
+    void QueueFollowUp(AttackInputType input)
     {
-        if (isBusy || !inputBuffer.IsOpen)
+        if (!CanAcceptCombatInput(input))
         {
             return;
         }
 
-        if (!comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out var attackId))
+        queuedFollowUp = input;
+        queuedFollowUpTime = Time.time;
+    }
+
+    void ExpireStaleQueuedFollowUp()
+    {
+        if (!queuedFollowUp.HasValue)
         {
             return;
         }
 
-        inputBuffer.Clear();
+        if (Time.time - queuedFollowUpTime > comboResetWindow)
+        {
+            queuedFollowUp = null;
+            return;
+        }
+
+        if (!CanAcceptCombatInput(queuedFollowUp.Value))
+        {
+            queuedFollowUp = null;
+        }
+    }
+
+    void TryCommitComboInput(AttackInputType input)
+    {
+        if (!CanAcceptCombatInput(input))
+        {
+            return;
+        }
+
+        if (!comboStepper.TryResolve(input, out var attackId))
+        {
+            return;
+        }
+
+        queuedFollowUp = null;
         ExecuteAttack(attackId).Forget();
     }
 
-    void TryCommitTimedOutBuffer()
+    bool TryConsumeQueuedFollowUp()
     {
-        if (isBusy || !inputBuffer.HasTimedOut(Time.time))
+        if (!queuedFollowUp.HasValue)
+        {
+            return false;
+        }
+
+        if (Time.time - queuedFollowUpTime > comboResetWindow)
+        {
+            queuedFollowUp = null;
+            return false;
+        }
+
+        var input = queuedFollowUp.Value;
+        queuedFollowUp = null;
+        if (!CanAcceptCombatInput(input))
+        {
+            return false;
+        }
+
+        TryCommitComboInput(input);
+        return true;
+    }
+
+    void BeginAttackLockout(float duration)
+    {
+        if (duration <= 0f)
         {
             return;
         }
 
-        pendingCommitAt = 0f;
-        if (comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out var attackId))
-        {
-            inputBuffer.Clear();
-            ExecuteAttack(attackId).Forget();
-            return;
-        }
+        attackLockoutUntil = Mathf.Max(attackLockoutUntil, Time.time + duration);
+    }
 
-        inputBuffer.Clear();
+    void ClearAttackLockout()
+    {
+        attackLockoutUntil = 0f;
     }
 
     /// <summary>
     /// Opens the cancel window so the next combo input can be accepted.
-    /// Called by Animation Event <c>OpenCancelWindow</c> (frame-accurate) or
-    /// <see cref="AttackStateBehavior"/> (normalized-time fallback).
-    /// Does not stop dashes, launches, or re-enable locomotion.
-    /// Closes the hit window so a cancel-into next attack cannot leave the hitbox active
-    /// (anim <c>DisableHitbox</c> may never fire once the clip is interrupted).
+    /// Called by Animation Event <c>OpenCancelWindow</c> (frame-accurate),
+    /// <see cref="AttackStateBehavior"/>, or automatically after active frames.
+    /// Closes the hit window so a cancel-into next attack cannot leave the hitbox active.
     /// </summary>
     public void OpenCancelWindow()
     {
@@ -263,10 +315,11 @@ public class PlayerCombat : MonoBehaviour
         {
             return;
         }
+
         isBusy = false;
         inputBuffer.SetOpen(true);
-        // Seal before timed EnableHitbox fallback can run again after this frame.
         hitbox.DisableHitbox();
+        TryConsumeQueuedFollowUp();
     }
 
     async UniTaskVoid ExecuteAttack(AttackId attackId)
@@ -285,9 +338,12 @@ public class PlayerCombat : MonoBehaviour
 
         isBusy = true;
         isAttackPlaying = true;
-        pendingCommitAt = 0f;
         inputBuffer.SetOpen(false);
         playerController.SetMovementEnabled(false);
+
+        // Committing any attack clears a prior lockout; finishers re-arm immediately.
+        ClearAttackLockout();
+        BeginAttackLockout(definition.attackLockoutDuration);
 
         Vector3 dashDirection;
         if (definition.useMoveInputDirection)
@@ -322,23 +378,28 @@ public class PlayerCombat : MonoBehaviour
             hitbox.BeginSwing(definition.payload.ToPayload());
         }
 
+        var recoveryHold = definition.recoveryHoldDuration > 0f
+            ? definition.recoveryHoldDuration
+            : 0.55f;
+
         try
         {
             isKinematicMotionActive = true;
             await attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token);
             isKinematicMotionActive = false;
 
-            if (definition.skipHitbox)
+            if (!definition.skipHitbox)
             {
-                return;
+                // Timed fallback for projects without Mixamo Animation Events yet.
+                await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxEnableDelay), cancellationToken: token);
+                hitbox.EnableHitbox();
+                await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxActiveDuration), cancellationToken: token);
+                hitbox.DisableHitbox();
             }
 
-            // Timed fallback for projects without Mixamo Animation Events yet.
-            // If OpenCancelWindow / anim Disable already sealed the window, EnableHitbox no-ops.
-            await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxEnableDelay), cancellationToken: token);
-            hitbox.EnableHitbox();
-            await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxActiveDuration), cancellationToken: token);
-            hitbox.DisableHitbox();
+            // Keep the string alive so cancel-into (and animator Attack_ID steps) can fire.
+            OpenCancelWindow();
+            await UniTask.Delay(TimeSpan.FromSeconds(recoveryHold), cancellationToken: token);
         }
         catch (OperationCanceledException)
         {
@@ -356,7 +417,6 @@ public class PlayerCombat : MonoBehaviour
             if (generation == attackGeneration)
             {
                 hitbox.EndSwing();
-                animatorDriver.ResetAttack();
 
                 if (!definition.triggersChaseSequence)
                 {
@@ -456,7 +516,8 @@ public class PlayerCombat : MonoBehaviour
         isBusy = false;
         isAttackPlaying = false;
         isKinematicMotionActive = false;
-        pendingCommitAt = 0f;
+        queuedFollowUp = null;
+        comboStepper.Reset();
         hitbox.EndSwing();
         animatorDriver.ResetAttack();
         inputBuffer.SetOpen(true);
@@ -569,39 +630,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (recipes == null || recipes.Length == 0)
         {
-            recipes = new[]
-            {
-                new ComboRecipe
-                {
-                    name = "Light",
-                    sequence = new[] { AttackInputType.L },
-                    attackId = AttackId.Light
-                },
-                new ComboRecipe
-                {
-                    name = "Heavy",
-                    sequence = new[] { AttackInputType.H },
-                    attackId = AttackId.Heavy
-                },
-                new ComboRecipe
-                {
-                    name = "Dash",
-                    sequence = new[] { AttackInputType.D },
-                    attackId = AttackId.Dash
-                },
-                new ComboRecipe
-                {
-                    name = "Dragon Finisher",
-                    sequence = new[]
-                    {
-                        AttackInputType.H,
-                        AttackInputType.H,
-                        AttackInputType.L,
-                        AttackInputType.H
-                    },
-                    attackId = AttackId.FinisherHHLH
-                }
-            };
+            recipes = CreateDefaultRecipes();
         }
         else
         {
@@ -629,12 +658,7 @@ public class PlayerCombat : MonoBehaviour
 
         var expanded = new ComboRecipe[recipes.Length + 1];
         Array.Copy(recipes, expanded, recipes.Length);
-        expanded[recipes.Length] = new ComboRecipe
-        {
-            name = "Dash",
-            sequence = new[] { AttackInputType.D },
-            attackId = AttackId.Dash
-        };
+        expanded[recipes.Length] = CreateRecipe("Dash", AttackId.Dash, AttackInputType.D);
         recipes = expanded;
     }
 
@@ -654,58 +678,144 @@ public class PlayerCombat : MonoBehaviour
         attacks = expanded;
     }
 
-    static AttackDefinition[] CreateDefaultAttacks()
+    static ComboRecipe[] CreateDefaultRecipes()
     {
         return new[]
         {
-            new AttackDefinition
-            {
-                attackId = AttackId.Light,
-                dashDistance = 0.5f,
-                dashDuration = 0.07f,
-                hitboxEnableDelay = 0.04f,
-                hitboxActiveDuration = 0.1f,
-                triggersChaseSequence = false,
-                payload = new HitPayloadData
-                {
-                    damage = 10,
-                    hitStunDuration = 0.12f,
-                    knockbackType = KnockbackType.Standard,
-                    launchDistance = 0.75f
-                }
-            },
-            new AttackDefinition
-            {
-                attackId = AttackId.Heavy,
-                dashDistance = 2f,
-                dashDuration = 0.1f,
-                hitboxEnableDelay = 0.06f,
-                hitboxActiveDuration = 0.12f,
-                triggersChaseSequence = false,
-                payload = new HitPayloadData
-                {
-                    damage = 18,
-                    hitStunDuration = 0.2f,
-                    knockbackType = KnockbackType.Standard,
-                    launchDistance = 1.5f
-                }
-            },
+            CreateRecipe("Light", AttackId.Light, Repeat(AttackInputType.L, 1)),
+            CreateRecipe("Light1", AttackId.Light1, Repeat(AttackInputType.L, 2)),
+            CreateRecipe("Light2", AttackId.Light2, Repeat(AttackInputType.L, 3)),
+            CreateRecipe("Light3", AttackId.Light3, Repeat(AttackInputType.L, 4)),
+            CreateRecipe("Light4", AttackId.Light4, Repeat(AttackInputType.L, 5)),
+            CreateRecipe("Light5", AttackId.Light5, Repeat(AttackInputType.L, 6)),
+            CreateRecipe("Light Finisher", AttackId.LightFinisher, Repeat(AttackInputType.L, 7)),
+
+            CreateRecipe("Heavy", AttackId.Heavy, Repeat(AttackInputType.H, 1)),
+            CreateRecipe("Heavy1", AttackId.Heavy1, Repeat(AttackInputType.H, 2)),
+            CreateRecipe("Heavy2", AttackId.Heavy2, Repeat(AttackInputType.H, 3)),
+            CreateRecipe("Heavy3", AttackId.Heavy3, Repeat(AttackInputType.H, 4)),
+            CreateRecipe("Heavy4", AttackId.Heavy4, Repeat(AttackInputType.H, 5)),
+            CreateRecipe("Heavy5", AttackId.Heavy5, Repeat(AttackInputType.H, 6)),
+            CreateRecipe("Heavy Finisher", AttackId.HeavyFinisher, Repeat(AttackInputType.H, 7)),
+
+            CreateRecipe("Dash", AttackId.Dash, AttackInputType.D),
+
+            CreateRecipe("Dash Light", AttackId.DashLight, DashThen(AttackInputType.L, 1)),
+            CreateRecipe("Dash Light1", AttackId.DashLight1, DashThen(AttackInputType.L, 2)),
+            CreateRecipe("Dash Light2", AttackId.DashLight2, DashThen(AttackInputType.L, 3)),
+            CreateRecipe("Dash Light Finisher", AttackId.DashLightFinisher, DashThen(AttackInputType.L, 4)),
+
+            CreateRecipe("Dash Heavy", AttackId.DashHeavy, DashThen(AttackInputType.H, 1)),
+            CreateRecipe("Dash Heavy1", AttackId.DashHeavy1, DashThen(AttackInputType.H, 2)),
+            CreateRecipe("Dash Heavy2", AttackId.DashHeavy2, DashThen(AttackInputType.H, 3)),
+            CreateRecipe("Dash Heavy Finisher", AttackId.DashHeavyFinisher, DashThen(AttackInputType.H, 4))
+        };
+    }
+
+    static AttackDefinition[] CreateDefaultAttacks()
+    {
+        const int lightBaseDamage = 10;
+        const int heavyBaseDamage = 18;
+
+        return new[]
+        {
+            CreateScaledAttack(AttackId.Light, lightBaseDamage, step: 0, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.Light1, lightBaseDamage, step: 1, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.Light2, lightBaseDamage, step: 2, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.Light3, lightBaseDamage, step: 3, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.Light4, lightBaseDamage, step: 4, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.Light5, lightBaseDamage, step: 5, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.LightFinisher, lightBaseDamage, step: 6, isHeavy: false, isFinisher: true),
+
+            CreateScaledAttack(AttackId.Heavy, heavyBaseDamage, step: 0, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.Heavy1, heavyBaseDamage, step: 1, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.Heavy2, heavyBaseDamage, step: 2, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.Heavy3, heavyBaseDamage, step: 3, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.Heavy4, heavyBaseDamage, step: 4, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.Heavy5, heavyBaseDamage, step: 5, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.HeavyFinisher, heavyBaseDamage, step: 6, isHeavy: true, isFinisher: true),
+
             CreateDashAttackDefinition(),
-            new AttackDefinition
+
+            CreateScaledAttack(AttackId.DashLight, lightBaseDamage, step: 0, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.DashLight1, lightBaseDamage, step: 1, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.DashLight2, lightBaseDamage, step: 2, isHeavy: false, isFinisher: false),
+            CreateScaledAttack(AttackId.DashLightFinisher, lightBaseDamage, step: 3, isHeavy: false, isFinisher: true),
+
+            CreateScaledAttack(AttackId.DashHeavy, heavyBaseDamage, step: 0, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.DashHeavy1, heavyBaseDamage, step: 1, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.DashHeavy2, heavyBaseDamage, step: 2, isHeavy: true, isFinisher: false),
+            CreateScaledAttack(AttackId.DashHeavyFinisher, heavyBaseDamage, step: 3, isHeavy: true, isFinisher: true)
+        };
+    }
+
+    static ComboRecipe CreateRecipe(string name, AttackId attackId, params AttackInputType[] sequence)
+    {
+        return new ComboRecipe
+        {
+            name = name,
+            sequence = sequence,
+            attackId = attackId
+        };
+    }
+
+    static AttackInputType[] Repeat(AttackInputType input, int count)
+    {
+        var sequence = new AttackInputType[count];
+        for (var i = 0; i < count; i++)
+        {
+            sequence[i] = input;
+        }
+
+        return sequence;
+    }
+
+    static AttackInputType[] DashThen(AttackInputType input, int count)
+    {
+        var sequence = new AttackInputType[count + 1];
+        sequence[0] = AttackInputType.D;
+        for (var i = 0; i < count; i++)
+        {
+            sequence[i + 1] = input;
+        }
+
+        return sequence;
+    }
+
+    static AttackDefinition CreateScaledAttack(
+        AttackId attackId,
+        int baseDamage,
+        int step,
+        bool isHeavy,
+        bool isFinisher)
+    {
+        var damageMultiplier = 1f + step * 0.05f;
+        var damage = Mathf.Max(1, (int)Math.Round(baseDamage * damageMultiplier, MidpointRounding.AwayFromZero));
+        var hitStun = (isHeavy ? 0.2f : 0.12f) + step * 0.02f;
+        var launch = (isHeavy ? 1.5f : 0.75f) + step * 0.15f;
+
+        return new AttackDefinition
+        {
+            attackId = attackId,
+            dashDistance = isHeavy ? 2f : 0.5f,
+            dashDuration = isHeavy ? 0.1f : 0.07f,
+            hitboxEnableDelay = isHeavy ? 0.06f : 0.04f,
+            hitboxActiveDuration = isHeavy ? 0.12f : 0.1f,
+            recoveryHoldDuration = isFinisher ? 1f : 0.55f,
+            attackLockoutDuration = isFinisher ? 0.65f : 0f,
+            hitboxRadius = isFinisher ? 0.9f : isHeavy ? 0.75f : 0.6f,
+            hitboxLocalOffset = isFinisher
+                ? new Vector3(0f, 0.8f, 1.1f)
+                : isHeavy
+                    ? new Vector3(0f, 0.8f, 0.3f)
+                    : new Vector3(0f, 0.8f, 0.7f),
+            triggersChaseSequence = isFinisher,
+            payload = new HitPayloadData
             {
-                attackId = AttackId.FinisherHHLH,
-                dashDistance = 2f,
-                dashDuration = 0.1f,
-                hitboxEnableDelay = 0.05f,
-                hitboxActiveDuration = 0.14f,
-                triggersChaseSequence = true,
-                payload = new HitPayloadData
-                {
-                    damage = 30,
-                    hitStunDuration = 0.35f,
-                    knockbackType = KnockbackType.KnockbackToDistance,
-                    launchDistance = 6f
-                }
+                damage = damage,
+                hitStunDuration = isFinisher ? Mathf.Max(hitStun, 0.35f) : hitStun,
+                knockbackType = isFinisher ? KnockbackType.KnockbackToDistance : KnockbackType.Standard,
+                launchDistance = isFinisher ? 6f : launch
             }
         };
     }
@@ -719,6 +829,7 @@ public class PlayerCombat : MonoBehaviour
             dashDuration = 0.12f,
             hitboxEnableDelay = 0f,
             hitboxActiveDuration = 0f,
+            recoveryHoldDuration = 0.35f,
             triggersChaseSequence = false,
             useMoveInputDirection = true,
             skipHitbox = true,
@@ -732,3 +843,4 @@ public class PlayerCombat : MonoBehaviour
         };
     }
 }
+

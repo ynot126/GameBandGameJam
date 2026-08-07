@@ -133,7 +133,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   comboResetWindow: 0.4
-  prefixCommitDelay: 0.16
   chaseOffset: 1.5
   lightKey: 106
   heavyKey: 107
@@ -142,21 +141,80 @@ MonoBehaviour:
   - name: Light
     sequence: 00000000
     attackId: 1
+  - name: Light1
+    sequence: 0000000000000000
+    attackId: 2
+  - name: Light2
+    sequence: 000000000000000000000000
+    attackId: 3
+  - name: Light3
+    sequence: 00000000000000000000000000000000
+    attackId: 4
+  - name: Light4
+    sequence: 0000000000000000000000000000000000000000
+    attackId: 5
+  - name: Light5
+    sequence: 000000000000000000000000000000000000000000000000
+    attackId: 6
+  - name: Light Finisher
+    sequence: 00000000000000000000000000000000000000000000000000000000
+    attackId: 7
   - name: Heavy
     sequence: 01000000
-    attackId: 2
+    attackId: 20
+  - name: Heavy1
+    sequence: 0100000001000000
+    attackId: 21
+  - name: Heavy2
+    sequence: 010000000100000001000000
+    attackId: 22
+  - name: Heavy3
+    sequence: 01000000010000000100000001000000
+    attackId: 23
+  - name: Heavy4
+    sequence: 0100000001000000010000000100000001000000
+    attackId: 24
+  - name: Heavy5
+    sequence: 010000000100000001000000010000000100000001000000
+    attackId: 25
+  - name: Heavy Finisher
+    sequence: 01000000010000000100000001000000010000000100000001000000
+    attackId: 26
   - name: Dash
     sequence: 02000000
-    attackId: 3
-  - name: Dragon Finisher Dash
+    attackId: 101
+  - name: Dash Light
     sequence: 0200000000000000
-    attackId: 100
+    attackId: 102
+  - name: Dash Light1
+    sequence: 020000000000000000000000
+    attackId: 103
+  - name: Dash Light2
+    sequence: 02000000000000000000000000000000
+    attackId: 104
+  - name: Dash Light Finisher
+    sequence: 0200000000000000000000000000000000000000
+    attackId: 106
+  - name: Dash Heavy
+    sequence: 0200000001000000
+    attackId: 121
+  - name: Dash Heavy1
+    sequence: 020000000100000001000000
+    attackId: 122
+  - name: Dash Heavy2
+    sequence: 02000000010000000100000001000000
+    attackId: 123
+  - name: Dash Heavy Finisher
+    sequence: 0200000001000000010000000100000001000000
+    attackId: 125
   attacks:
   - attackId: 1
     dashDistance: 0.5
     dashDuration: 0.07
     hitboxEnableDelay: 0.04
     hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
     hitboxRadius: 0.6
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
@@ -164,14 +222,118 @@ MonoBehaviour:
     skipHitbox: 0
     payload:
       damage: 10
-      hitStunDuration: 0.06
+      hitStunDuration: 0.12
       knockbackType: 0
       launchDistance: 0.75
   - attackId: 2
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.6
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 11
+      hitStunDuration: 0.14
+      knockbackType: 0
+      launchDistance: 0.9
+  - attackId: 3
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.6
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 11
+      hitStunDuration: 0.16
+      knockbackType: 0
+      launchDistance: 1.05
+  - attackId: 4
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.6
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 12
+      hitStunDuration: 0.18
+      knockbackType: 0
+      launchDistance: 1.2
+  - attackId: 5
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.6
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 12
+      hitStunDuration: 0.2
+      knockbackType: 0
+      launchDistance: 1.35
+  - attackId: 6
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.6
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 13
+      hitStunDuration: 0.22
+      knockbackType: 0
+      launchDistance: 1.5
+  - attackId: 7
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 1
+    attackLockoutDuration: 0.3
+    hitboxRadius: 0.9
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
+    triggersChaseSequence: 1
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 13
+      hitStunDuration: 0.35
+      knockbackType: 1
+      launchDistance: 6
+  - attackId: 20
     dashDistance: 2
     dashDuration: 0.1
     hitboxEnableDelay: 0.06
     hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
     hitboxRadius: 0.75
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
     triggersChaseSequence: 0
@@ -179,14 +341,118 @@ MonoBehaviour:
     skipHitbox: 0
     payload:
       damage: 18
-      hitStunDuration: 0.12
+      hitStunDuration: 0.2
       knockbackType: 0
       launchDistance: 1.5
-  - attackId: 3
+  - attackId: 21
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.75
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 19
+      hitStunDuration: 0.22
+      knockbackType: 0
+      launchDistance: 1.65
+  - attackId: 22
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.75
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 20
+      hitStunDuration: 0.24
+      knockbackType: 0
+      launchDistance: 1.8
+  - attackId: 23
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.75
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 21
+      hitStunDuration: 0.26
+      knockbackType: 0
+      launchDistance: 1.95
+  - attackId: 24
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.75
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 22
+      hitStunDuration: 0.28
+      knockbackType: 0
+      launchDistance: 2.1
+  - attackId: 25
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.75
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 23
+      hitStunDuration: 0.3
+      knockbackType: 0
+      launchDistance: 2.25
+  - attackId: 26
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 1
+    attackLockoutDuration: 0.3
+    hitboxRadius: 0.9
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
+    triggersChaseSequence: 1
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 23
+      hitStunDuration: 0.35
+      knockbackType: 1
+      launchDistance: 6
+  - attackId: 101
     dashDistance: 3
     dashDuration: 0.12
     hitboxEnableDelay: 0
     hitboxActiveDuration: 0
+    recoveryHoldDuration: 0.35
+    attackLockoutDuration: 0
     hitboxRadius: 0.6
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
@@ -197,18 +463,139 @@ MonoBehaviour:
       hitStunDuration: 0
       knockbackType: 0
       launchDistance: 0
-  - attackId: 100
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.05
-    hitboxActiveDuration: 0.14
+  - attackId: 102
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.6
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 10
+      hitStunDuration: 0.12
+      knockbackType: 0
+      launchDistance: 0.75
+  - attackId: 103
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.6
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 11
+      hitStunDuration: 0.14
+      knockbackType: 0
+      launchDistance: 0.9
+  - attackId: 104
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.6
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 11
+      hitStunDuration: 0.16
+      knockbackType: 0
+      launchDistance: 1.05
+  - attackId: 106
+    dashDistance: 0.5
+    dashDuration: 0.07
+    hitboxEnableDelay: 0.04
+    hitboxActiveDuration: 0.1
+    recoveryHoldDuration: 1
+    attackLockoutDuration: 0.3
     hitboxRadius: 0.9
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
     triggersChaseSequence: 1
     useMoveInputDirection: 0
     skipHitbox: 0
     payload:
-      damage: 30
+      damage: 12
+      hitStunDuration: 0.35
+      knockbackType: 1
+      launchDistance: 6
+  - attackId: 121
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.75
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 18
+      hitStunDuration: 0.2
+      knockbackType: 0
+      launchDistance: 1.5
+  - attackId: 122
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.75
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 19
+      hitStunDuration: 0.22
+      knockbackType: 0
+      launchDistance: 1.65
+  - attackId: 123
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 0.55
+    attackLockoutDuration: 0
+    hitboxRadius: 0.75
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
+    triggersChaseSequence: 0
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 20
+      hitStunDuration: 0.24
+      knockbackType: 0
+      launchDistance: 1.8
+  - attackId: 125
+    dashDistance: 2
+    dashDuration: 0.1
+    hitboxEnableDelay: 0.06
+    hitboxActiveDuration: 0.12
+    recoveryHoldDuration: 1
+    attackLockoutDuration: 0.65
+    hitboxRadius: 0.9
+    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
+    triggersChaseSequence: 1
+    useMoveInputDirection: 0
+    skipHitbox: 0
+    payload:
+      damage: 21
       hitStunDuration: 0.35
       knockbackType: 1
       launchDistance: 6

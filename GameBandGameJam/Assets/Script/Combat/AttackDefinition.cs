@@ -10,6 +10,15 @@ public class AttackDefinition
     public float dashDuration = 0.08f;
     public float hitboxEnableDelay = 0.05f;
     public float hitboxActiveDuration = 0.12f;
+    /// <summary>
+    /// Time after the active frames (or dash) to keep the attack alive for cancel-into combo.
+    /// </summary>
+    public float recoveryHoldDuration = 0.55f;
+    /// <summary>
+    /// After active frames, block Light/Heavy for this long. Dash is still allowed.
+    /// Use on finishers so spam cannot skip recovery.
+    /// </summary>
+    public float attackLockoutDuration;
     public float hitboxRadius = 0.6f;
     public Vector3 hitboxLocalOffset = new(0f, 0.8f, 0.7f);
     public bool triggersChaseSequence;

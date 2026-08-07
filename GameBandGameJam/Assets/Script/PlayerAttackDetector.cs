@@ -17,6 +17,8 @@ public class PlayerAttackDetector : MonoBehaviour
     [SerializeField] Transform sphereIndicator = null!;
     CancellationTokenSource? indicatorCts;
 
+    public Transform SphereIndicator => sphereIndicator;
+
     public void Initialize()
     {
         sphereIndicator.gameObject.SetActive(false);

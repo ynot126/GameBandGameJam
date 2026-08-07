@@ -28990,15 +28990,15 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.36666667
-    functionName: OpenCancelWindow
+  - time: 0.33333334
+    functionName: DisableHitbox
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.43333334
-    functionName: DisableHitbox
+  - time: 0.36666667
+    functionName: OpenCancelWindow
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

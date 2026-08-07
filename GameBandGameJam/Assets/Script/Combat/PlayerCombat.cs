@@ -84,7 +84,15 @@ public class PlayerCombat : MonoBehaviour
         attackDash.Initialize(transform);
         chaseTeleport.Initialize(transform, playerColliders, chaseOffset);
         sequencer.Initialize(chaseTeleport);
-        hitbox.Initialize(transform, hitMask);
+
+        Transform? indicator = null;
+        var attackDetector = GetComponentInChildren<PlayerAttackDetector>(true);
+        if (attackDetector != null)
+        {
+            indicator = attackDetector.SphereIndicator;
+        }
+
+        hitbox.Initialize(transform, hitMask, indicator);
 
         var animator = GetComponentInChildren<Animator>();
         animatorDriver.Initialize(animator);
@@ -246,6 +254,8 @@ public class PlayerCombat : MonoBehaviour
     /// Called by Animation Event <c>OpenCancelWindow</c> (frame-accurate) or
     /// <see cref="AttackStateBehavior"/> (normalized-time fallback).
     /// Does not stop dashes, launches, or re-enable locomotion.
+    /// Closes the hit window so a cancel-into next attack cannot leave the hitbox active
+    /// (anim <c>DisableHitbox</c> may never fire once the clip is interrupted).
     /// </summary>
     public void OpenCancelWindow()
     {
@@ -253,10 +263,10 @@ public class PlayerCombat : MonoBehaviour
         {
             return;
         }
-        hitbox.DisableHitbox();
-
         isBusy = false;
         inputBuffer.SetOpen(true);
+        // Seal before timed EnableHitbox fallback can run again after this frame.
+        hitbox.DisableHitbox();
     }
 
     async UniTaskVoid ExecuteAttack(AttackId attackId)
@@ -303,6 +313,9 @@ public class PlayerCombat : MonoBehaviour
         animatorDriver.PlayAttack(attackId);
         OnAttackExecuted?.Invoke(attackId);
 
+        // Always clear any prior swing: cancel-into (especially skipHitbox dash) skips the
+        // superseded attack's finally EndSwing, which would otherwise leave the hitbox live.
+        hitbox.EndSwing();
         if (!definition.skipHitbox)
         {
             hitbox.ConfigureShape(definition.hitboxRadius, definition.hitboxLocalOffset);
@@ -321,6 +334,7 @@ public class PlayerCombat : MonoBehaviour
             }
 
             // Timed fallback for projects without Mixamo Animation Events yet.
+            // If OpenCancelWindow / anim Disable already sealed the window, EnableHitbox no-ops.
             await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxEnableDelay), cancellationToken: token);
             hitbox.EnableHitbox();
             await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxActiveDuration), cancellationToken: token);

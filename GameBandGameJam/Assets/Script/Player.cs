@@ -9,7 +9,6 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] PlayerCombat playerCombat = null!;
     [SerializeField] CombatHitbox combatHitbox = null!;
     [SerializeField] PlayerAnimatorDriver animatorDriver = null!;
-    [SerializeField] PlayerAttackDetector playerAttackDetector = null!;
     [SerializeField] CollisionDetector collisionDetector = null!;
     [SerializeField] DamageNumberVisual damageNumberPrefab = null!;
 
@@ -40,10 +39,6 @@ public class Player : MonoBehaviour, IDamageable
         EnsureCombatComponents();
 
         playerController.Initialize(playerData.speed);
-        if (playerAttackDetector != null)
-        {
-            playerAttackDetector.Initialize();
-        }
 
         playerCombat.Initialize(
             playerController,

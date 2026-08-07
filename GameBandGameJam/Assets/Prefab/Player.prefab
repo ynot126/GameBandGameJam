@@ -148,8 +148,8 @@ MonoBehaviour:
   - name: Dash
     sequence: 02000000
     attackId: 3
-  - name: Dragon Finisher
-    sequence: 01000000010000000000000001000000
+  - name: Dragon Finisher Dash
+    sequence: 0200000000000000
     attackId: 100
   attacks:
   - attackId: 1

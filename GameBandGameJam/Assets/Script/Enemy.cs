@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour, IDamageable, ICombatLaunchable
+public class Enemy : MonoBehaviour, IDamageable, ICombatLaunchable, ICombatTarget
 {
     [SerializeField] int maxHealth = 100;
     [SerializeField] LayerMask wallMask;
@@ -16,13 +16,20 @@ public class Enemy : MonoBehaviour, IDamageable, ICombatLaunchable
     int currentHealth;
     float hitStunUntil;
     bool aiEnabled = true;
+    bool isDead;
 
     public Transform Transform => transform;
     public bool IsAiEnabled => aiEnabled && Time.time >= hitStunUntil;
+    public bool IsLockable => !isDead && currentHealth > 0;
+    public float RemainingHealthNormalized =>
+        maxHealth <= 0 ? 0f : Mathf.Clamp01((float)currentHealth / maxHealth);
+    /// <summary>Stub until enemy attack AI exposes mid-attack state.</summary>
+    public bool IsThreatening => false;
 
     public void Initialize()
     {
         currentHealth = maxHealth;
+        isDead = false;
         body = GetComponent<Rigidbody>();
         if (body != null)
         {
@@ -127,6 +134,12 @@ public class Enemy : MonoBehaviour, IDamageable, ICombatLaunchable
 
     void Death()
     {
+        if (isDead)
+        {
+            return;
+        }
+
+        isDead = true;
         launchCts?.Cancel();
         launchCts?.Dispose();
         Destroy(gameObject);

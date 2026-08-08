@@ -49,7 +49,9 @@ MonoBehaviour:
     pairs:
     - key: 0
       value: {fileID: 0}
-  audioSource: {fileID: 0}
+    - key: 1
+      value: {fileID: 8300000, guid: 8e8afecbeb040764692f721d073d3296, type: 3}
+  audioSource: {fileID: 5731448518016069978}
 --- !u!82 &5731448518016069978
 AudioSource:
   m_ObjectHideFlags: 0

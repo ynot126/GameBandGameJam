@@ -19,6 +19,11 @@ public sealed class ComboEvaluator
         Array.Sort(recipes, (a, b) => b.sequence.Length.CompareTo(a.sequence.Length));
     }
 
+    /// <summary>
+    /// Resolves an exact recipe match. When <paramref name="forceCommit"/> is false and the
+    /// buffer is also a prefix of a longer recipe, returns false so the caller can wait.
+    /// Combo cancel-chains should pass <paramref name="forceCommit"/> true so each step fires.
+    /// </summary>
     public bool TryResolve(IReadOnlyList<AttackInputType> buffer, bool forceCommit, out AttackId attackId)
     {
         attackId = AttackId.None;

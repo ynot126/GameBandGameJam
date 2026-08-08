@@ -8,7 +8,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] PlayerController playerController = null!;
     [SerializeField] PlayerCombat playerCombat = null!;
     [SerializeField] CombatHitbox combatHitbox = null!;
-    [SerializeField] PlayerAnimatorDriver animatorDriver = null!;
+    [SerializeField] PlayerAnimationController animationController = null!;
     [SerializeField] CollisionDetector collisionDetector = null!;
     [SerializeField] DamageNumberVisual damageNumberPrefab = null!;
 
@@ -38,12 +38,15 @@ public class Player : MonoBehaviour, IDamageable
 
         EnsureCombatComponents();
 
+        var animator = GetComponentInChildren<Animator>();
+        animationController.Initialize(animator);
+
         playerController.Initialize(playerData.speed);
 
         playerCombat.Initialize(
             playerController,
             combatHitbox,
-            animatorDriver,
+            animationController,
             damageNumberPrefab,
             layerMask);
     }
@@ -61,6 +64,7 @@ public class Player : MonoBehaviour, IDamageable
 
     public void ApplyHit(in HitPayload payload, Vector3 hitDirection)
     {
+        playerCombat.InterruptFromHit();
         Damage(payload.Damage);
     }
 
@@ -94,12 +98,12 @@ public class Player : MonoBehaviour, IDamageable
             }
         }
 
-        if (animatorDriver == null)
+        if (animationController == null)
         {
-            animatorDriver = GetComponent<PlayerAnimatorDriver>();
-            if (animatorDriver == null)
+            animationController = GetComponent<PlayerAnimationController>();
+            if (animationController == null)
             {
-                animatorDriver = gameObject.AddComponent<PlayerAnimatorDriver>();
+                animationController = gameObject.AddComponent<PlayerAnimationController>();
             }
         }
     }

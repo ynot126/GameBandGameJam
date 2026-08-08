@@ -88,7 +88,7 @@ MonoBehaviour:
   playerController: {fileID: 4109264221245626821}
   playerCombat: {fileID: 6172849501728341001}
   combatHitbox: {fileID: 6172849501728341002}
-  animatorDriver: {fileID: 6172849501728341003}
+  animationController: {fileID: 6172849501728341003}
   collisionDetector: {fileID: 5627855489857298626}
   damageNumberPrefab: {fileID: 3421854495893843226, guid: 4b18700542abb3a4382aae20c35a9c46, type: 3}
   layerMask:
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 4109264221245626821}
   hitbox: {fileID: 6172849501728341002}
-  animatorDriver: {fileID: 6172849501728341003}
+  animationController: {fileID: 6172849501728341003}
   damageNumberPrefab: {fileID: 3421854495893843226, guid: 4b18700542abb3a4382aae20c35a9c46, type: 3}
   body: {fileID: 8936354506429449023}
   playerColliders:
@@ -133,6 +133,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   comboResetWindow: 0.4
+  simultaneousInputWindow: 0.05
+  consecutiveInvalidThreshold: 2
   chaseOffset: 1.5
   lightKey: 106
   heavyKey: 107
@@ -315,7 +317,7 @@ MonoBehaviour:
     dashDuration: 0.07
     hitboxEnableDelay: 0.04
     hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 1
+    recoveryHoldDuration: 0.8
     attackLockoutDuration: 0.3
     hitboxRadius: 0.9
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
@@ -434,7 +436,7 @@ MonoBehaviour:
     dashDuration: 0.1
     hitboxEnableDelay: 0.06
     hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 1
+    recoveryHoldDuration: 0.8
     attackLockoutDuration: 0.3
     hitboxRadius: 0.9
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
@@ -519,7 +521,7 @@ MonoBehaviour:
     dashDuration: 0.07
     hitboxEnableDelay: 0.04
     hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 1
+    recoveryHoldDuration: 0.8
     attackLockoutDuration: 0.3
     hitboxRadius: 0.9
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
@@ -587,7 +589,7 @@ MonoBehaviour:
     dashDuration: 0.1
     hitboxEnableDelay: 0.06
     hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 1
+    recoveryHoldDuration: 0.8
     attackLockoutDuration: 0.65
     hitboxRadius: 0.9
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
@@ -599,6 +601,14 @@ MonoBehaviour:
       hitStunDuration: 0.35
       knockbackType: 1
       launchDistance: 6
+  lockConeDegrees: 90
+  lockSnapMargin: 4
+  lockPersistenceRange: 6
+  lockRotationSpeed: 720
+  lockScoreAlignmentWeight: 1
+  lockScoreDistanceWeight: 1
+  lockScoreThreatWeight: 0.35
+  lockScoreLowHealthWeight: 0.2
 --- !u!114 &6172849501728341002
 MonoBehaviour:
   m_ObjectHideFlags: 0

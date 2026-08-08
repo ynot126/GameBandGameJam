@@ -9,7 +9,9 @@ public sealed class InputBuffer
     bool isOpen = true;
 
     public IReadOnlyList<AttackInputType> Sequence => sequence;
+    public int Count => sequence.Count;
     public bool IsOpen => isOpen;
+    public float LastInputTime => lastInputTime;
 
     public void Initialize(float resetWindow)
     {
@@ -18,30 +20,27 @@ public sealed class InputBuffer
         isOpen = true;
     }
 
+    public void SetResetWindow(float resetWindow)
+    {
+        comboResetWindow = resetWindow;
+    }
+
     public void SetOpen(bool open)
     {
         isOpen = open;
-        if (!open)
-        {
-            Clear();
-        }
     }
 
-    public bool TryRegister(AttackInputType input, float time)
+    public void Append(AttackInputType input, float time)
     {
-        if (!isOpen)
-        {
-            return false;
-        }
-
-        if (sequence.Count > 0 && time - lastInputTime > comboResetWindow)
-        {
-            sequence.Clear();
-        }
-
         sequence.Add(input);
         lastInputTime = time;
-        return true;
+    }
+
+    public void ReplaceWith(AttackInputType input, float time)
+    {
+        sequence.Clear();
+        sequence.Add(input);
+        lastInputTime = time;
     }
 
     public bool HasTimedOut(float time)
@@ -53,5 +52,17 @@ public sealed class InputBuffer
     {
         sequence.Clear();
         lastInputTime = -999f;
+    }
+
+    /// <summary>
+    /// Refreshes the continuation timer without changing the sequence
+    /// (e.g. when the cancel window opens after startup/active frames).
+    /// </summary>
+    public void Touch(float time)
+    {
+        if (sequence.Count > 0)
+        {
+            lastInputTime = time;
+        }
     }
 }

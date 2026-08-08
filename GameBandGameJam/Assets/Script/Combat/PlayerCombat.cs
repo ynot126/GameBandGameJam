@@ -10,7 +10,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("Refs")]
     [SerializeField] PlayerController playerController = null!;
     [SerializeField] CombatHitbox hitbox = null!;
-    [SerializeField] PlayerAnimatorDriver animatorDriver = null!;
+    [SerializeField] PlayerAnimationController animationController = null!;
     [SerializeField] DamageNumberVisual? damageNumberPrefab;
     [SerializeField] Rigidbody? body;
     [SerializeField] Collider[] playerColliders = Array.Empty<Collider>();
@@ -20,7 +20,9 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] LayerMask wallMask;
 
     [Header("Combo")]
-    [SerializeField] float comboResetWindow = 0.45f;
+    [SerializeField] float comboResetWindow = 0.5f;
+    [SerializeField] float simultaneousInputWindow = 0.05f;
+    [SerializeField] int consecutiveInvalidThreshold = 2;
     [SerializeField] float chaseOffset = 1.5f;
     [SerializeField] KeyCode lightKey = KeyCode.J;
     [SerializeField] KeyCode heavyKey = KeyCode.K;
@@ -28,11 +30,22 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] ComboRecipe[] recipes = Array.Empty<ComboRecipe>();
     [SerializeField] AttackDefinition[] attacks = Array.Empty<AttackDefinition>();
 
+    [Header("Auto Lock")]
+    [SerializeField] float lockConeDegrees = 90f;
+    [SerializeField] float lockSnapMargin = 0.75f;
+    [SerializeField] float lockPersistenceRange = 4f;
+    [SerializeField] float lockRotationSpeed = 720f;
+    [SerializeField] float lockScoreAlignmentWeight = 1f;
+    [SerializeField] float lockScoreDistanceWeight = 1f;
+    [SerializeField] float lockScoreThreatWeight = 0.35f;
+    [SerializeField] float lockScoreLowHealthWeight = 0.2f;
+
     readonly InputBuffer inputBuffer = new();
-    readonly ComboStepper comboStepper = new();
+    readonly ComboEvaluator comboEvaluator = new();
     readonly AttackDash attackDash = new();
     readonly ChaseTeleport chaseTeleport = new();
     readonly CombatSequencer sequencer = new();
+    readonly CombatAutoLock autoLock = new();
     readonly Dictionary<AttackId, AttackDefinition> attackMap = new();
 
     CancellationTokenSource? attackCts;
@@ -40,27 +53,36 @@ public class PlayerCombat : MonoBehaviour
     bool isBusy;
     bool isAttackPlaying;
     bool isKinematicMotionActive;
+    bool hardBreakRecovery;
     AttackInputType? queuedFollowUp;
     float queuedFollowUpTime;
     float attackLockoutUntil;
+    int consecutiveInvalidCount;
+    AttackDefinition? activeAttack;
+
+    float? pendingLightTime;
+    float? pendingHeavyTime;
+    float? pendingDashTime;
 
     public bool IsBusy => isBusy;
     public bool IsKinematicMotionActive => isKinematicMotionActive;
     public bool IsAttackLockedOut => Time.time < attackLockoutUntil;
+    public bool IsHardBreakRecovery => hardBreakRecovery;
 
     public event Action<AttackId>? OnAttackExecuted;
     public event Action? OnCombatReset;
+    public event Action? OnHardComboBreak;
 
     public void Initialize(
         PlayerController controller,
         CombatHitbox combatHitbox,
-        PlayerAnimatorDriver driver,
+        PlayerAnimationController animController,
         DamageNumberVisual? numberPrefab,
         LayerMask entityMask)
     {
         playerController = controller;
         hitbox = combatHitbox;
-        animatorDriver = driver;
+        animationController = animController;
         damageNumberPrefab = numberPrefab;
         hitMask = entityMask;
         if (wallMask.value == 0)
@@ -82,10 +104,21 @@ public class PlayerCombat : MonoBehaviour
         EnsureDefaultConfig();
 
         inputBuffer.Initialize(comboResetWindow);
-        comboStepper.Reset();
+        comboEvaluator.Initialize(recipes);
         attackDash.Initialize(transform);
         chaseTeleport.Initialize(transform, playerColliders, chaseOffset);
         sequencer.Initialize(chaseTeleport);
+        autoLock.Initialize(
+            transform,
+            hitMask,
+            wallMask,
+            lockConeDegrees,
+            lockSnapMargin,
+            lockPersistenceRange,
+            lockScoreAlignmentWeight,
+            lockScoreDistanceWeight,
+            lockScoreThreatWeight,
+            lockScoreLowHealthWeight);
 
         Transform? indicator = null;
         var attackDetector = GetComponentInChildren<PlayerAttackDetector>(true);
@@ -97,7 +130,6 @@ public class PlayerCombat : MonoBehaviour
         hitbox.Initialize(transform, hitMask, indicator);
 
         var animator = GetComponentInChildren<Animator>();
-        animatorDriver.Initialize(animator);
         EnsureAnimationEventReceiver(animator);
 
         attackMap.Clear();
@@ -141,19 +173,56 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
+        CaptureRawAttackPresses();
         ExpireStaleQueuedFollowUp();
+        CheckComboTimeout();
         PollAttackInput();
+    }
+
+    void CaptureRawAttackPresses()
+    {
+        if (Input.GetKeyDown(dashKey))
+        {
+            pendingDashTime = Time.time;
+        }
+
+        if (Input.GetKeyDown(heavyKey) || Input.GetMouseButtonDown(1))
+        {
+            pendingHeavyTime = Time.time;
+        }
+
+        if (Input.GetKeyDown(lightKey) || Input.GetMouseButtonDown(0))
+        {
+            pendingLightTime = Time.time;
+        }
     }
 
     void PollAttackInput()
     {
-        if (!TryReadAttackInput(out var input))
+        if (!TryResolvePendingAttackInput(out var input))
         {
             return;
         }
 
+        HandleResolvedAttackInput(input);
+    }
+
+    void HandleResolvedAttackInput(AttackInputType input)
+    {
         if (!CanAcceptCombatInput(input))
         {
+            if (input != AttackInputType.D)
+            {
+                RegisterInvalidInput();
+            }
+
+            return;
+        }
+
+        // Dodge always commits immediately — highest global priority.
+        if (input == AttackInputType.D)
+        {
+            TryCommitComboInput(input);
             return;
         }
 
@@ -181,47 +250,75 @@ public class PlayerCombat : MonoBehaviour
 
     bool CanAcceptCombatInput(AttackInputType input)
     {
-        if (!IsAttackLockedOut)
+        if (input == AttackInputType.D)
         {
             return true;
         }
 
-        // Finisher lockout: Dash may cancel out; Light/Heavy may not.
-        return input == AttackInputType.D;
+        if (hardBreakRecovery || IsAttackLockedOut)
+        {
+            return false;
+        }
+
+        return true;
     }
 
-    bool TryReadAttackInput(out AttackInputType input)
+    /// <summary>
+    /// Simultaneous window: D immediate; H commits immediately; L waits up to the window for a possible H.
+    /// Priority: D &gt; H &gt; L. At most one attack input is returned per resolve.
+    /// </summary>
+    bool TryResolvePendingAttackInput(out AttackInputType input)
     {
         input = default;
-        var pressedDash = Input.GetKeyDown(dashKey);
-        var pressedHeavy = Input.GetKeyDown(heavyKey) || Input.GetMouseButtonDown(1);
-        var pressedLight = Input.GetKeyDown(lightKey) || Input.GetMouseButtonDown(0);
+        var now = Time.time;
 
-        if (pressedDash)
+        if (pendingDashTime.HasValue)
         {
             input = AttackInputType.D;
+            ClearPendingAttackInputs();
             return true;
         }
 
-        if (pressedHeavy)
+        if (pendingHeavyTime.HasValue)
         {
+            // H outranks L; consume any pending light so only one attack resolves.
             input = AttackInputType.H;
+            ClearPendingAttackInputs();
             return true;
         }
 
-        if (pressedLight)
+        if (pendingLightTime.HasValue)
         {
+            if (now - pendingLightTime.Value < simultaneousInputWindow)
+            {
+                // Wait briefly so a near-simultaneous H can take priority.
+                return false;
+            }
+
             input = AttackInputType.L;
+            pendingLightTime = null;
             return true;
         }
 
         return false;
     }
 
+    void ClearPendingAttackInputs()
+    {
+        pendingDashTime = null;
+        pendingHeavyTime = null;
+        pendingLightTime = null;
+    }
+
     void QueueFollowUp(AttackInputType input)
     {
         if (!CanAcceptCombatInput(input))
         {
+            if (input != AttackInputType.D)
+            {
+                RegisterInvalidInput();
+            }
+
             return;
         }
 
@@ -248,20 +345,102 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    void CheckComboTimeout()
+    {
+        // Continuation is only available once the cancel window opens (not during startup/active).
+        if (isBusy)
+        {
+            return;
+        }
+
+        if (!inputBuffer.HasTimedOut(Time.time))
+        {
+            return;
+        }
+
+        TriggerHardComboBreak();
+    }
+
     void TryCommitComboInput(AttackInputType input)
     {
         if (!CanAcceptCombatInput(input))
         {
+            if (input != AttackInputType.D)
+            {
+                RegisterInvalidInput();
+            }
+
             return;
         }
 
-        if (!comboStepper.TryResolve(input, out var attackId))
+        if (!TryResolveRecipe(input, out var attackId))
+        {
+            RegisterInvalidInput();
+            return;
+        }
+
+        if (input == AttackInputType.D)
+        {
+            autoLock.Clear();
+        }
+        else if (!PrepareAutoLockForAttack(attackId))
         {
             return;
         }
 
+        consecutiveInvalidCount = 0;
         queuedFollowUp = null;
         ExecuteAttack(attackId).Forget();
+    }
+
+    /// <summary>
+    /// Runs L/H auto-lock at attack commit. Returns false when a persisted combo target
+    /// was lost (range + LOS) and the combo was broken.
+    /// </summary>
+    bool PrepareAutoLockForAttack(AttackId attackId)
+    {
+        if (!attackMap.TryGetValue(attackId, out var definition))
+        {
+            return true;
+        }
+
+        // Mobility dash never acquires; lock was cleared on D input.
+        if (definition.useMoveInputDirection || definition.skipHitbox)
+        {
+            return true;
+        }
+
+        var reach = CombatAutoLock.ComputeAttackReach(definition);
+        if (!autoLock.TrySelectOrRetain(reach, out var lostPersistedTarget) && lostPersistedTarget)
+        {
+            TriggerHardComboBreak();
+            return false;
+        }
+
+        return true;
+    }
+
+    bool TryResolveRecipe(AttackInputType input, out AttackId attackId)
+    {
+        attackId = AttackId.None;
+        var time = Time.time;
+
+        // Dash always starts a fresh mobility branch.
+        if (input == AttackInputType.D)
+        {
+            inputBuffer.ReplaceWith(input, time);
+            return comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out attackId);
+        }
+
+        inputBuffer.Append(input, time);
+        if (comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out attackId))
+        {
+            return true;
+        }
+
+        // No recipe for the extended sequence — intentional branch restart from this input.
+        inputBuffer.ReplaceWith(input, time);
+        return comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out attackId);
     }
 
     bool TryConsumeQueuedFollowUp()
@@ -286,6 +465,53 @@ public class PlayerCombat : MonoBehaviour
 
         TryCommitComboInput(input);
         return true;
+    }
+
+    void RegisterInvalidInput()
+    {
+        if (hardBreakRecovery)
+        {
+            return;
+        }
+
+        consecutiveInvalidCount++;
+        if (consecutiveInvalidCount >= consecutiveInvalidThreshold)
+        {
+            TriggerHardComboBreak();
+        }
+    }
+
+    void TriggerHardComboBreak()
+    {
+        if (hardBreakRecovery)
+        {
+            consecutiveInvalidCount = 0;
+            queuedFollowUp = null;
+            inputBuffer.Clear();
+            inputBuffer.SetOpen(false);
+            autoLock.Clear();
+            return;
+        }
+
+        var shouldNotify = inputBuffer.Count > 0 || consecutiveInvalidCount > 0 || isAttackPlaying;
+        consecutiveInvalidCount = 0;
+        queuedFollowUp = null;
+        inputBuffer.Clear();
+        inputBuffer.SetOpen(false);
+        autoLock.Clear();
+
+        if (isAttackPlaying)
+        {
+            hardBreakRecovery = true;
+        }
+
+        if (!shouldNotify)
+        {
+            return;
+        }
+
+        OnHardComboBreak?.Invoke();
+        SfxManager.Instance.Play(SfxType.HardComboBreak);
     }
 
     void BeginAttackLockout(float duration)
@@ -317,9 +543,35 @@ public class PlayerCombat : MonoBehaviour
         }
 
         isBusy = false;
-        inputBuffer.SetOpen(true);
         hitbox.DisableHitbox();
+
+        if (hardBreakRecovery)
+        {
+            inputBuffer.SetOpen(false);
+            return;
+        }
+
+        inputBuffer.SetOpen(true);
+        inputBuffer.Touch(Time.time);
         TryConsumeQueuedFollowUp();
+    }
+
+    /// <summary>
+    /// Immediately cancels all active combat state when the player is hit.
+    /// </summary>
+    public void InterruptFromHit()
+    {
+        attackCts?.Cancel();
+        attackCts?.Dispose();
+        attackCts = null;
+        attackGeneration++;
+
+        sequencer.CancelPendingChase();
+        hardBreakRecovery = false;
+        consecutiveInvalidCount = 0;
+        ClearAttackLockout();
+        ClearPendingAttackInputs();
+        ResetToNavigation();
     }
 
     async UniTaskVoid ExecuteAttack(AttackId attackId)
@@ -336,8 +588,10 @@ public class PlayerCombat : MonoBehaviour
         var token = attackCts.Token;
         var generation = ++attackGeneration;
 
+        hardBreakRecovery = false;
         isBusy = true;
         isAttackPlaying = true;
+        activeAttack = definition;
         inputBuffer.SetOpen(false);
         playerController.SetMovementEnabled(false);
 
@@ -345,11 +599,17 @@ public class PlayerCombat : MonoBehaviour
         ClearAttackLockout();
         BeginAttackLockout(definition.attackLockoutDuration);
 
+        var alignToLock = false;
         Vector3 dashDirection;
         if (definition.useMoveInputDirection)
         {
             dashDirection = ResolveMoveInputDirection();
             FaceDirection(dashDirection);
+        }
+        else if (autoLock.TryGetLockDirection(out var lockDirection))
+        {
+            dashDirection = lockDirection;
+            alignToLock = true;
         }
         else
         {
@@ -366,7 +626,7 @@ public class PlayerCombat : MonoBehaviour
             sequencer.ArmChaseOnNextLaunch();
         }
 
-        animatorDriver.PlayAttack(attackId);
+        animationController.PlayAttack(attackId);
         OnAttackExecuted?.Invoke(attackId);
 
         // Always clear any prior swing: cancel-into (especially skipHitbox dash) skips the
@@ -385,19 +645,39 @@ public class PlayerCombat : MonoBehaviour
         try
         {
             isKinematicMotionActive = true;
-            await attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token);
+            if (alignToLock)
+            {
+                await UniTask.WhenAll(
+                    attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token),
+                    AlignToLockDuringStartupAsync(definition.dashDuration, token));
+            }
+            else
+            {
+                await attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token);
+            }
+
             isKinematicMotionActive = false;
 
             if (!definition.skipHitbox)
             {
-                // Timed fallback for projects without Mixamo Animation Events yet.
-                await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxEnableDelay), cancellationToken: token);
+                // Remaining startup: keep aligning until active frames begin, then freeze facing.
+                if (alignToLock && definition.hitboxEnableDelay > 0f)
+                {
+                    await UniTask.WhenAll(
+                        UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxEnableDelay), cancellationToken: token),
+                        AlignToLockDuringStartupAsync(definition.hitboxEnableDelay, token));
+                }
+                else
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxEnableDelay), cancellationToken: token);
+                }
+
                 hitbox.EnableHitbox();
                 await UniTask.Delay(TimeSpan.FromSeconds(definition.hitboxActiveDuration), cancellationToken: token);
                 hitbox.DisableHitbox();
             }
 
-            // Keep the string alive so cancel-into (and animator Attack_ID steps) can fire.
+            // Keep the string alive so cancel-into next attack can fire.
             OpenCancelWindow();
             await UniTask.Delay(TimeSpan.FromSeconds(recoveryHold), cancellationToken: token);
         }
@@ -472,6 +752,12 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
+        // Retain launched target through chase recovery for optional follow-ups.
+        if (damageable is ICombatTarget launchTarget)
+        {
+            autoLock.ForceLock(launchTarget);
+        }
+
         ResolveLaunch(launchable, hitDirection, payload.LaunchDistance).Forget();
     }
 
@@ -483,18 +769,35 @@ public class PlayerCombat : MonoBehaviour
         var token = attackCts.Token;
         var generation = ++attackGeneration;
 
+        // Launch cancels ExecuteAttack's recovery wait — keep the committing attack's
+        // recovery/lockout so a successful finisher cannot skip end-lag.
+        var recoveryHold = activeAttack != null && activeAttack.recoveryHoldDuration > 0f
+            ? activeAttack.recoveryHoldDuration
+            : 0.55f;
+        var lockoutDuration = activeAttack?.attackLockoutDuration ?? 0f;
+
         isBusy = true;
         isAttackPlaying = true;
         inputBuffer.SetOpen(false);
+        queuedFollowUp = null;
         playerController.SetMovementEnabled(false);
+        BeginAttackLockout(lockoutDuration);
 
         try
         {
             isKinematicMotionActive = true;
             await sequencer.HandleLaunchAndChaseAsync(launchable, hitDirection, launchDistance, token);
+            isKinematicMotionActive = false;
+
+            // Forced recovery: do not open cancel — L/H must wait out finisher end-lag.
+            if (recoveryHold > 0f)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(recoveryHold), cancellationToken: token);
+            }
         }
         catch (OperationCanceledException)
         {
+            isKinematicMotionActive = false;
         }
         finally
         {
@@ -516,15 +819,51 @@ public class PlayerCombat : MonoBehaviour
         isBusy = false;
         isAttackPlaying = false;
         isKinematicMotionActive = false;
+        hardBreakRecovery = false;
+        consecutiveInvalidCount = 0;
         queuedFollowUp = null;
-        comboStepper.Reset();
+        activeAttack = null;
+        autoLock.Clear();
+        inputBuffer.Clear();
         hitbox.EndSwing();
-        animatorDriver.ResetAttack();
+        animationController.ResetAttack();
         inputBuffer.SetOpen(true);
         playerController.SetMovementEnabled(true);
         if (body != null)
         {
             body.isKinematic = true;
+        }
+    }
+
+    async UniTask AlignToLockDuringStartupAsync(float duration, CancellationToken cancellationToken)
+    {
+        if (duration <= 0f)
+        {
+            if (autoLock.TryGetLockDirection(out var instantDir))
+            {
+                FaceDirection(instantDir);
+            }
+
+            return;
+        }
+
+        var elapsed = 0f;
+        while (elapsed < duration)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!autoLock.TryGetLockDirection(out var lockDirection))
+            {
+                return;
+            }
+
+            var targetRotation = Quaternion.LookRotation(lockDirection, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                lockRotationSpeed * Time.deltaTime);
+
+            elapsed += Time.deltaTime;
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
     }
 
@@ -843,4 +1182,3 @@ public class PlayerCombat : MonoBehaviour
         };
     }
 }
-

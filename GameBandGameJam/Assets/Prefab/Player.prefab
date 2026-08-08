@@ -91,6 +91,7 @@ MonoBehaviour:
   animationController: {fileID: 6172849501728341003}
   collisionDetector: {fileID: 5627855489857298626}
   damageNumberPrefab: {fileID: 3421854495893843226, guid: 4b18700542abb3a4382aae20c35a9c46, type: 3}
+  combatConfig: {fileID: 11400000, guid: 9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b, type: 2}
   layerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -121,6 +122,8 @@ MonoBehaviour:
   playerController: {fileID: 4109264221245626821}
   hitbox: {fileID: 6172849501728341002}
   animationController: {fileID: 6172849501728341003}
+  animationEventReceiver: {fileID: 5179666629638170059}
+  attackDetector: {fileID: 0}
   damageNumberPrefab: {fileID: 3421854495893843226, guid: 4b18700542abb3a4382aae20c35a9c46, type: 3}
   body: {fileID: 8936354506429449023}
   playerColliders:
@@ -132,475 +135,10 @@ MonoBehaviour:
   wallMask:
     serializedVersion: 2
     m_Bits: 1
-  comboResetWindow: 0.4
-  simultaneousInputWindow: 0.05
-  consecutiveInvalidThreshold: 2
   chaseOffset: 1.5
   lightKey: 106
   heavyKey: 107
   dashKey: 304
-  recipes:
-  - name: Light
-    sequence: 00000000
-    attackId: 1
-  - name: Light1
-    sequence: 0000000000000000
-    attackId: 2
-  - name: Light2
-    sequence: 000000000000000000000000
-    attackId: 3
-  - name: Light3
-    sequence: 00000000000000000000000000000000
-    attackId: 4
-  - name: Light4
-    sequence: 0000000000000000000000000000000000000000
-    attackId: 5
-  - name: Light5
-    sequence: 000000000000000000000000000000000000000000000000
-    attackId: 6
-  - name: Light Finisher
-    sequence: 00000000000000000000000000000000000000000000000000000000
-    attackId: 7
-  - name: Heavy
-    sequence: 01000000
-    attackId: 20
-  - name: Heavy1
-    sequence: 0100000001000000
-    attackId: 21
-  - name: Heavy2
-    sequence: 010000000100000001000000
-    attackId: 22
-  - name: Heavy3
-    sequence: 01000000010000000100000001000000
-    attackId: 23
-  - name: Heavy4
-    sequence: 0100000001000000010000000100000001000000
-    attackId: 24
-  - name: Heavy5
-    sequence: 010000000100000001000000010000000100000001000000
-    attackId: 25
-  - name: Heavy Finisher
-    sequence: 01000000010000000100000001000000010000000100000001000000
-    attackId: 26
-  - name: Dash
-    sequence: 02000000
-    attackId: 101
-  - name: Dash Light
-    sequence: 0200000000000000
-    attackId: 102
-  - name: Dash Light1
-    sequence: 020000000000000000000000
-    attackId: 103
-  - name: Dash Light2
-    sequence: 02000000000000000000000000000000
-    attackId: 104
-  - name: Dash Light Finisher
-    sequence: 0200000000000000000000000000000000000000
-    attackId: 106
-  - name: Dash Heavy
-    sequence: 0200000001000000
-    attackId: 121
-  - name: Dash Heavy1
-    sequence: 020000000100000001000000
-    attackId: 122
-  - name: Dash Heavy2
-    sequence: 02000000010000000100000001000000
-    attackId: 123
-  - name: Dash Heavy Finisher
-    sequence: 0200000001000000010000000100000001000000
-    attackId: 125
-  attacks:
-  - attackId: 1
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 10
-      hitStunDuration: 0.12
-      knockbackType: 0
-      launchDistance: 0.75
-  - attackId: 2
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 11
-      hitStunDuration: 0.14
-      knockbackType: 0
-      launchDistance: 0.9
-  - attackId: 3
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 11
-      hitStunDuration: 0.16
-      knockbackType: 0
-      launchDistance: 1.05
-  - attackId: 4
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 12
-      hitStunDuration: 0.18
-      knockbackType: 0
-      launchDistance: 1.2
-  - attackId: 5
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 12
-      hitStunDuration: 0.2
-      knockbackType: 0
-      launchDistance: 1.35
-  - attackId: 6
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 13
-      hitStunDuration: 0.22
-      knockbackType: 0
-      launchDistance: 1.5
-  - attackId: 7
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.8
-    attackLockoutDuration: 0.3
-    hitboxRadius: 0.9
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
-    triggersChaseSequence: 1
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 13
-      hitStunDuration: 0.35
-      knockbackType: 1
-      launchDistance: 6
-  - attackId: 20
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 18
-      hitStunDuration: 0.2
-      knockbackType: 0
-      launchDistance: 1.5
-  - attackId: 21
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 19
-      hitStunDuration: 0.22
-      knockbackType: 0
-      launchDistance: 1.65
-  - attackId: 22
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 20
-      hitStunDuration: 0.24
-      knockbackType: 0
-      launchDistance: 1.8
-  - attackId: 23
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 21
-      hitStunDuration: 0.26
-      knockbackType: 0
-      launchDistance: 1.95
-  - attackId: 24
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 22
-      hitStunDuration: 0.28
-      knockbackType: 0
-      launchDistance: 2.1
-  - attackId: 25
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 23
-      hitStunDuration: 0.3
-      knockbackType: 0
-      launchDistance: 2.25
-  - attackId: 26
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.8
-    attackLockoutDuration: 0.3
-    hitboxRadius: 0.9
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
-    triggersChaseSequence: 1
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 23
-      hitStunDuration: 0.35
-      knockbackType: 1
-      launchDistance: 6
-  - attackId: 101
-    dashDistance: 3
-    dashDuration: 0.12
-    hitboxEnableDelay: 0
-    hitboxActiveDuration: 0
-    recoveryHoldDuration: 0.35
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 1
-    skipHitbox: 1
-    payload:
-      damage: 0
-      hitStunDuration: 0
-      knockbackType: 0
-      launchDistance: 0
-  - attackId: 102
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 10
-      hitStunDuration: 0.12
-      knockbackType: 0
-      launchDistance: 0.75
-  - attackId: 103
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 11
-      hitStunDuration: 0.14
-      knockbackType: 0
-      launchDistance: 0.9
-  - attackId: 104
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.6
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 11
-      hitStunDuration: 0.16
-      knockbackType: 0
-      launchDistance: 1.05
-  - attackId: 106
-    dashDistance: 0.5
-    dashDuration: 0.07
-    hitboxEnableDelay: 0.04
-    hitboxActiveDuration: 0.1
-    recoveryHoldDuration: 0.8
-    attackLockoutDuration: 0.3
-    hitboxRadius: 0.9
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
-    triggersChaseSequence: 1
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 12
-      hitStunDuration: 0.35
-      knockbackType: 1
-      launchDistance: 6
-  - attackId: 121
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 18
-      hitStunDuration: 0.2
-      knockbackType: 0
-      launchDistance: 1.5
-  - attackId: 122
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 19
-      hitStunDuration: 0.22
-      knockbackType: 0
-      launchDistance: 1.65
-  - attackId: 123
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    hitboxRadius: 0.75
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 20
-      hitStunDuration: 0.24
-      knockbackType: 0
-      launchDistance: 1.8
-  - attackId: 125
-    dashDistance: 2
-    dashDuration: 0.1
-    hitboxEnableDelay: 0.06
-    hitboxActiveDuration: 0.12
-    recoveryHoldDuration: 0.8
-    attackLockoutDuration: 0.65
-    hitboxRadius: 0.9
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
-    triggersChaseSequence: 1
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 21
-      hitStunDuration: 0.35
-      knockbackType: 1
-      launchDistance: 6
   lockConeDegrees: 90
   lockSnapMargin: 4
   lockPersistenceRange: 6
@@ -854,15 +392,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: d3c089830f10629469927561a60ca0aa, type: 2}
     - target: {fileID: -8679921383154817045, guid: e3e08c6aac3f3404ca2b5bd3a9bcadd0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.00044356097
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e3e08c6aac3f3404ca2b5bd3a9bcadd0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.00000002793968
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e3e08c6aac3f3404ca2b5bd3a9bcadd0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.0001488777
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e3e08c6aac3f3404ca2b5bd3a9bcadd0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -922,11 +460,14 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 88d03ed949bf99140a6c627ad5123cb1, type: 2}
     - target: {fileID: 5866666021909216657, guid: e3e08c6aac3f3404ca2b5bd3a9bcadd0, type: 3}
       propertyPath: m_WarningMessage
-      value: 
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'root'\n\tTransform 'root'\n\tFrom animation
+        clip 'Punch Pause'\n\tFrom animation clip 'Punch Pause'"
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: e3e08c6aac3f3404ca2b5bd3a9bcadd0, type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

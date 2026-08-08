@@ -22,9 +22,11 @@ public static class PlayerAnimationClips
     public const string Heavy1 = "Heavy1";
     public const string Heavy2 = "Heavy2";
     public const string Heavy3 = "Heavy3";
-    public const string Heavy4 = "Heavy4";
-    public const string Heavy5 = "Heavy5";
     public const string HeavyFinisher = "HeavyFinisher";
+
+    public const string KickPause = "KickPause";
+    public const string PunchPause = "PunchPause";
+    public const string PunchPause2 = "PunchPause2";
 
     public const string Dash = "Dash";
     public const string DashLight = "DashLight";
@@ -40,19 +42,21 @@ public static class PlayerAnimationClips
 
     public const float LightDuration = 0.55f;
     public const float Light1Duration = 0.58f;
-    public const float Light2Duration = 0.6f;
+    public const float Light2Duration = 0.72f;
     public const float Light3Duration = 0.62f;
     public const float Light4Duration = 0.64f;
-    public const float Light5Duration = 0.66f;
+    public const float Light5Duration = 0.88f;
     public const float LightFinisherDuration = 1f;
 
     public const float HeavyDuration = 0.7f;
-    public const float Heavy1Duration = 0.74f;
+    public const float Heavy1Duration = 0.9f;
     public const float Heavy2Duration = 0.78f;
-    public const float Heavy3Duration = 0.82f;
-    public const float Heavy4Duration = 0.86f;
-    public const float Heavy5Duration = 0.9f;
+    public const float Heavy3Duration = 0.95f;
     public const float HeavyFinisherDuration = 1.1f;
+
+    public const float KickPauseDuration = 0.72f;
+    public const float PunchPauseDuration = 0.88f;
+    public const float PunchPause2Duration = 0.9f;
 
     public const float DashDuration = 0.35f;
     public const float DashLightDuration = 0.55f;
@@ -68,18 +72,21 @@ public static class PlayerAnimationClips
     {
         { AttackId.Light, (Light, LightDuration) },
         { AttackId.Light1, (Light1, Light1Duration) },
-        { AttackId.Light2, (Light2, Light2Duration) },
+        // Rhythm anchors: state names must match the Player Animator controller.
+        { AttackId.Light2, (KickPause, KickPauseDuration) },
         { AttackId.Light3, (Light3, Light3Duration) },
         { AttackId.Light4, (Light4, Light4Duration) },
-        { AttackId.Light5, (Light5, Light5Duration) },
+        { AttackId.Light5, (PunchPause, PunchPauseDuration) },
         { AttackId.LightFinisher, (LightFinisher, LightFinisherDuration) },
         { AttackId.Heavy, (Heavy, HeavyDuration) },
-        { AttackId.Heavy1, (Heavy1, Heavy1Duration) },
+        { AttackId.Heavy1, (PunchPause2, PunchPause2Duration) },
         { AttackId.Heavy2, (Heavy2, Heavy2Duration) },
         { AttackId.Heavy3, (Heavy3, Heavy3Duration) },
-        { AttackId.Heavy4, (Heavy4, Heavy4Duration) },
-        { AttackId.Heavy5, (Heavy5, Heavy5Duration) },
         { AttackId.HeavyFinisher, (HeavyFinisher, HeavyFinisherDuration) },
+        { AttackId.LightBreakKick, (KickPause, KickPauseDuration) },
+        { AttackId.LightHeavyFinisher, (PunchPause, PunchPauseDuration) },
+        { AttackId.HeavySweepKick, (KickPause, KickPauseDuration) },
+        { AttackId.HeavyLightEnder, (Light, LightDuration) },
         { AttackId.Dash, (Dash, DashDuration) },
         { AttackId.DashLight, (DashLight, DashLightDuration) },
         { AttackId.DashLight1, (DashLight1, DashLight1Duration) },

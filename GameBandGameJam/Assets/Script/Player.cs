@@ -13,6 +13,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] DamageNumberVisual damageNumberPrefab = null!;
 
     [Header("Combat Config")]
+    [SerializeField] PlayerCombatConfig combatConfig = null!;
     [SerializeField] LayerMask layerMask;
 
     public event Action? OnHealthChanged;
@@ -36,14 +37,13 @@ public class Player : MonoBehaviour, IDamageable
             body.isKinematic = true;
         }
 
-        EnsureCombatComponents();
-
         var animator = GetComponentInChildren<Animator>();
         animationController.Initialize(animator);
 
         playerController.Initialize(playerData.speed);
 
         playerCombat.Initialize(
+            combatConfig,
             playerController,
             combatHitbox,
             animationController,
@@ -71,41 +71,6 @@ public class Player : MonoBehaviour, IDamageable
     public void DoubleTakenDamage()
     {
         damageTokenMultipler++;
-    }
-
-    void EnsureCombatComponents()
-    {
-        if (playerController == null)
-        {
-            playerController = GetComponent<PlayerController>();
-        }
-
-        if (playerCombat == null)
-        {
-            playerCombat = GetComponent<PlayerCombat>();
-            if (playerCombat == null)
-            {
-                playerCombat = gameObject.AddComponent<PlayerCombat>();
-            }
-        }
-
-        if (combatHitbox == null)
-        {
-            combatHitbox = GetComponent<CombatHitbox>();
-            if (combatHitbox == null)
-            {
-                combatHitbox = gameObject.AddComponent<CombatHitbox>();
-            }
-        }
-
-        if (animationController == null)
-        {
-            animationController = GetComponent<PlayerAnimationController>();
-            if (animationController == null)
-            {
-                animationController = gameObject.AddComponent<PlayerAnimationController>();
-            }
-        }
     }
 
     void Death()

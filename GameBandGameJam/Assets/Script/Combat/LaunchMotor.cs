@@ -11,6 +11,8 @@ public sealed class LaunchMotor
     float launchDuration = 0.18f;
     float arcHeight = 1.25f;
     float skinWidth = 0.2f;
+    float groundedY;
+    int launchGeneration;
 
     public event Action? OnLaunchCompleted;
     public bool IsLaunching { get; private set; }
@@ -18,22 +20,21 @@ public sealed class LaunchMotor
     public void Initialize(
         Rigidbody launchBody,
         LayerMask walls,
+        float groundedHeight,
         float duration = 0.18f,
         float height = 1.25f)
     {
         body = launchBody;
         wallMask = walls;
+        groundedY = groundedHeight;
         launchDuration = duration;
         arcHeight = height;
+        launchGeneration = 0;
     }
 
     public async UniTask LaunchAsync(Vector3 launchDirection, float distance, CancellationToken cancellationToken)
     {
-        if (IsLaunching)
-        {
-            return;
-        }
-
+        var generation = ++launchGeneration;
         IsLaunching = true;
 
         var direction = launchDirection;
@@ -47,7 +48,7 @@ public sealed class LaunchMotor
         var origin = body.position;
         var travel = ClampDistance(origin, direction, distance);
         var destination = origin + direction * travel;
-        destination.y = origin.y;
+        destination.y = groundedY;
 
         try
         {
@@ -60,8 +61,11 @@ public sealed class LaunchMotor
         }
         finally
         {
-            IsLaunching = false;
-            OnLaunchCompleted?.Invoke();
+            if (generation == launchGeneration)
+            {
+                IsLaunching = false;
+                OnLaunchCompleted?.Invoke();
+            }
         }
     }
 

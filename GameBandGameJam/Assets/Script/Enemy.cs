@@ -20,6 +20,8 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     Rigidbody body = null!;
     int currentHealth;
     float hitStunUntil;
+    float groundedY;
+    int knockbackGeneration;
     bool aiEnabled = true;
     bool isDead;
 
@@ -42,6 +44,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         body.linearVelocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
+        groundedY = body.position.y;
 
         if (wallMask.value == 0)
         {
@@ -49,9 +52,10 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
             wallMask = ~(1 << 6);
         }
 
-        launchMotor.Initialize(body, wallMask, launchKnockbackDuration, launchKnockbackArcHeight);
+        launchMotor.Initialize(body, wallMask, groundedY, launchKnockbackDuration, launchKnockbackArcHeight);
         aiEnabled = true;
         hitStunUntil = 0f;
+        knockbackGeneration = 0;
     }
 
     public async UniTask SpawnAnimation()
@@ -108,39 +112,46 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     async UniTask LaunchAsync(Vector3 direction, float distance, CancellationToken cancellationToken)
     {
         SetAiEnabled(false);
-        launchCts?.Cancel();
-        launchCts?.Dispose();
+        CancelActiveKnockback();
         launchCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var token = launchCts.Token;
+        var generation = ++knockbackGeneration;
 
         try
         {
             await launchMotor.LaunchAsync(direction, distance, token);
         }
+        catch (System.OperationCanceledException)
+        {
+        }
         finally
         {
-            StopBodyMotion();
-            // AI stays off until stun expires; navigation resumes via IsAiEnabled.
-            if (Time.time >= hitStunUntil)
+            if (generation == knockbackGeneration)
             {
-                SetAiEnabled(true);
+                StopBodyMotion();
+                // AI stays off until stun expires; navigation resumes via IsAiEnabled.
+                if (Time.time >= hitStunUntil)
+                {
+                    SetAiEnabled(true);
+                }
             }
         }
     }
 
     async UniTaskVoid ApplyStandardKnockback(Vector3 direction, float distance)
     {
-        launchCts?.Cancel();
-        launchCts?.Dispose();
+        CancelActiveKnockback();
         launchCts = new CancellationTokenSource();
         var token = launchCts.Token;
+        var generation = ++knockbackGeneration;
 
         try
         {
             var flat = Flatten(direction);
-            var travel = ClampTravelAgainstWalls(body.position, flat, distance);
-            var end = body.position + flat * travel;
-            end.y = body.position.y;
+            var origin = body.position;
+            var travel = ClampTravelAgainstWalls(origin, flat, distance);
+            var end = origin + flat * travel;
+            end.y = groundedY;
             await KinematicMover.MoveAlongArcAsync(
                 body,
                 end,
@@ -153,10 +164,13 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         }
         finally
         {
-            StopBodyMotion();
-            if (Time.time >= hitStunUntil)
+            if (generation == knockbackGeneration)
             {
-                SetAiEnabled(true);
+                StopBodyMotion();
+                if (Time.time >= hitStunUntil)
+                {
+                    SetAiEnabled(true);
+                }
             }
         }
     }
@@ -174,9 +188,15 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         }
 
         isDead = true;
+        CancelActiveKnockback();
+        Destroy(gameObject);
+    }
+
+    void CancelActiveKnockback()
+    {
         launchCts?.Cancel();
         launchCts?.Dispose();
-        Destroy(gameObject);
+        launchCts = null;
     }
 
     void StopBodyMotion()

@@ -250,7 +250,7 @@ MonoBehaviour:
     payload:
       damage: 20
       hitStunDuration: 0.24000001
-      knockbackType: 0
+      knockbackType: 1
       launchDistance: 4
   - attackId: 23
     dashDistance: 2

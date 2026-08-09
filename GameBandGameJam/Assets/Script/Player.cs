@@ -1,8 +1,10 @@
 #nullable enable
 using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class Player : MonoBehaviour, IDamageable
+public class Player : MonoBehaviour, IHitable
 {
     [Header("Components")]
     [SerializeField] Rigidbody body = null!;
@@ -50,8 +52,10 @@ public class Player : MonoBehaviour, IDamageable
             layerMask);
     }
 
-    public void Damage(int damage)
+    public void TryDamage(int damage)
     {
+        playerCombat.InterruptFromHit();
+
         damage *= damageTokenMultipler;
         currentHealth -= damage;
         OnHealthChanged?.Invoke();
@@ -61,10 +65,17 @@ public class Player : MonoBehaviour, IDamageable
         }
     }
 
-    public void ApplyHit(in HitPayload payload, Vector3 hitDirection)
+    public void TryStun(float stunDuration)
     {
-        playerCombat.InterruptFromHit();
-        Damage(payload.Damage);
+    }
+
+    public UniTask TryKnockback(
+        KnockbackType knockbackType,
+        float launchDistance,
+        Vector3 hitDirection,
+        CancellationToken cancellationToken = default)
+    {
+        return UniTask.CompletedTask;
     }
 
     public void DoubleTakenDamage()

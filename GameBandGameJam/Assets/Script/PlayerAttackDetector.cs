@@ -24,7 +24,7 @@ public class PlayerAttackDetector : MonoBehaviour
         sphereIndicator.gameObject.SetActive(false);
     }
 
-    public List<IDamageable> GetDamageables(DamageDetectionData damageDetectionData)
+    public List<IHitable> GetDamageables(DamageDetectionData damageDetectionData)
     {
 #if UNITY_EDITOR
         ShowIndicator(damageDetectionData.detectionCenter, damageDetectionData.detectionRadius).Forget();
@@ -35,7 +35,7 @@ public class PlayerAttackDetector : MonoBehaviour
             damageDetectionData.layerMask,
             QueryTriggerInteraction.Ignore
         );
-        return colliders.Select(detectedCollider => detectedCollider.GetComponentInParent<IDamageable>()).Where(damageable => damageable != null).ToList();
+        return colliders.Select(detectedCollider => detectedCollider.GetComponentInParent<IHitable>()).Where(damageable => damageable != null).ToList();
     }
 
     async UniTask ShowIndicator(Vector3 center, float radius)

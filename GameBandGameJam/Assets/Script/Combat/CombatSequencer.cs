@@ -23,24 +23,31 @@ public sealed class CombatSequencer
     }
 
     public async UniTask HandleLaunchAndChaseAsync(
-        ICombatLaunchable launchable,
+        IHitable hitable,
         Vector3 hitDirection,
         float launchDistance,
         CancellationToken cancellationToken)
     {
+        var launchTask = hitable.TryKnockback(
+            KnockbackType.KnockbackToDistance,
+            launchDistance,
+            hitDirection,
+            cancellationToken);
+
         if (!awaitingChase)
         {
-            await launchable.LaunchAsync(hitDirection, launchDistance, cancellationToken);
+            await launchTask;
             return;
         }
 
         awaitingChase = false;
-        await launchable.LaunchAsync(hitDirection, launchDistance, cancellationToken);
+        await launchTask;
         cancellationToken.ThrowIfCancellationRequested();
-
-        if (launchable.Transform != null)
+        
+        var targetTransform = ResolveTransform(hitable);
+        if (targetTransform != null)
         {
-            chaseTeleport.TeleportBehind(launchable.Transform);
+            chaseTeleport.TeleportBehind(targetTransform);
         }
 
         OnSequenceReset?.Invoke();
@@ -50,10 +57,19 @@ public sealed class CombatSequencer
     {
         awaitingChase = false;
     }
-}
 
-public interface ICombatLaunchable
-{
-    Transform Transform { get; }
-    UniTask LaunchAsync(Vector3 direction, float distance, CancellationToken cancellationToken);
+    static Transform? ResolveTransform(IHitable hitable)
+    {
+        if (hitable is ICombatTarget target)
+        {
+            return target.Transform;
+        }
+
+        if (hitable is Component component)
+        {
+            return component.transform;
+        }
+
+        return null;
+    }
 }

@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour, IDamageable, ICombatLaunchable, ICombatTarget
+public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 {
     [SerializeField] int maxHealth = 100;
     [SerializeField] LayerMask wallMask;
@@ -53,8 +53,13 @@ public class Enemy : MonoBehaviour, IDamageable, ICombatLaunchable, ICombatTarge
         await transform.DOScale(1f, 1f);
     }
 
-    public void Damage(int damage)
+    public void TryDamage(int damage)
     {
+        if (isDead)
+        {
+            return;
+        }
+
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
@@ -62,27 +67,38 @@ public class Enemy : MonoBehaviour, IDamageable, ICombatLaunchable, ICombatTarge
         }
     }
 
-    public void ApplyHit(in HitPayload payload, Vector3 hitDirection)
+    public void TryStun(float stunDuration)
     {
-        Damage(payload.Damage);
-        if (currentHealth <= 0)
+        if (isDead)
         {
             return;
         }
 
-        hitStunUntil = Time.time + payload.HitStunDuration;
+        hitStunUntil = Time.time + stunDuration;
         SetAiEnabled(false);
-
-        if (payload.KnockbackType == KnockbackType.KnockbackToDistance)
-        {
-            // Finisher / chase path is driven by PlayerCombat via LaunchAsync.
-            return;
-        }
-
-        ApplyStandardKnockback(hitDirection, payload.LaunchDistance).Forget();
     }
 
-    public async UniTask LaunchAsync(Vector3 direction, float distance, CancellationToken cancellationToken)
+    public UniTask TryKnockback(
+        KnockbackType knockbackType,
+        float launchDistance,
+        Vector3 hitDirection,
+        CancellationToken cancellationToken = default)
+    {
+        if (isDead)
+        {
+            return UniTask.CompletedTask;
+        }
+
+        if (knockbackType == KnockbackType.KnockbackToDistance)
+        {
+            return LaunchAsync(hitDirection, launchDistance, cancellationToken);
+        }
+
+        ApplyStandardKnockback(hitDirection, launchDistance).Forget();
+        return UniTask.CompletedTask;
+    }
+
+    async UniTask LaunchAsync(Vector3 direction, float distance, CancellationToken cancellationToken)
     {
         SetAiEnabled(false);
         launchCts?.Cancel();

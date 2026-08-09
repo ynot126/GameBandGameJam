@@ -10,10 +10,10 @@ public class CombatHitbox : MonoBehaviour
     [SerializeField] Vector3 localOffset = new(0f, 0.8f, 0.7f);
     [SerializeField] Transform? sphereIndicator;
 
-    readonly HashSet<IDamageable> hitThisSwing = new();
+    readonly HashSet<IHitable> hitThisSwing = new();
     HitPayload activePayload;
     Transform owner = null!;
-    IDamageable? ownerDamageable;
+    IHitable? ownerDamageable;
     bool isActive;
     /// <summary>
     /// True between <see cref="BeginSwing"/> and the first <see cref="DisableHitbox"/> / <see cref="EndSwing"/>.
@@ -21,12 +21,12 @@ public class CombatHitbox : MonoBehaviour
     /// </summary>
     bool hitWindowOpen;
 
-    public event Action<IDamageable, HitPayload, Vector3>? OnHitConfirmed;
+    public event Action<IHitable, HitPayload, Vector3>? OnHitConfirmed;
 
     public void Initialize(Transform ownerTransform, LayerMask mask, Transform? indicator = null)
     {
         owner = ownerTransform;
-        ownerDamageable = ownerTransform.GetComponent<IDamageable>();
+        ownerDamageable = ownerTransform.GetComponent<IHitable>();
         hitMask = mask;
 
         if (indicator != null)
@@ -129,7 +129,7 @@ public class CombatHitbox : MonoBehaviour
 
         for (var i = 0; i < colliders.Length; i++)
         {
-            var damageable = colliders[i].GetComponentInParent<IDamageable>();
+            var damageable = colliders[i].GetComponentInParent<IHitable>();
             if (damageable == null || ReferenceEquals(damageable, ownerDamageable))
             {
                 continue;

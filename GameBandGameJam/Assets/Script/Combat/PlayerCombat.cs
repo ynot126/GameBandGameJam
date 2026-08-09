@@ -739,7 +739,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    void HandleHitConfirmed(IDamageable damageable, HitPayload payload, Vector3 hitDirection)
+    void HandleHitConfirmed(IHitable hitable, HitPayload payload, Vector3 hitDirection)
     {
         if (cameraShakeArmed)
         {
@@ -751,7 +751,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (damageNumberPrefab != null)
         {
-            var spawnPos = damageable is Component component
+            var spawnPos = hitable is Component component
                 ? component.transform.position + Vector3.up
                 : transform.position + transform.forward;
             var damageNumber = Instantiate(damageNumberPrefab);
@@ -763,20 +763,15 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        if (damageable is not ICombatLaunchable launchable)
-        {
-            return;
-        }
-
-        if (damageable is ICombatTarget launchTarget)
+        if (hitable is ICombatTarget launchTarget)
         {
             autoLock.ForceLock(launchTarget);
         }
 
-        ResolveLaunch(launchable, hitDirection, payload.LaunchDistance).Forget();
+        ResolveLaunch(hitable, hitDirection, payload.LaunchDistance).Forget();
     }
 
-    async UniTaskVoid ResolveLaunch(ICombatLaunchable launchable, Vector3 hitDirection, float launchDistance)
+    async UniTaskVoid ResolveLaunch(IHitable hitable, Vector3 hitDirection, float launchDistance)
     {
         attackCts?.Cancel();
         attackCts?.Dispose();
@@ -798,7 +793,7 @@ public class PlayerCombat : MonoBehaviour
 
         try
         {
-            await sequencer.HandleLaunchAndChaseAsync(launchable, hitDirection, launchDistance, token);
+            await sequencer.HandleLaunchAndChaseAsync(hitable, hitDirection, launchDistance, token);
 
             if (recoveryHold > 0f)
             {

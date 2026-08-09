@@ -52,6 +52,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   standardKnockbackDuration: 0.08
+  standardKnockbackArcHeight: 0.35
+  launchKnockbackDuration: 0.18
+  launchKnockbackArcHeight: 1
 --- !u!54 &9220707714355100720
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -75,7 +78,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 84
   m_CollisionDetection: 0

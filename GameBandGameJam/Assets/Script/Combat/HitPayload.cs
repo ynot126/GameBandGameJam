@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using NaughtyAttributes;
 
 [Serializable]
 public struct HitPayloadData
@@ -7,6 +8,8 @@ public struct HitPayloadData
     public int damage;
     public float hitStunDuration;
     public KnockbackType knockbackType;
+    [ShowIf(nameof(knockbackType), KnockbackType.KnockbackToDistance)]
+    [AllowNesting]
     public float launchDistance;
 
     public HitPayload ToPayload()

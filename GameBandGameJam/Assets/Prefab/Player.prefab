@@ -136,6 +136,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   chaseOffset: 1.5
+  chaseDuration: 0.2
+  chaseArcHeight: 1
+  chaseDelay: 0.1
   lightKey: 106
   heavyKey: 107
   dashKey: 304

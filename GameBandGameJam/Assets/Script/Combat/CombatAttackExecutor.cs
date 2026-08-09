@@ -238,7 +238,16 @@ public sealed class CombatAttackExecutor
 
         if (definition.triggersChaseSequence)
         {
-            sequencer.ArmChaseOnNextLaunch();
+            if (definition.payload.knockbackType == KnockbackType.Standard)
+            {
+                Debug.LogError(
+                    $"{attackId}: triggersChaseSequence requires KnockbackToDistance, but knockbackType is Standard. Chase will not be armed.",
+                    logContext);
+            }
+            else
+            {
+                sequencer.ArmChaseOnNextLaunch();
+            }
         }
 
         animationController.PlayAttack(attackId);

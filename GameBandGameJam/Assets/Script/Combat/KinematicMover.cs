@@ -42,4 +42,38 @@ public static class KinematicMover
         var delta = worldEnd - body.position;
         await MoveByAsync(body, delta, duration, cancellationToken);
     }
+
+    /// <summary>
+    /// Moves along a horizontal lerp with a parabolic Y offset (projectile / ball arc).
+    /// </summary>
+    public static async UniTask MoveAlongArcAsync(
+        Rigidbody body,
+        Vector3 worldEnd,
+        float duration,
+        float arcHeight,
+        CancellationToken cancellationToken)
+    {
+        if (duration <= 0f)
+        {
+            body.MovePosition(worldEnd);
+            return;
+        }
+
+        var start = body.position;
+        var elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            elapsed += Time.fixedDeltaTime;
+            var t = Mathf.Clamp01(elapsed / duration);
+            var grounded = Vector3.Lerp(start, worldEnd, t);
+            var peak = arcHeight * 4f * t * (1f - t);
+            grounded.y += peak;
+            body.MovePosition(grounded);
+            await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+        }
+
+        body.MovePosition(worldEnd);
+    }
 }

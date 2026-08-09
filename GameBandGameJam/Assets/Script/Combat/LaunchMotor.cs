@@ -9,16 +9,22 @@ public sealed class LaunchMotor
     Rigidbody body = null!;
     LayerMask wallMask;
     float launchDuration = 0.18f;
+    float arcHeight = 1.25f;
     float skinWidth = 0.2f;
 
     public event Action? OnLaunchCompleted;
     public bool IsLaunching { get; private set; }
 
-    public void Initialize(Rigidbody launchBody, LayerMask walls, float duration = 0.18f)
+    public void Initialize(
+        Rigidbody launchBody,
+        LayerMask walls,
+        float duration = 0.18f,
+        float height = 1.25f)
     {
         body = launchBody;
         wallMask = walls;
         launchDuration = duration;
+        arcHeight = height;
     }
 
     public async UniTask LaunchAsync(Vector3 launchDirection, float distance, CancellationToken cancellationToken)
@@ -41,10 +47,16 @@ public sealed class LaunchMotor
         var origin = body.position;
         var travel = ClampDistance(origin, direction, distance);
         var destination = origin + direction * travel;
+        destination.y = origin.y;
 
         try
         {
-            await KinematicMover.MoveToAsync(body, destination, launchDuration, cancellationToken);
+            await KinematicMover.MoveAlongArcAsync(
+                body,
+                destination,
+                launchDuration,
+                arcHeight,
+                cancellationToken);
         }
         finally
         {

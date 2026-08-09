@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
@@ -19,8 +19,13 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] LayerMask hitMask;
     [SerializeField] LayerMask wallMask;
 
-    [Header("Input")]
+    [Header("Chase")]
     [SerializeField] float chaseOffset = 1.5f;
+    [SerializeField, Min(0.01f)] float chaseDuration = 0.35f;
+    [SerializeField, Min(0f)] float chaseArcHeight = 1.75f;
+    [SerializeField, Min(0f)] float chaseDelay = 0.5f;
+
+    [Header("Input")]
     [SerializeField] KeyCode lightKey = KeyCode.J;
     [SerializeField] KeyCode heavyKey = KeyCode.K;
     [SerializeField] KeyCode dashKey = KeyCode.LeftShift;
@@ -102,8 +107,8 @@ public class PlayerCombat : MonoBehaviour
         inputBuffer.Initialize(activeComboInputWindow);
         comboEvaluator.Initialize(config.recipes);
         attackDash.Initialize(ownerBody);
-        chaseTeleport.Initialize(transform, playerColliders, chaseOffset);
-        sequencer.Initialize(chaseTeleport);
+        chaseTeleport.Initialize(ownerBody, playerColliders, chaseOffset, chaseDuration, chaseArcHeight);
+        sequencer.Initialize(chaseTeleport, chaseDelay);
         autoLock.Initialize(
             transform,
             hitMask,
@@ -486,3 +491,4 @@ public class PlayerCombat : MonoBehaviour
         OnCombatReset?.Invoke();
     }
 }
+

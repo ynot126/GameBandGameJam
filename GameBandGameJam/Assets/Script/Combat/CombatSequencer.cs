@@ -7,13 +7,15 @@ using UnityEngine;
 public sealed class CombatSequencer
 {
     ChaseTeleport chaseTeleport = null!;
+    float chaseDelaySeconds = 0.5f;
     bool awaitingChase;
 
     public event Action? OnSequenceReset;
 
-    public void Initialize(ChaseTeleport teleport)
+    public void Initialize(ChaseTeleport teleport, float chaseDelay = 0.5f)
     {
         chaseTeleport = teleport;
+        chaseDelaySeconds = chaseDelay;
         awaitingChase = false;
     }
 
@@ -43,11 +45,18 @@ public sealed class CombatSequencer
         awaitingChase = false;
         await launchTask;
         cancellationToken.ThrowIfCancellationRequested();
-        
+
+        if (chaseDelaySeconds > 0f)
+        {
+            await UniTask.Delay(
+                TimeSpan.FromSeconds(chaseDelaySeconds),
+                cancellationToken: cancellationToken);
+        }
+
         var targetTransform = ResolveTransform(hitable);
         if (targetTransform != null)
         {
-            chaseTeleport.TeleportBehind(targetTransform);
+            await chaseTeleport.ChaseBehindAsync(targetTransform, cancellationToken);
         }
 
         OnSequenceReset?.Invoke();

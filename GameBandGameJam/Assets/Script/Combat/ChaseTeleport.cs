@@ -1,24 +1,34 @@
 #nullable enable
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public sealed class ChaseTeleport
 {
-    Transform player = null!;
-    Collider[] playerColliders = null!;
+    Rigidbody body = null!;
+    Collider[] playerColliders = Array.Empty<Collider>();
     float offsetDistance = 1.5f;
+    float chaseDuration = 0.35f;
+    float arcHeight = 1.75f;
 
-    public void Initialize(Transform playerTransform, Collider[] colliders, float chaseOffset)
+    public void Initialize(
+        Rigidbody playerBody,
+        Collider[] colliders,
+        float chaseOffset,
+        float duration = 0.35f,
+        float height = 1.75f)
     {
-        player = playerTransform;
+        body = playerBody;
         playerColliders = colliders;
         offsetDistance = chaseOffset;
+        chaseDuration = duration;
+        arcHeight = height;
     }
 
-    public void TeleportBehind(Transform target)
+    public async UniTask ChaseBehindAsync(Transform target, CancellationToken cancellationToken)
     {
-        SetCollidersEnabled(false);
-
-        var forward = player.forward;
+        var forward = body.transform.forward;
         forward.y = 0f;
         if (forward.sqrMagnitude <= 0.0001f)
         {
@@ -28,17 +38,30 @@ public sealed class ChaseTeleport
         forward.Normalize();
 
         var destination = target.position - forward * offsetDistance;
-        destination.y = player.position.y;
-        player.position = destination;
+        destination.y = body.position.y;
 
-        var lookDirection = target.position - player.position;
+        var lookDirection = target.position - destination;
         lookDirection.y = 0f;
-        if (lookDirection.sqrMagnitude > 0.0001f)
-        {
-            player.rotation = Quaternion.LookRotation(lookDirection.normalized, Vector3.up);
-        }
+        var targetRotation = lookDirection.sqrMagnitude > 0.0001f
+            ? Quaternion.LookRotation(lookDirection.normalized, Vector3.up)
+            : body.rotation;
 
-        SetCollidersEnabled(true);
+        SetCollidersEnabled(false);
+        try
+        {
+            await KinematicMover.MoveAlongArcAsync(
+                body,
+                destination,
+                chaseDuration,
+                arcHeight,
+                cancellationToken);
+
+            body.MoveRotation(targetRotation);
+        }
+        finally
+        {
+            SetCollidersEnabled(true);
+        }
     }
 
     void SetCollidersEnabled(bool enabled)

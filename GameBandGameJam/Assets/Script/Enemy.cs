@@ -8,7 +8,12 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 {
     [SerializeField] int maxHealth = 100;
     [SerializeField] LayerMask wallMask;
-    [SerializeField] float standardKnockbackDuration = 0.08f;
+
+    [Header("Knockback")]
+    [SerializeField, Min(0.01f)] float standardKnockbackDuration = 0.08f;
+    [SerializeField, Min(0f)] float standardKnockbackArcHeight = 0.35f;
+    [SerializeField, Min(0.01f)] float launchKnockbackDuration = 0.18f;
+    [SerializeField, Min(0f)] float launchKnockbackArcHeight = 1.25f;
 
     readonly LaunchMotor launchMotor = new();
     CancellationTokenSource? launchCts;
@@ -31,7 +36,12 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         currentHealth = maxHealth;
         isDead = false;
         body = GetComponent<Rigidbody>();
-        body.isKinematic = true;
+        body.isKinematic = false;
+        body.useGravity = false;
+        body.constraints = RigidbodyConstraints.FreezeRotation;
+        body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        body.linearVelocity = Vector3.zero;
+        body.angularVelocity = Vector3.zero;
 
         if (wallMask.value == 0)
         {
@@ -39,7 +49,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
             wallMask = ~(1 << 6);
         }
 
-        launchMotor.Initialize(body, wallMask);
+        launchMotor.Initialize(body, wallMask, launchKnockbackDuration, launchKnockbackArcHeight);
         aiEnabled = true;
         hitStunUntil = 0f;
     }
@@ -109,6 +119,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         }
         finally
         {
+            StopBodyMotion();
             // AI stays off until stun expires; navigation resumes via IsAiEnabled.
             if (Time.time >= hitStunUntil)
             {
@@ -126,13 +137,23 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
         try
         {
-            await KinematicMover.MoveByAsync(body, Flatten(direction) * distance, standardKnockbackDuration, token);
+            var flat = Flatten(direction);
+            var travel = ClampTravelAgainstWalls(body.position, flat, distance);
+            var end = body.position + flat * travel;
+            end.y = body.position.y;
+            await KinematicMover.MoveAlongArcAsync(
+                body,
+                end,
+                standardKnockbackDuration,
+                standardKnockbackArcHeight,
+                token);
         }
         catch (System.OperationCanceledException)
         {
         }
         finally
         {
+            StopBodyMotion();
             if (Time.time >= hitStunUntil)
             {
                 SetAiEnabled(true);
@@ -156,6 +177,29 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         launchCts?.Cancel();
         launchCts?.Dispose();
         Destroy(gameObject);
+    }
+
+    void StopBodyMotion()
+    {
+        body.linearVelocity = Vector3.zero;
+        body.angularVelocity = Vector3.zero;
+    }
+
+    float ClampTravelAgainstWalls(Vector3 origin, Vector3 direction, float desiredDistance)
+    {
+        const float skinWidth = 0.2f;
+        if (Physics.Raycast(
+                origin + Vector3.up * 0.5f,
+                direction,
+                out var hit,
+                desiredDistance + skinWidth,
+                wallMask,
+                QueryTriggerInteraction.Ignore))
+        {
+            return Mathf.Max(0f, hit.distance - skinWidth);
+        }
+
+        return desiredDistance;
     }
 
     static Vector3 Flatten(Vector3 direction)

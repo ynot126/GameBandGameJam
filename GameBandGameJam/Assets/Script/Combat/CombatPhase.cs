@@ -9,4 +9,6 @@ public enum CombatPhase
     Recovery,
     HardBreak,
     ChaseAwait,
+    /// <summary>Launch / chase resolution after a confirmed knockback hit.</summary>
+    Launch,
 }

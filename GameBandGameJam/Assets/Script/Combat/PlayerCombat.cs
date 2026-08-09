@@ -50,6 +50,7 @@ public class PlayerCombat : MonoBehaviour
     readonly ChaseTeleport chaseTeleport = new();
     readonly CombatSequencer sequencer = new();
     readonly CombatAutoLock autoLock = new();
+    readonly CombatPhaseMachine phaseMachine = new();
     readonly Dictionary<AttackId, AttackDefinition> attackMap = new();
     
 
@@ -60,8 +61,6 @@ public class PlayerCombat : MonoBehaviour
 
     CancellationTokenSource? attackCts;
     int attackGeneration;
-    int cancelOpenGeneration;
-    CombatPhase phase = CombatPhase.Idle;
     AttackInputType? queuedFollowUp;
     float queuedFollowUpTime;
     float attackLockoutUntil;
@@ -73,11 +72,10 @@ public class PlayerCombat : MonoBehaviour
     float? pendingHeavyTime;
     float? pendingDashTime;
 
-    public CombatPhase Phase => phase;
-    public bool IsBusy => phase is CombatPhase.Startup or CombatPhase.Active;
+    public CombatPhase Phase => phaseMachine.Current;
+    public bool IsBusy => phaseMachine.IsBusy;
     public bool IsAttackLockedOut => Time.time < attackLockoutUntil;
-    public bool IsHardBreakRecovery => phase == CombatPhase.HardBreak;
-    bool IsAttackPlaying => phase != CombatPhase.Idle;
+    public bool IsHardBreakRecovery => phaseMachine.IsHardBreak;
 
     public event Action<AttackId>? OnAttackExecuted;
     public event Action? OnCombatReset;
@@ -212,27 +210,24 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        switch (phase)
+        switch (phaseMachine.ResolveAttackInputRouting())
         {
-            case CombatPhase.Startup:
-            case CombatPhase.Active:
+            case CombatAttackInputRouting.QueueFollowUp:
                 QueueFollowUp(input);
                 return;
-            case CombatPhase.CancelWindow:
-            case CombatPhase.Recovery:
-            case CombatPhase.ChaseAwait:
+            case CombatAttackInputRouting.Commit:
                 TryCommitComboInput(input);
                 return;
-            case CombatPhase.HardBreak:
-                return;
-            case CombatPhase.Idle:
-            default:
+            case CombatAttackInputRouting.CommitIfBufferOpen:
                 if (!inputBuffer.IsOpen)
                 {
                     return;
                 }
 
                 TryCommitComboInput(input);
+                return;
+            case CombatAttackInputRouting.Ignore:
+            default:
                 return;
         }
     }
@@ -244,7 +239,7 @@ public class PlayerCombat : MonoBehaviour
             return true;
         }
 
-        if (phase == CombatPhase.HardBreak || IsAttackLockedOut)
+        if (phaseMachine.IsHardBreak || IsAttackLockedOut)
         {
             return false;
         }
@@ -330,7 +325,7 @@ public class PlayerCombat : MonoBehaviour
 
     void CheckComboTimeout()
     {
-        if (phase is CombatPhase.Startup or CombatPhase.Active)
+        if (phaseMachine.BlocksComboTimeout)
         {
             return;
         }
@@ -444,7 +439,7 @@ public class PlayerCombat : MonoBehaviour
 
     void RegisterInvalidInput()
     {
-        if (phase == CombatPhase.HardBreak)
+        if (phaseMachine.IsHardBreak)
         {
             return;
         }
@@ -458,7 +453,7 @@ public class PlayerCombat : MonoBehaviour
 
     void TriggerHardComboBreak()
     {
-        if (phase == CombatPhase.HardBreak)
+        if (phaseMachine.IsHardBreak)
         {
             consecutiveInvalidCount = 0;
             queuedFollowUp = null;
@@ -468,17 +463,15 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        var shouldNotify = inputBuffer.Count > 0 || consecutiveInvalidCount > 0 || IsAttackPlaying;
+        var shouldNotify = inputBuffer.Count > 0
+            || consecutiveInvalidCount > 0
+            || phaseMachine.IsAttackPlaying;
         consecutiveInvalidCount = 0;
         queuedFollowUp = null;
         inputBuffer.Clear();
         inputBuffer.SetOpen(false);
         autoLock.Clear();
-
-        if (IsAttackPlaying)
-        {
-            phase = CombatPhase.HardBreak;
-        }
+        phaseMachine.TryEnterHardBreak();
 
         if (!shouldNotify)
         {
@@ -547,26 +540,21 @@ public class PlayerCombat : MonoBehaviour
 
     public void OpenCancelWindow()
     {
-        if (phase == CombatPhase.HardBreak)
-        {
-            cancelOpenGeneration++;
-            hitbox.DisableHitbox();
-            ClearCameraShakeOnHit();
-            EndCombatCameraZoom();
-            inputBuffer.SetOpen(false);
-            return;
-        }
-
-        if (phase is not (CombatPhase.Startup or CombatPhase.Active))
+        var result = phaseMachine.TryOpenCancel();
+        if (result == CancelOpenResult.Ignored)
         {
             return;
         }
 
-        cancelOpenGeneration++;
-        phase = CombatPhase.CancelWindow;
         hitbox.DisableHitbox();
         ClearCameraShakeOnHit();
         EndCombatCameraZoom();
+
+        if (result == CancelOpenResult.HardBreakAcknowledged)
+        {
+            inputBuffer.SetOpen(false);
+            return;
+        }
 
         if (activeAttack != null)
         {
@@ -582,15 +570,15 @@ public class PlayerCombat : MonoBehaviour
     {
         var clipDuration = animationController.GetClipDuration(attackId);
         var safetyTimeout = clipDuration > 0f ? clipDuration : 1.5f;
-        var gate = cancelOpenGeneration;
+        var gate = phaseMachine.CaptureCancelGate();
 
         var cancelOpened = UniTask.WaitUntil(
-            () => cancelOpenGeneration != gate || phase == CombatPhase.Idle,
+            () => phaseMachine.HasCancelOpenedSince(gate),
             cancellationToken: token);
         var timedOut = UniTask.Delay(TimeSpan.FromSeconds(safetyTimeout), cancellationToken: token);
         await UniTask.WhenAny(cancelOpened, timedOut);
 
-        if (cancelOpenGeneration == gate && phase is CombatPhase.Startup or CombatPhase.Active or CombatPhase.HardBreak)
+        if (phaseMachine.NeedsCancelFallback(gate))
         {
             Debug.LogWarning(
                 $"No OpenCancelWindow Animation Event for {attackId} within {safetyTimeout:0.##}s — opening cancel as fallback.",
@@ -627,7 +615,7 @@ public class PlayerCombat : MonoBehaviour
         var token = attackCts.Token;
         var generation = ++attackGeneration;
 
-        phase = CombatPhase.Startup;
+        phaseMachine.EnterStartup();
         activeAttack = definition;
         inputBuffer.SetOpen(false);
         playerController.SetMovementEnabled(false);
@@ -690,10 +678,7 @@ public class PlayerCombat : MonoBehaviour
                 await attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token);
             }
 
-            if (phase == CombatPhase.Startup)
-            {
-                phase = CombatPhase.Active;
-            }
+            phaseMachine.TryEnterActiveAfterStartup();
 
             // Hitbox enable/disable and cancel open are driven by Animation Events
             // (or AttackStateBehavior). Mobility-only moves open cancel after the dash.
@@ -706,10 +691,7 @@ public class PlayerCombat : MonoBehaviour
                 await WaitForCancelWindowAsync(attackId, token);
             }
 
-            if (phase == CombatPhase.CancelWindow)
-            {
-                phase = CombatPhase.Recovery;
-            }
+            phaseMachine.TryEnterRecovery();
 
             await UniTask.Delay(TimeSpan.FromSeconds(recoveryHold), cancellationToken: token);
         }
@@ -742,10 +724,7 @@ public class PlayerCombat : MonoBehaviour
 
     async UniTaskVoid AwaitFinisherFallback(CancellationToken token, int generation)
     {
-        if (phase is CombatPhase.CancelWindow or CombatPhase.Recovery)
-        {
-            phase = CombatPhase.ChaseAwait;
-        }
+        phaseMachine.TryEnterChaseAwait();
 
         try
         {
@@ -755,7 +734,7 @@ public class PlayerCombat : MonoBehaviour
                 return;
             }
 
-            if (IsAttackPlaying)
+            if (phaseMachine.IsAttackPlaying)
             {
                 sequencer.CancelPendingChase();
                 ResetToNavigation();
@@ -811,7 +790,7 @@ public class PlayerCombat : MonoBehaviour
             : 0.55f;
         var lockoutDuration = activeAttack?.attackLockoutDuration ?? 0f;
 
-        phase = CombatPhase.Active;
+        phaseMachine.EnterLaunch();
         inputBuffer.SetOpen(false);
         queuedFollowUp = null;
         playerController.SetMovementEnabled(false);
@@ -845,7 +824,7 @@ public class PlayerCombat : MonoBehaviour
 
     void ResetToNavigation()
     {
-        phase = CombatPhase.Idle;
+        phaseMachine.EnterIdle();
         consecutiveInvalidCount = 0;
         queuedFollowUp = null;
         activeAttack = null;

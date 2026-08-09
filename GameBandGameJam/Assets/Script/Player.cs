@@ -32,7 +32,9 @@ public class Player : MonoBehaviour, IDamageable
         currentHealth = playerData.maxHealth;
         maxHealth = playerData.maxHealth;
 
-        body.isKinematic = true;
+        body.isKinematic = false;
+        body.useGravity = false;
+        body.constraints = RigidbodyConstraints.FreezeRotation;
 
         var animator = GetComponentInChildren<Animator>();
         animationController.Initialize(animator);
@@ -45,8 +47,7 @@ public class Player : MonoBehaviour, IDamageable
             combatHitbox,
             animationController,
             damageNumberPrefab,
-            layerMask,
-            body);
+            layerMask);
     }
 
     public void Damage(int damage)

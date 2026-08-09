@@ -57,13 +57,11 @@ public class PlayerCombat : MonoBehaviour
     float activeComboInputWindow = 0.5f;
     float simultaneousInputWindow = 0.05f;
     int consecutiveInvalidThreshold = 2;
-    Rigidbody body = null!;
 
     CancellationTokenSource? attackCts;
     int attackGeneration;
     bool isBusy;
     bool isAttackPlaying;
-    bool isKinematicMotionActive;
     bool hardBreakRecovery;
     AttackInputType? queuedFollowUp;
     float queuedFollowUpTime;
@@ -77,7 +75,6 @@ public class PlayerCombat : MonoBehaviour
     float? pendingDashTime;
 
     public bool IsBusy => isBusy;
-    public bool IsKinematicMotionActive => isKinematicMotionActive;
     public bool IsAttackLockedOut => Time.time < attackLockoutUntil;
     public bool IsHardBreakRecovery => hardBreakRecovery;
 
@@ -91,8 +88,7 @@ public class PlayerCombat : MonoBehaviour
         CombatHitbox combatHitbox,
         PlayerAnimationController animController,
         DamageNumberVisual? numberPrefab,
-        LayerMask entityMask,
-        Rigidbody aBody)
+        LayerMask entityMask)
     {
 
         if (config.recipes.Length == 0 || config.attacks.Length == 0)
@@ -107,7 +103,6 @@ public class PlayerCombat : MonoBehaviour
         animationController = animController;
         damageNumberPrefab = numberPrefab;
         hitMask = entityMask;
-        body = aBody;
         if (wallMask.value == 0)
         {
             wallMask = ~entityMask;
@@ -116,8 +111,6 @@ public class PlayerCombat : MonoBehaviour
         activeComboInputWindow = config.defaultComboResetWindow;
         simultaneousInputWindow = config.simultaneousInputWindow;
         consecutiveInvalidThreshold = config.consecutiveInvalidThreshold;
-
-        body.isKinematic = true;
 
         inputBuffer.Initialize(activeComboInputWindow);
         comboEvaluator.Initialize(config.recipes);
@@ -674,7 +667,6 @@ public class PlayerCombat : MonoBehaviour
 
         try
         {
-            isKinematicMotionActive = true;
             if (alignToLock)
             {
                 await UniTask.WhenAll(
@@ -685,8 +677,6 @@ public class PlayerCombat : MonoBehaviour
             {
                 await attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token);
             }
-
-            isKinematicMotionActive = false;
 
             // Hitbox enable/disable and cancel open are driven by Animation Events
             // (or AttackStateBehavior). Mobility-only moves open cancel after the dash.
@@ -703,7 +693,6 @@ public class PlayerCombat : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            isKinematicMotionActive = false;
             if (generation != attackGeneration)
             {
                 return;
@@ -809,9 +798,7 @@ public class PlayerCombat : MonoBehaviour
 
         try
         {
-            isKinematicMotionActive = true;
             await sequencer.HandleLaunchAndChaseAsync(launchable, hitDirection, launchDistance, token);
-            isKinematicMotionActive = false;
 
             if (recoveryHold > 0f)
             {
@@ -820,11 +807,9 @@ public class PlayerCombat : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            isKinematicMotionActive = false;
         }
         finally
         {
-            isKinematicMotionActive = false;
             if (generation == attackGeneration)
             {
                 ResetToNavigation();
@@ -841,7 +826,6 @@ public class PlayerCombat : MonoBehaviour
     {
         isBusy = false;
         isAttackPlaying = false;
-        isKinematicMotionActive = false;
         hardBreakRecovery = false;
         consecutiveInvalidCount = 0;
         queuedFollowUp = null;
@@ -860,10 +844,6 @@ public class PlayerCombat : MonoBehaviour
         }
 
         playerController.SetMovementEnabled(true);
-        if (body != null)
-        {
-            body.isKinematic = true;
-        }
     }
 
     async UniTask AlignToLockDuringStartupAsync(float duration, CancellationToken cancellationToken)

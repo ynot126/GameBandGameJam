@@ -85,6 +85,7 @@ public class PlayerCombat : MonoBehaviour
     public void Initialize(
         PlayerCombatConfig config,
         PlayerController controller,
+        Rigidbody ownerBody,
         CombatHitbox combatHitbox,
         PlayerAnimationController animController,
         DamageNumberVisual? numberPrefab,
@@ -114,7 +115,7 @@ public class PlayerCombat : MonoBehaviour
 
         inputBuffer.Initialize(activeComboInputWindow);
         comboEvaluator.Initialize(config.recipes);
-        attackDash.Initialize(transform);
+        attackDash.Initialize(ownerBody);
         chaseTeleport.Initialize(transform, playerColliders, chaseOffset);
         sequencer.Initialize(chaseTeleport);
         autoLock.Initialize(

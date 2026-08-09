@@ -5,11 +5,11 @@ using UnityEngine;
 
 public sealed class AttackDash
 {
-    Transform owner = null!;
+    Rigidbody body = null!;
 
-    public void Initialize(Transform ownerTransform)
+    public void Initialize(Rigidbody ownerBody)
     {
-        owner = ownerTransform;
+        body = ownerBody;
     }
 
     public UniTask DashForwardAsync(float distance, float duration, CancellationToken cancellationToken)
@@ -25,12 +25,12 @@ public sealed class AttackDash
             direction = GetOwnerForward();
         }
 
-        return KinematicMover.MoveByAsync(owner, direction * distance, duration, cancellationToken);
+        return KinematicMover.MoveByAsync(body, direction * distance, duration, cancellationToken);
     }
 
     Vector3 GetOwnerForward()
     {
-        return Flatten(owner.forward);
+        return Flatten(body.transform.forward);
     }
 
     static Vector3 Flatten(Vector3 direction)

@@ -46,6 +46,7 @@ public class Player : MonoBehaviour, IHitable
         playerCombat.Initialize(
             combatConfig,
             playerController,
+            body,
             combatHitbox,
             animationController,
             damageNumberPrefab,

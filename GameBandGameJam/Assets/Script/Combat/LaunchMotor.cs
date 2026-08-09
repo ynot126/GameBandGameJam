@@ -6,7 +6,7 @@ using UnityEngine;
 
 public sealed class LaunchMotor
 {
-    Transform target = null!;
+    Rigidbody body = null!;
     LayerMask wallMask;
     float launchDuration = 0.18f;
     float skinWidth = 0.2f;
@@ -14,9 +14,9 @@ public sealed class LaunchMotor
     public event Action? OnLaunchCompleted;
     public bool IsLaunching { get; private set; }
 
-    public void Initialize(Transform launchTarget, LayerMask walls, float duration = 0.18f)
+    public void Initialize(Rigidbody launchBody, LayerMask walls, float duration = 0.18f)
     {
-        target = launchTarget;
+        body = launchBody;
         wallMask = walls;
         launchDuration = duration;
     }
@@ -38,12 +38,13 @@ public sealed class LaunchMotor
         }
 
         direction.Normalize();
-        var travel = ClampDistance(target.position, direction, distance);
-        var destination = target.position + direction * travel;
+        var origin = body.position;
+        var travel = ClampDistance(origin, direction, distance);
+        var destination = origin + direction * travel;
 
         try
         {
-            await KinematicMover.MoveToAsync(target, destination, launchDuration, cancellationToken);
+            await KinematicMover.MoveToAsync(body, destination, launchDuration, cancellationToken);
         }
         finally
         {

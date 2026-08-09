@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
     readonly LaunchMotor launchMotor = new();
     CancellationTokenSource? launchCts;
-    Rigidbody? body;
+    Rigidbody body = null!;
     int currentHealth;
     float hitStunUntil;
     bool aiEnabled = true;
@@ -31,10 +31,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         currentHealth = maxHealth;
         isDead = false;
         body = GetComponent<Rigidbody>();
-        if (body != null)
-        {
-            body.isKinematic = true;
-        }
+        body.isKinematic = true;
 
         if (wallMask.value == 0)
         {
@@ -42,7 +39,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
             wallMask = ~(1 << 6);
         }
 
-        launchMotor.Initialize(transform, wallMask);
+        launchMotor.Initialize(body, wallMask);
         aiEnabled = true;
         hitStunUntil = 0f;
     }
@@ -129,7 +126,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
         try
         {
-            await KinematicMover.MoveByAsync(transform, Flatten(direction) * distance, standardKnockbackDuration, token);
+            await KinematicMover.MoveByAsync(body, Flatten(direction) * distance, standardKnockbackDuration, token);
         }
         catch (System.OperationCanceledException)
         {

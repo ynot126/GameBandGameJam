@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class TwoHandChooseView : BaseView
 {
-    [SerializeField] Button leftButton;
-    [SerializeField] Button rightButton;
+    [SerializeField] Button leftButton = null!;
+    [SerializeField] Button rightButton = null!;
 
     public event Action? OnSelect;
     public void Initialize()

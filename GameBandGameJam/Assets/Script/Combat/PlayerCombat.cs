@@ -14,7 +14,6 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] CombatAnimationEventReceiver animationEventReceiver = null!;
     [SerializeField] PlayerAttackDetector? attackDetector;
     [SerializeField] DamageNumberVisual? damageNumberPrefab;
-    [SerializeField] Rigidbody body = null!;
     [SerializeField] Collider[] playerColliders = Array.Empty<Collider>();
 
     [Header("Masks")]
@@ -49,11 +48,13 @@ public class PlayerCombat : MonoBehaviour
     readonly CombatSequencer sequencer = new();
     readonly CombatAutoLock autoLock = new();
     readonly Dictionary<AttackId, AttackDefinition> attackMap = new();
+    
 
     PlayerCombatConfig? combatConfig;
     float activeComboInputWindow = 0.5f;
     float simultaneousInputWindow = 0.05f;
     int consecutiveInvalidThreshold = 2;
+    Rigidbody body = null!;
 
     CancellationTokenSource? attackCts;
     int attackGeneration;
@@ -87,16 +88,11 @@ public class PlayerCombat : MonoBehaviour
         CombatHitbox combatHitbox,
         PlayerAnimationController animController,
         DamageNumberVisual? numberPrefab,
-        LayerMask entityMask)
+        LayerMask entityMask,
+        Rigidbody aBody)
     {
-        if (config == null)
-        {
-            Debug.LogError("PlayerCombat.Initialize: PlayerCombatConfig is required.", this);
-            return;
-        }
 
-        if (config.recipes == null || config.recipes.Length == 0
-            || config.attacks == null || config.attacks.Length == 0)
+        if (config.recipes.Length == 0 || config.attacks.Length == 0)
         {
             Debug.LogError("PlayerCombat.Initialize: PlayerCombatConfig has no recipes or attacks.", config);
             return;
@@ -108,6 +104,7 @@ public class PlayerCombat : MonoBehaviour
         animationController = animController;
         damageNumberPrefab = numberPrefab;
         hitMask = entityMask;
+        body = aBody;
         if (wallMask.value == 0)
         {
             wallMask = ~entityMask;
@@ -117,10 +114,7 @@ public class PlayerCombat : MonoBehaviour
         simultaneousInputWindow = config.simultaneousInputWindow;
         consecutiveInvalidThreshold = config.consecutiveInvalidThreshold;
 
-        if (body != null)
-        {
-            body.isKinematic = true;
-        }
+        body.isKinematic = true;
 
         inputBuffer.Initialize(activeComboInputWindow);
         comboEvaluator.Initialize(config.recipes);

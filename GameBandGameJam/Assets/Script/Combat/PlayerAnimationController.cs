@@ -16,7 +16,7 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void PlayAttack(AttackId attackId)
     {
-        if (animator == null)
+        if (!animator)
         {
             return;
         }
@@ -34,7 +34,7 @@ public class PlayerAnimationController : MonoBehaviour
         PlayIdle();
     }
 
-    public void PlayIdle()
+    void PlayIdle()
     {
         PlayState(PlayerAnimationClips.Idle);
     }
@@ -51,7 +51,7 @@ public class PlayerAnimationController : MonoBehaviour
 
     void PlayState(string stateName)
     {
-        if (animator == null)
+        if (!animator)
         {
             return;
         }

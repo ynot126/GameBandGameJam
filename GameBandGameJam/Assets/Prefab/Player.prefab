@@ -85,6 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf33548ad3a68d2418ec79e82a020790, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  body: {fileID: 8936354506429449023}
   playerController: {fileID: 4109264221245626821}
   playerCombat: {fileID: 6172849501728341001}
   combatHitbox: {fileID: 6172849501728341002}
@@ -125,7 +126,6 @@ MonoBehaviour:
   animationEventReceiver: {fileID: 5179666629638170059}
   attackDetector: {fileID: 0}
   damageNumberPrefab: {fileID: 3421854495893843226, guid: 4b18700542abb3a4382aae20c35a9c46, type: 3}
-  body: {fileID: 8936354506429449023}
   playerColliders:
   - {fileID: 5469002510797592115}
   - {fileID: 8071335646858348348}

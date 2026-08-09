@@ -5,23 +5,18 @@ public class PlayerController : MonoBehaviour
 {
     float movementSpeed;
     bool movementEnabled = true;
-    Rigidbody? body;
+    Rigidbody body = null!;
 
-    public void Initialize(int aMovementSpeed)
+    public void Initialize(int aMovementSpeed, Rigidbody aBody)
     {
         movementSpeed = aMovementSpeed;
-        body = GetComponent<Rigidbody>();
-        if (body != null)
-        {
-            body.isKinematic = true;
-        }
-
+        body = aBody;
         movementEnabled = true;
     }
 
-    public void SetMovementEnabled(bool enabled)
+    public void SetMovementEnabled(bool val)
     {
-        movementEnabled = enabled;
+        movementEnabled = val;
     }
 
     void Update()
@@ -43,8 +38,8 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-
-        transform.position += movement * (movementSpeed * Time.deltaTime);
+        
+        body.MovePosition(transform.position + movement * (movementSpeed * Time.deltaTime));
         transform.rotation = Quaternion.LookRotation(movement, Vector3.up);
     }
 

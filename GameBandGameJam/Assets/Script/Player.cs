@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour, IDamageable
 {
     [Header("Components")]
+    [SerializeField] Rigidbody body = null!;
     [SerializeField] PlayerController playerController = null!;
     [SerializeField] PlayerCombat playerCombat = null!;
     [SerializeField] CombatHitbox combatHitbox = null!;
@@ -31,16 +32,12 @@ public class Player : MonoBehaviour, IDamageable
         currentHealth = playerData.maxHealth;
         maxHealth = playerData.maxHealth;
 
-        var body = GetComponent<Rigidbody>();
-        if (body != null)
-        {
-            body.isKinematic = true;
-        }
+        body.isKinematic = true;
 
         var animator = GetComponentInChildren<Animator>();
         animationController.Initialize(animator);
 
-        playerController.Initialize(playerData.speed);
+        playerController.Initialize(playerData.speed, body);
 
         playerCombat.Initialize(
             combatConfig,
@@ -48,7 +45,8 @@ public class Player : MonoBehaviour, IDamageable
             combatHitbox,
             animationController,
             damageNumberPrefab,
-            layerMask);
+            layerMask,
+            body);
     }
 
     public void Damage(int damage)

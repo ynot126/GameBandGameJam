@@ -140,9 +140,9 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         }
     }
 
-    public void SetAiEnabled(bool enabled)
+    void SetAiEnabled(bool val)
     {
-        aiEnabled = enabled;
+        aiEnabled = val;
     }
 
     void Death()

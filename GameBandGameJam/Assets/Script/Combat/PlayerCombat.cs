@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -51,26 +50,16 @@ public class PlayerCombat : MonoBehaviour
     readonly CombatSequencer sequencer = new();
     readonly CombatAutoLock autoLock = new();
     readonly CombatPhaseMachine phaseMachine = new();
+    readonly CombatFacing facing = new();
+    readonly CombatAttackInput attackInput = new();
+    readonly CombatAttackExecutor attackExecutor = new();
     readonly Dictionary<AttackId, AttackDefinition> attackMap = new();
-    
 
     PlayerCombatConfig? combatConfig;
     float activeComboInputWindow = 0.5f;
-    float simultaneousInputWindow = 0.05f;
     int consecutiveInvalidThreshold = 2;
-
-    CancellationTokenSource? attackCts;
-    int attackGeneration;
-    AttackInputType? queuedFollowUp;
-    float queuedFollowUpTime;
     float attackLockoutUntil;
     int consecutiveInvalidCount;
-    AttackDefinition? activeAttack;
-    bool cameraShakeArmed;
-
-    float? pendingLightTime;
-    float? pendingHeavyTime;
-    float? pendingDashTime;
 
     public CombatPhase Phase => phaseMachine.Current;
     public bool IsBusy => phaseMachine.IsBusy;
@@ -90,7 +79,6 @@ public class PlayerCombat : MonoBehaviour
         DamageNumberVisual? numberPrefab,
         LayerMask entityMask)
     {
-
         if (config.recipes.Length == 0 || config.attacks.Length == 0)
         {
             Debug.LogError("PlayerCombat.Initialize: PlayerCombatConfig has no recipes or attacks.", config);
@@ -109,7 +97,6 @@ public class PlayerCombat : MonoBehaviour
         }
 
         activeComboInputWindow = config.defaultComboResetWindow;
-        simultaneousInputWindow = config.simultaneousInputWindow;
         consecutiveInvalidThreshold = config.consecutiveInvalidThreshold;
 
         inputBuffer.Initialize(activeComboInputWindow);
@@ -128,6 +115,38 @@ public class PlayerCombat : MonoBehaviour
             lockScoreDistanceWeight,
             lockScoreThreatWeight,
             lockScoreLowHealthWeight);
+        facing.Initialize(transform, lockRotationSpeed);
+        attackInput.Initialize(
+            lightKey,
+            heavyKey,
+            dashKey,
+            config.simultaneousInputWindow,
+            activeComboInputWindow);
+        attackExecutor.Initialize(
+            transform,
+            this,
+            playerController,
+            hitbox,
+            animationController,
+            attackDash,
+            autoLock,
+            sequencer,
+            phaseMachine,
+            facing,
+            inputBuffer,
+            damageNumberPrefab,
+            impactFrameParticleConfig,
+            cameraShakeDuration,
+            cameraShakeStrength,
+            cameraShakeFrequency,
+            attackId => OnAttackExecuted?.Invoke(attackId),
+            ApplyComboInputWindow,
+            () => TryConsumeQueuedFollowUp(),
+            attackInput.ClearQueuedFollowUp,
+            () => consecutiveInvalidCount = 0,
+            BeginAttackLockout,
+            ClearAttackLockout,
+            RestoreDefaultComboWindow);
 
         var indicator = attackDetector != null ? attackDetector.SphereIndicator : null;
         hitbox.Initialize(transform, hitMask, indicator);
@@ -139,7 +158,7 @@ public class PlayerCombat : MonoBehaviour
             attackMap[config.attacks[i].attackId] = config.attacks[i];
         }
 
-        hitbox.OnHitConfirmed += HandleHitConfirmed;
+        hitbox.OnHitConfirmed += attackExecutor.HandleHitConfirmed;
         sequencer.OnSequenceReset += HandleSequenceReset;
         playerController.SetMovementEnabled(true);
     }
@@ -148,43 +167,24 @@ public class PlayerCombat : MonoBehaviour
     {
         if (hitbox != null)
         {
-            hitbox.OnHitConfirmed -= HandleHitConfirmed;
+            hitbox.OnHitConfirmed -= attackExecutor.HandleHitConfirmed;
         }
 
         sequencer.OnSequenceReset -= HandleSequenceReset;
-        attackCts?.Cancel();
-        attackCts?.Dispose();
+        attackExecutor.Dispose();
     }
 
     void Update()
     {
-        CaptureRawAttackPresses();
-        ExpireStaleQueuedFollowUp();
+        attackInput.CaptureRawAttackPresses();
+        attackInput.ExpireStaleQueuedFollowUp(CanAcceptCombatInput);
         CheckComboTimeout();
         PollAttackInput();
     }
 
-    void CaptureRawAttackPresses()
-    {
-        if (Input.GetKeyDown(dashKey))
-        {
-            pendingDashTime = Time.time;
-        }
-
-        if (Input.GetKeyDown(heavyKey) || Input.GetMouseButtonDown(1))
-        {
-            pendingHeavyTime = Time.time;
-        }
-
-        if (Input.GetKeyDown(lightKey) || Input.GetMouseButtonDown(0))
-        {
-            pendingLightTime = Time.time;
-        }
-    }
-
     void PollAttackInput()
     {
-        if (!TryResolvePendingAttackInput(out var input))
+        if (!attackInput.TryResolvePendingAttackInput(out var input))
         {
             return;
         }
@@ -247,47 +247,6 @@ public class PlayerCombat : MonoBehaviour
         return true;
     }
 
-    bool TryResolvePendingAttackInput(out AttackInputType input)
-    {
-        input = default;
-        var now = Time.time;
-
-        if (pendingDashTime.HasValue)
-        {
-            input = AttackInputType.D;
-            ClearPendingAttackInputs();
-            return true;
-        }
-
-        if (pendingHeavyTime.HasValue)
-        {
-            input = AttackInputType.H;
-            ClearPendingAttackInputs();
-            return true;
-        }
-
-        if (pendingLightTime.HasValue)
-        {
-            if (now - pendingLightTime.Value < simultaneousInputWindow)
-            {
-                return false;
-            }
-
-            input = AttackInputType.L;
-            pendingLightTime = null;
-            return true;
-        }
-
-        return false;
-    }
-
-    void ClearPendingAttackInputs()
-    {
-        pendingDashTime = null;
-        pendingHeavyTime = null;
-        pendingLightTime = null;
-    }
-
     void QueueFollowUp(AttackInputType input)
     {
         if (!CanAcceptCombatInput(input))
@@ -300,27 +259,7 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        queuedFollowUp = input;
-        queuedFollowUpTime = Time.time;
-    }
-
-    void ExpireStaleQueuedFollowUp()
-    {
-        if (!queuedFollowUp.HasValue)
-        {
-            return;
-        }
-
-        if (Time.time - queuedFollowUpTime > activeComboInputWindow)
-        {
-            queuedFollowUp = null;
-            return;
-        }
-
-        if (!CanAcceptCombatInput(queuedFollowUp.Value))
-        {
-            queuedFollowUp = null;
-        }
+        attackInput.QueueFollowUp(input);
     }
 
     void CheckComboTimeout()
@@ -366,8 +305,15 @@ public class PlayerCombat : MonoBehaviour
         }
 
         consecutiveInvalidCount = 0;
-        queuedFollowUp = null;
-        ExecuteAttack(attackId).Forget();
+        attackInput.ClearQueuedFollowUp();
+
+        if (!attackMap.TryGetValue(attackId, out var definition))
+        {
+            Debug.LogWarning($"No AttackDefinition for {attackId}");
+            return;
+        }
+
+        attackExecutor.ExecuteAttack(definition, attackId).Forget();
     }
 
     bool PrepareAutoLockForAttack(AttackId attackId)
@@ -415,19 +361,11 @@ public class PlayerCombat : MonoBehaviour
 
     bool TryConsumeQueuedFollowUp()
     {
-        if (!queuedFollowUp.HasValue)
+        if (!attackInput.TryTakeQueuedFollowUp(out var input))
         {
             return false;
         }
 
-        if (Time.time - queuedFollowUpTime > activeComboInputWindow)
-        {
-            queuedFollowUp = null;
-            return false;
-        }
-
-        var input = queuedFollowUp.Value;
-        queuedFollowUp = null;
         if (!CanAcceptCombatInput(input))
         {
             return false;
@@ -456,7 +394,7 @@ public class PlayerCombat : MonoBehaviour
         if (phaseMachine.IsHardBreak)
         {
             consecutiveInvalidCount = 0;
-            queuedFollowUp = null;
+            attackInput.ClearQueuedFollowUp();
             inputBuffer.Clear();
             inputBuffer.SetOpen(false);
             autoLock.Clear();
@@ -467,7 +405,7 @@ public class PlayerCombat : MonoBehaviour
             || consecutiveInvalidCount > 0
             || phaseMachine.IsAttackPlaying;
         consecutiveInvalidCount = 0;
-        queuedFollowUp = null;
+        attackInput.ClearQueuedFollowUp();
         inputBuffer.Clear();
         inputBuffer.SetOpen(false);
         autoLock.Clear();
@@ -510,467 +448,41 @@ public class PlayerCombat : MonoBehaviour
     void ApplyComboInputWindow(AttackDefinition definition)
     {
         activeComboInputWindow = ResolveComboInputWindow(definition);
+        attackInput.SetComboInputWindow(activeComboInputWindow);
         inputBuffer.SetResetWindow(activeComboInputWindow);
     }
 
-    public void ArmCameraShakeOnHit()
+    void RestoreDefaultComboWindow()
     {
-        cameraShakeArmed = true;
-    }
-
-    public void ClearCameraShakeOnHit()
-    {
-        cameraShakeArmed = false;
-    }
-
-    public void EndCombatCameraZoom()
-    {
-        GameCameraController.Instance.EndZoom();
-    }
-
-    public void PlayImpactFrameParticle()
-    {
-        if (impactFrameParticleConfig == null)
+        if (combatConfig == null)
         {
             return;
         }
 
-        impactFrameParticleConfig.PlayRandomAt(hitbox.GetWorldCenter(), hitbox.GetOwnerRotation());
+        activeComboInputWindow = combatConfig.defaultComboResetWindow;
+        attackInput.SetComboInputWindow(activeComboInputWindow);
+        inputBuffer.SetResetWindow(activeComboInputWindow);
     }
 
-    public void OpenCancelWindow()
-    {
-        var result = phaseMachine.TryOpenCancel();
-        if (result == CancelOpenResult.Ignored)
-        {
-            return;
-        }
+    public void ArmCameraShakeOnHit() => attackExecutor.ArmCameraShakeOnHit();
 
-        hitbox.DisableHitbox();
-        ClearCameraShakeOnHit();
-        EndCombatCameraZoom();
+    public void ClearCameraShakeOnHit() => attackExecutor.ClearCameraShakeOnHit();
 
-        if (result == CancelOpenResult.HardBreakAcknowledged)
-        {
-            inputBuffer.SetOpen(false);
-            return;
-        }
+    public void EndCombatCameraZoom() => attackExecutor.EndCombatCameraZoom();
 
-        if (activeAttack != null)
-        {
-            ApplyComboInputWindow(activeAttack);
-        }
+    public void PlayImpactFrameParticle() => attackExecutor.PlayImpactFrameParticle();
 
-        inputBuffer.SetOpen(true);
-        inputBuffer.Touch(Time.time);
-        TryConsumeQueuedFollowUp();
-    }
-
-    async UniTask WaitForCancelWindowAsync(AttackId attackId, CancellationToken token)
-    {
-        var clipDuration = animationController.GetClipDuration(attackId);
-        var safetyTimeout = clipDuration > 0f ? clipDuration : 1.5f;
-        var gate = phaseMachine.CaptureCancelGate();
-
-        var cancelOpened = UniTask.WaitUntil(
-            () => phaseMachine.HasCancelOpenedSince(gate),
-            cancellationToken: token);
-        var timedOut = UniTask.Delay(TimeSpan.FromSeconds(safetyTimeout), cancellationToken: token);
-        await UniTask.WhenAny(cancelOpened, timedOut);
-
-        if (phaseMachine.NeedsCancelFallback(gate))
-        {
-            Debug.LogWarning(
-                $"No OpenCancelWindow Animation Event for {attackId} within {safetyTimeout:0.##}s — opening cancel as fallback.",
-                this);
-            OpenCancelWindow();
-        }
-    }
+    public void OpenCancelWindow() => attackExecutor.OpenCancelWindow();
 
     public void InterruptFromHit()
     {
-        attackCts?.Cancel();
-        attackCts?.Dispose();
-        attackCts = null;
-        attackGeneration++;
-
-        sequencer.CancelPendingChase();
         consecutiveInvalidCount = 0;
-        ClearAttackLockout();
-        ClearPendingAttackInputs();
-        ResetToNavigation();
-    }
-
-    async UniTaskVoid ExecuteAttack(AttackId attackId)
-    {
-        if (!attackMap.TryGetValue(attackId, out var definition))
-        {
-            Debug.LogWarning($"No AttackDefinition for {attackId}");
-            return;
-        }
-
-        attackCts?.Cancel();
-        attackCts?.Dispose();
-        attackCts = new CancellationTokenSource();
-        var token = attackCts.Token;
-        var generation = ++attackGeneration;
-
-        phaseMachine.EnterStartup();
-        activeAttack = definition;
-        inputBuffer.SetOpen(false);
-        playerController.SetMovementEnabled(false);
-
-        ClearAttackLockout();
-        BeginAttackLockout(definition.attackLockoutDuration);
-
-        var alignToLock = false;
-        Vector3 dashDirection;
-        if (definition.useMoveInputDirection)
-        {
-            dashDirection = ResolveMoveInputDirection();
-            FaceDirection(dashDirection);
-        }
-        else if (autoLock.TryGetLockDirection(out var lockDirection))
-        {
-            dashDirection = lockDirection;
-            alignToLock = true;
-        }
-        else
-        {
-            FaceAimDirection();
-            dashDirection = Flatten(transform.forward);
-            if (dashDirection.sqrMagnitude <= 0.0001f)
-            {
-                dashDirection = Vector3.forward;
-            }
-        }
-
-        if (definition.triggersChaseSequence)
-        {
-            sequencer.ArmChaseOnNextLaunch();
-        }
-
-        animationController.PlayAttack(attackId);
-        OnAttackExecuted?.Invoke(attackId);
-
-        ClearCameraShakeOnHit();
-        hitbox.EndSwing();
-        if (!definition.skipHitbox)
-        {
-            hitbox.ConfigureShape(definition.hitboxRadius, definition.hitboxLocalOffset);
-            hitbox.BeginSwing(definition.payload.ToPayload());
-        }
-
-        var recoveryHold = definition.recoveryHoldDuration > 0f
-            ? definition.recoveryHoldDuration
-            : 0.55f;
-
-        try
-        {
-            if (alignToLock)
-            {
-                await UniTask.WhenAll(
-                    attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token),
-                    AlignToLockDuringStartupAsync(definition.dashDuration, token));
-            }
-            else
-            {
-                await attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token);
-            }
-
-            phaseMachine.TryEnterActiveAfterStartup();
-
-            // Hitbox enable/disable and cancel open are driven by Animation Events
-            // (or AttackStateBehavior). Mobility-only moves open cancel after the dash.
-            if (definition.skipHitbox)
-            {
-                OpenCancelWindow();
-            }
-            else
-            {
-                await WaitForCancelWindowAsync(attackId, token);
-            }
-
-            phaseMachine.TryEnterRecovery();
-
-            await UniTask.Delay(TimeSpan.FromSeconds(recoveryHold), cancellationToken: token);
-        }
-        catch (OperationCanceledException)
-        {
-            if (generation != attackGeneration)
-            {
-                return;
-            }
-
-            sequencer.CancelPendingChase();
-        }
-        finally
-        {
-            if (generation == attackGeneration)
-            {
-                hitbox.EndSwing();
-
-                if (!definition.triggersChaseSequence)
-                {
-                    ResetToNavigation();
-                }
-                else
-                {
-                    AwaitFinisherFallback(token, generation).Forget();
-                }
-            }
-        }
-    }
-
-    async UniTaskVoid AwaitFinisherFallback(CancellationToken token, int generation)
-    {
-        phaseMachine.TryEnterChaseAwait();
-
-        try
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(0.75f), cancellationToken: token);
-            if (generation != attackGeneration)
-            {
-                return;
-            }
-
-            if (phaseMachine.IsAttackPlaying)
-            {
-                sequencer.CancelPendingChase();
-                ResetToNavigation();
-            }
-        }
-        catch (OperationCanceledException)
-        {
-        }
-    }
-
-    void HandleHitConfirmed(IHitable hitable, HitPayload payload, Vector3 hitDirection)
-    {
-        if (cameraShakeArmed)
-        {
-            GameCameraController.Instance.Shake(
-                cameraShakeDuration,
-                cameraShakeStrength,
-                cameraShakeFrequency);
-        }
-
-        if (damageNumberPrefab != null)
-        {
-            var spawnPos = hitable is Component component
-                ? component.transform.position + Vector3.up
-                : transform.position + transform.forward;
-            var damageNumber = Instantiate(damageNumberPrefab);
-            damageNumber.Initialize(spawnPos, payload.Damage);
-        }
-
-        if (payload.KnockbackType != KnockbackType.KnockbackToDistance)
-        {
-            return;
-        }
-
-        if (hitable is ICombatTarget launchTarget)
-        {
-            autoLock.ForceLock(launchTarget);
-        }
-
-        ResolveLaunch(hitable, hitDirection, payload.LaunchDistance).Forget();
-    }
-
-    async UniTaskVoid ResolveLaunch(IHitable hitable, Vector3 hitDirection, float launchDistance)
-    {
-        attackCts?.Cancel();
-        attackCts?.Dispose();
-        attackCts = new CancellationTokenSource();
-        var token = attackCts.Token;
-        var generation = ++attackGeneration;
-
-        var recoveryHold = activeAttack != null && activeAttack.recoveryHoldDuration > 0f
-            ? activeAttack.recoveryHoldDuration
-            : 0.55f;
-        var lockoutDuration = activeAttack?.attackLockoutDuration ?? 0f;
-
-        phaseMachine.EnterLaunch();
-        inputBuffer.SetOpen(false);
-        queuedFollowUp = null;
-        playerController.SetMovementEnabled(false);
-        BeginAttackLockout(lockoutDuration);
-
-        try
-        {
-            await sequencer.HandleLaunchAndChaseAsync(hitable, hitDirection, launchDistance, token);
-
-            if (recoveryHold > 0f)
-            {
-                await UniTask.Delay(TimeSpan.FromSeconds(recoveryHold), cancellationToken: token);
-            }
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        finally
-        {
-            if (generation == attackGeneration)
-            {
-                ResetToNavigation();
-            }
-        }
+        attackInput.ClearPending();
+        attackExecutor.InterruptFromHit();
     }
 
     void HandleSequenceReset()
     {
         OnCombatReset?.Invoke();
-    }
-
-    void ResetToNavigation()
-    {
-        phaseMachine.EnterIdle();
-        consecutiveInvalidCount = 0;
-        queuedFollowUp = null;
-        activeAttack = null;
-        ClearCameraShakeOnHit();
-        EndCombatCameraZoom();
-        autoLock.Clear();
-        inputBuffer.Clear();
-        hitbox.EndSwing();
-        animationController.ResetAttack();
-        inputBuffer.SetOpen(true);
-        if (combatConfig != null)
-        {
-            activeComboInputWindow = combatConfig.defaultComboResetWindow;
-            inputBuffer.SetResetWindow(activeComboInputWindow);
-        }
-
-        playerController.SetMovementEnabled(true);
-    }
-
-    async UniTask AlignToLockDuringStartupAsync(float duration, CancellationToken cancellationToken)
-    {
-        if (duration <= 0f)
-        {
-            if (autoLock.TryGetLockDirection(out var instantDir))
-            {
-                FaceDirection(instantDir);
-            }
-
-            return;
-        }
-
-        var elapsed = 0f;
-        while (elapsed < duration)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (!autoLock.TryGetLockDirection(out var lockDirection))
-            {
-                return;
-            }
-
-            var targetRotation = Quaternion.LookRotation(lockDirection, Vector3.up);
-            transform.rotation = Quaternion.RotateTowards(
-                transform.rotation,
-                targetRotation,
-                lockRotationSpeed * Time.deltaTime);
-
-            elapsed += Time.deltaTime;
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
-        }
-    }
-
-    void FaceAimDirection()
-    {
-        if (TryGetHeldMoveInput(out var held))
-        {
-            FaceDirection(held);
-            return;
-        }
-
-        if (TryGetFloorAim(out var aimPoint))
-        {
-            var dir = aimPoint - transform.position;
-            dir.y = 0f;
-            if (dir.sqrMagnitude > 0.001f)
-            {
-                FaceDirection(dir);
-            }
-        }
-    }
-
-    void FaceDirection(Vector3 worldDirection)
-    {
-        var flat = Flatten(worldDirection);
-        if (flat.sqrMagnitude <= 0.0001f)
-        {
-            return;
-        }
-
-        transform.rotation = Quaternion.LookRotation(flat, Vector3.up);
-    }
-
-    Vector3 ResolveMoveInputDirection()
-    {
-        if (TryGetHeldMoveInput(out var move) && move.sqrMagnitude > 0.001f)
-        {
-            return move;
-        }
-
-        return Flatten(transform.forward);
-    }
-
-    bool TryGetHeldMoveInput(out Vector3 planarDirection)
-    {
-        planarDirection = default;
-        var horizontal = Input.GetAxisRaw("Horizontal");
-        var vertical = Input.GetAxisRaw("Vertical");
-        if (Mathf.Abs(horizontal) < 0.01f && Mathf.Abs(vertical) < 0.01f)
-        {
-            return false;
-        }
-
-        planarDirection = GetCameraPlanarDirection(horizontal, vertical);
-        return planarDirection.sqrMagnitude > 0.001f;
-    }
-
-    static Vector3 GetCameraPlanarDirection(float horizontal, float vertical)
-    {
-        var cam = Camera.main;
-        if (cam == null)
-        {
-            return Flatten(new Vector3(horizontal, 0f, vertical));
-        }
-
-        var forward = Flatten(cam.transform.forward);
-        var right = Flatten(cam.transform.right);
-        return Flatten(forward * vertical + right * horizontal);
-    }
-
-    static Vector3 Flatten(Vector3 direction)
-    {
-        direction.y = 0f;
-        if (direction.sqrMagnitude <= 0.0001f)
-        {
-            return Vector3.zero;
-        }
-
-        return direction.normalized;
-    }
-
-    bool TryGetFloorAim(out Vector3 point)
-    {
-        point = default;
-        var cam = Camera.main;
-        if (cam == null)
-        {
-            return false;
-        }
-
-        var ray = cam.ScreenPointToRay(Input.mousePosition);
-        var floor = new Plane(Vector3.up, 0f);
-        if (!floor.Raycast(ray, out var enter))
-        {
-            return false;
-        }
-
-        point = ray.GetPoint(enter);
-        return true;
     }
 }

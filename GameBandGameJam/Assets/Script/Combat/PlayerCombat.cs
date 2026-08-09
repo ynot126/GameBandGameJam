@@ -60,9 +60,8 @@ public class PlayerCombat : MonoBehaviour
 
     CancellationTokenSource? attackCts;
     int attackGeneration;
-    bool isBusy;
-    bool isAttackPlaying;
-    bool hardBreakRecovery;
+    int cancelOpenGeneration;
+    CombatPhase phase = CombatPhase.Idle;
     AttackInputType? queuedFollowUp;
     float queuedFollowUpTime;
     float attackLockoutUntil;
@@ -74,9 +73,11 @@ public class PlayerCombat : MonoBehaviour
     float? pendingHeavyTime;
     float? pendingDashTime;
 
-    public bool IsBusy => isBusy;
+    public CombatPhase Phase => phase;
+    public bool IsBusy => phase is CombatPhase.Startup or CombatPhase.Active;
     public bool IsAttackLockedOut => Time.time < attackLockoutUntil;
-    public bool IsHardBreakRecovery => hardBreakRecovery;
+    public bool IsHardBreakRecovery => phase == CombatPhase.HardBreak;
+    bool IsAttackPlaying => phase != CombatPhase.Idle;
 
     public event Action<AttackId>? OnAttackExecuted;
     public event Action? OnCombatReset;
@@ -211,24 +212,29 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        if (isAttackPlaying && isBusy)
+        switch (phase)
         {
-            QueueFollowUp(input);
-            return;
-        }
+            case CombatPhase.Startup:
+            case CombatPhase.Active:
+                QueueFollowUp(input);
+                return;
+            case CombatPhase.CancelWindow:
+            case CombatPhase.Recovery:
+            case CombatPhase.ChaseAwait:
+                TryCommitComboInput(input);
+                return;
+            case CombatPhase.HardBreak:
+                return;
+            case CombatPhase.Idle:
+            default:
+                if (!inputBuffer.IsOpen)
+                {
+                    return;
+                }
 
-        if (isAttackPlaying && !isBusy)
-        {
-            TryCommitComboInput(input);
-            return;
+                TryCommitComboInput(input);
+                return;
         }
-
-        if (isBusy || !inputBuffer.IsOpen)
-        {
-            return;
-        }
-
-        TryCommitComboInput(input);
     }
 
     bool CanAcceptCombatInput(AttackInputType input)
@@ -238,7 +244,7 @@ public class PlayerCombat : MonoBehaviour
             return true;
         }
 
-        if (hardBreakRecovery || IsAttackLockedOut)
+        if (phase == CombatPhase.HardBreak || IsAttackLockedOut)
         {
             return false;
         }
@@ -324,7 +330,7 @@ public class PlayerCombat : MonoBehaviour
 
     void CheckComboTimeout()
     {
-        if (isBusy)
+        if (phase is CombatPhase.Startup or CombatPhase.Active)
         {
             return;
         }
@@ -438,7 +444,7 @@ public class PlayerCombat : MonoBehaviour
 
     void RegisterInvalidInput()
     {
-        if (hardBreakRecovery)
+        if (phase == CombatPhase.HardBreak)
         {
             return;
         }
@@ -452,7 +458,7 @@ public class PlayerCombat : MonoBehaviour
 
     void TriggerHardComboBreak()
     {
-        if (hardBreakRecovery)
+        if (phase == CombatPhase.HardBreak)
         {
             consecutiveInvalidCount = 0;
             queuedFollowUp = null;
@@ -462,16 +468,16 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        var shouldNotify = inputBuffer.Count > 0 || consecutiveInvalidCount > 0 || isAttackPlaying;
+        var shouldNotify = inputBuffer.Count > 0 || consecutiveInvalidCount > 0 || IsAttackPlaying;
         consecutiveInvalidCount = 0;
         queuedFollowUp = null;
         inputBuffer.Clear();
         inputBuffer.SetOpen(false);
         autoLock.Clear();
 
-        if (isAttackPlaying)
+        if (IsAttackPlaying)
         {
-            hardBreakRecovery = true;
+            phase = CombatPhase.HardBreak;
         }
 
         if (!shouldNotify)
@@ -541,21 +547,26 @@ public class PlayerCombat : MonoBehaviour
 
     public void OpenCancelWindow()
     {
-        if (!isAttackPlaying || !isBusy)
+        if (phase == CombatPhase.HardBreak)
         {
-            return;
-        }
-
-        isBusy = false;
-        hitbox.DisableHitbox();
-        ClearCameraShakeOnHit();
-        EndCombatCameraZoom();
-
-        if (hardBreakRecovery)
-        {
+            cancelOpenGeneration++;
+            hitbox.DisableHitbox();
+            ClearCameraShakeOnHit();
+            EndCombatCameraZoom();
             inputBuffer.SetOpen(false);
             return;
         }
+
+        if (phase is not (CombatPhase.Startup or CombatPhase.Active))
+        {
+            return;
+        }
+
+        cancelOpenGeneration++;
+        phase = CombatPhase.CancelWindow;
+        hitbox.DisableHitbox();
+        ClearCameraShakeOnHit();
+        EndCombatCameraZoom();
 
         if (activeAttack != null)
         {
@@ -571,12 +582,15 @@ public class PlayerCombat : MonoBehaviour
     {
         var clipDuration = animationController.GetClipDuration(attackId);
         var safetyTimeout = clipDuration > 0f ? clipDuration : 1.5f;
+        var gate = cancelOpenGeneration;
 
-        var cancelOpened = UniTask.WaitUntil(() => !isBusy, cancellationToken: token);
+        var cancelOpened = UniTask.WaitUntil(
+            () => cancelOpenGeneration != gate || phase == CombatPhase.Idle,
+            cancellationToken: token);
         var timedOut = UniTask.Delay(TimeSpan.FromSeconds(safetyTimeout), cancellationToken: token);
         await UniTask.WhenAny(cancelOpened, timedOut);
 
-        if (isBusy)
+        if (cancelOpenGeneration == gate && phase is CombatPhase.Startup or CombatPhase.Active or CombatPhase.HardBreak)
         {
             Debug.LogWarning(
                 $"No OpenCancelWindow Animation Event for {attackId} within {safetyTimeout:0.##}s — opening cancel as fallback.",
@@ -593,7 +607,6 @@ public class PlayerCombat : MonoBehaviour
         attackGeneration++;
 
         sequencer.CancelPendingChase();
-        hardBreakRecovery = false;
         consecutiveInvalidCount = 0;
         ClearAttackLockout();
         ClearPendingAttackInputs();
@@ -614,9 +627,7 @@ public class PlayerCombat : MonoBehaviour
         var token = attackCts.Token;
         var generation = ++attackGeneration;
 
-        hardBreakRecovery = false;
-        isBusy = true;
-        isAttackPlaying = true;
+        phase = CombatPhase.Startup;
         activeAttack = definition;
         inputBuffer.SetOpen(false);
         playerController.SetMovementEnabled(false);
@@ -679,6 +690,11 @@ public class PlayerCombat : MonoBehaviour
                 await attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token);
             }
 
+            if (phase == CombatPhase.Startup)
+            {
+                phase = CombatPhase.Active;
+            }
+
             // Hitbox enable/disable and cancel open are driven by Animation Events
             // (or AttackStateBehavior). Mobility-only moves open cancel after the dash.
             if (definition.skipHitbox)
@@ -688,6 +704,11 @@ public class PlayerCombat : MonoBehaviour
             else
             {
                 await WaitForCancelWindowAsync(attackId, token);
+            }
+
+            if (phase == CombatPhase.CancelWindow)
+            {
+                phase = CombatPhase.Recovery;
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(recoveryHold), cancellationToken: token);
@@ -721,6 +742,11 @@ public class PlayerCombat : MonoBehaviour
 
     async UniTaskVoid AwaitFinisherFallback(CancellationToken token, int generation)
     {
+        if (phase is CombatPhase.CancelWindow or CombatPhase.Recovery)
+        {
+            phase = CombatPhase.ChaseAwait;
+        }
+
         try
         {
             await UniTask.Delay(TimeSpan.FromSeconds(0.75f), cancellationToken: token);
@@ -729,7 +755,7 @@ public class PlayerCombat : MonoBehaviour
                 return;
             }
 
-            if (isAttackPlaying)
+            if (IsAttackPlaying)
             {
                 sequencer.CancelPendingChase();
                 ResetToNavigation();
@@ -785,8 +811,7 @@ public class PlayerCombat : MonoBehaviour
             : 0.55f;
         var lockoutDuration = activeAttack?.attackLockoutDuration ?? 0f;
 
-        isBusy = true;
-        isAttackPlaying = true;
+        phase = CombatPhase.Active;
         inputBuffer.SetOpen(false);
         queuedFollowUp = null;
         playerController.SetMovementEnabled(false);
@@ -820,9 +845,7 @@ public class PlayerCombat : MonoBehaviour
 
     void ResetToNavigation()
     {
-        isBusy = false;
-        isAttackPlaying = false;
-        hardBreakRecovery = false;
+        phase = CombatPhase.Idle;
         consecutiveInvalidCount = 0;
         queuedFollowUp = null;
         activeAttack = null;

@@ -9,9 +9,6 @@ public class GameStageDrive : MonoBehaviour
     [SerializeField] Player playerPrefab = null!;
     [SerializeField] Transform playerSpawnPoint = null!;
     
-    [Header("Camera")]
-    [SerializeField] GameCameraController gameCameraController = null!;
-    
     [Header("View")]
     [SerializeField] GameView gameViewPrefab = null!;
     [SerializeField] TwoHandChooseView twoHandChooseViewPrefab = null!;
@@ -52,7 +49,7 @@ public class GameStageDrive : MonoBehaviour
         ViewManager.Instance.PushView(gameView);
         
         // start Camera
-        gameCameraController.StartTrackingPlayer(player.transform);
+        GameCameraController.Instance.StartTrackingPlayer(player.transform);
 
         // Spawn enemy
         enemies = new List<Enemy>();

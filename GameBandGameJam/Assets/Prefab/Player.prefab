@@ -139,6 +139,9 @@ MonoBehaviour:
   lightKey: 106
   heavyKey: 107
   dashKey: 304
+  cameraShakeDuration: 0.25
+  cameraShakeStrength: 0.3
+  cameraShakeFrequency: 25
   lockConeDegrees: 90
   lockSnapMargin: 4
   lockPersistenceRange: 6

@@ -27,6 +27,11 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] KeyCode heavyKey = KeyCode.K;
     [SerializeField] KeyCode dashKey = KeyCode.LeftShift;
 
+    [Header("Camera")]
+    [SerializeField, Min(0f)] float cameraShakeDuration = 0.25f;
+    [SerializeField, Min(0f)] float cameraShakeStrength = 0.3f;
+    [SerializeField, Min(0f)] float cameraShakeFrequency = 25f;
+
     [Header("Auto Lock")]
     [SerializeField] float lockConeDegrees = 90f;
     [SerializeField] float lockSnapMargin = 0.75f;
@@ -61,6 +66,7 @@ public class PlayerCombat : MonoBehaviour
     float attackLockoutUntil;
     int consecutiveInvalidCount;
     AttackDefinition? activeAttack;
+    bool cameraShakeArmed;
 
     float? pendingLightTime;
     float? pendingHeavyTime;
@@ -517,6 +523,16 @@ public class PlayerCombat : MonoBehaviour
         inputBuffer.SetResetWindow(activeComboInputWindow);
     }
 
+    public void ArmCameraShakeOnHit()
+    {
+        cameraShakeArmed = true;
+    }
+
+    public void ClearCameraShakeOnHit()
+    {
+        cameraShakeArmed = false;
+    }
+
     public void OpenCancelWindow()
     {
         if (!isAttackPlaying || !isBusy)
@@ -526,6 +542,7 @@ public class PlayerCombat : MonoBehaviour
 
         isBusy = false;
         hitbox.DisableHitbox();
+        ClearCameraShakeOnHit();
 
         if (hardBreakRecovery)
         {
@@ -630,6 +647,7 @@ public class PlayerCombat : MonoBehaviour
         animationController.PlayAttack(attackId);
         OnAttackExecuted?.Invoke(attackId);
 
+        ClearCameraShakeOnHit();
         hitbox.EndSwing();
         if (!definition.skipHitbox)
         {
@@ -721,6 +739,14 @@ public class PlayerCombat : MonoBehaviour
 
     void HandleHitConfirmed(IDamageable damageable, HitPayload payload, Vector3 hitDirection)
     {
+        if (cameraShakeArmed)
+        {
+            GameCameraController.Instance.Shake(
+                cameraShakeDuration,
+                cameraShakeStrength,
+                cameraShakeFrequency);
+        }
+
         if (damageNumberPrefab != null)
         {
             var spawnPos = damageable is Component component
@@ -807,6 +833,7 @@ public class PlayerCombat : MonoBehaviour
         consecutiveInvalidCount = 0;
         queuedFollowUp = null;
         activeAttack = null;
+        ClearCameraShakeOnHit();
         autoLock.Clear();
         inputBuffer.Clear();
         hitbox.EndSwing();

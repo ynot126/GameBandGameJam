@@ -142,6 +142,7 @@ MonoBehaviour:
   cameraShakeDuration: 0.25
   cameraShakeStrength: 0.3
   cameraShakeFrequency: 25
+  impactFrameParticleConfig: {fileID: 11400000, guid: 28b9f8b09ab7f5e46aff8fffb290384b, type: 2}
   lockConeDegrees: 90
   lockSnapMargin: 4
   lockPersistenceRange: 6
@@ -463,10 +464,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 88d03ed949bf99140a6c627ad5123cb1, type: 2}
     - target: {fileID: 5866666021909216657, guid: e3e08c6aac3f3404ca2b5bd3a9bcadd0, type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed
-        by Humanoid clips.\n\tTransform 'root'\n\tTransform 'root'\n\tFrom animation
-        clip 'Punch Pause'\n\tFrom animation clip 'Punch Pause'"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: e3e08c6aac3f3404ca2b5bd3a9bcadd0, type: 3}
       propertyPath: m_ApplyRootMotion

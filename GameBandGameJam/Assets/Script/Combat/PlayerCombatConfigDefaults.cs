@@ -170,7 +170,7 @@ public static class PlayerCombatConfigDefaults
             recoveryHoldDuration = recovery,
             attackLockoutDuration = isFinisher ? 0.65f : 0f,
             comboInputWindow = isFinisher ? NormalComboWindow : comboWindow,
-            hitboxRadius = isFinisher ? 0.9f : 0.6f,
+            hitboxRadius = isFinisher ? 1.5f : 1f,
             hitboxLocalOffset = isFinisher
                 ? new Vector3(0f, 0.8f, 1.1f)
                 : new Vector3(0f, 0.8f, 0.7f),
@@ -219,7 +219,7 @@ public static class PlayerCombatConfigDefaults
             recoveryHoldDuration = recovery,
             attackLockoutDuration = isFinisher ? 0.65f : 0f,
             comboInputWindow = comboWindow,
-            hitboxRadius = isFinisher ? 0.9f : 0.75f,
+            hitboxRadius = isFinisher ? 1.5f : 1f,
             hitboxLocalOffset = isFinisher
                 ? new Vector3(0f, 0.8f, 1.1f)
                 : new Vector3(0f, 0.8f, 0.3f),
@@ -244,7 +244,7 @@ public static class PlayerCombatConfigDefaults
             recoveryHoldDuration = 1f,
             attackLockoutDuration = 0.65f,
             comboInputWindow = NormalComboWindow,
-            hitboxRadius = 0.85f,
+            hitboxRadius = 1f,
             hitboxLocalOffset = new Vector3(0f, 0.75f, 0.9f),
             triggersChaseSequence = true,
             payload = new HitPayloadData
@@ -267,7 +267,7 @@ public static class PlayerCombatConfigDefaults
             recoveryHoldDuration = 1f,
             attackLockoutDuration = 0.65f,
             comboInputWindow = NormalComboWindow,
-            hitboxRadius = 0.95f,
+            hitboxRadius = 1.5f,
             hitboxLocalOffset = new Vector3(0f, 0.85f, 1.15f),
             triggersChaseSequence = true,
             payload = new HitPayloadData
@@ -290,7 +290,7 @@ public static class PlayerCombatConfigDefaults
             recoveryHoldDuration = 1f,
             attackLockoutDuration = 0.65f,
             comboInputWindow = NormalComboWindow,
-            hitboxRadius = 0.85f,
+            hitboxRadius = 1f,
             hitboxLocalOffset = new Vector3(0f, 0.5f, 1f),
             triggersChaseSequence = true,
             payload = new HitPayloadData
@@ -313,7 +313,7 @@ public static class PlayerCombatConfigDefaults
             recoveryHoldDuration = 0.3f,
             attackLockoutDuration = 0f,
             comboInputWindow = NormalComboWindow,
-            hitboxRadius = 0.65f,
+            hitboxRadius = 1f,
             hitboxLocalOffset = new Vector3(0f, 0.8f, 0.75f),
             triggersChaseSequence = false,
             payload = new HitPayloadData
@@ -368,7 +368,7 @@ public static class PlayerCombatConfigDefaults
             recoveryHoldDuration = isFinisher ? 1f : 0.55f,
             attackLockoutDuration = isFinisher ? 0.65f : 0f,
             comboInputWindow = NormalComboWindow,
-            hitboxRadius = isFinisher ? 0.9f : isHeavy ? 0.75f : 0.6f,
+            hitboxRadius = isFinisher ? 1.5f : 1f,
             hitboxLocalOffset = isFinisher
                 ? new Vector3(0f, 0.8f, 1.1f)
                 : isHeavy

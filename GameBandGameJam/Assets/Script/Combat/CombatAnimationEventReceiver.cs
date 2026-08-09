@@ -26,6 +26,7 @@ public class CombatAnimationEventReceiver : MonoBehaviour
     public void EnableHitbox()
     {
         hitbox?.EnableHitbox();
+        playerCombat?.PlayImpactFrameParticle();
     }
 
     // Animation Event — active hit frames; shake only if a hit is confirmed during this window.
@@ -33,6 +34,7 @@ public class CombatAnimationEventReceiver : MonoBehaviour
     {
         hitbox?.EnableHitbox();
         playerCombat?.ArmCameraShakeOnHit();
+        playerCombat?.PlayImpactFrameParticle();
     }
 
     // Animation Event — end active hit frames.
@@ -51,6 +53,6 @@ public class CombatAnimationEventReceiver : MonoBehaviour
     // Animation Event — restore framing after BeginCameraZoom.
     public void EndCameraZoom()
     {
-        GameCameraController.Instance.EndZoom();
+        playerCombat?.EndCombatCameraZoom();
     }
 }

@@ -87,6 +87,26 @@ public class CombatHitbox : MonoBehaviour
         hitThisSwing.Clear();
     }
 
+    public Vector3 GetWorldCenter()
+    {
+        if (owner == null)
+        {
+            return transform.position + localOffset;
+        }
+
+        return owner.TransformPoint(localOffset);
+    }
+
+    public Quaternion GetOwnerRotation()
+    {
+        if (owner == null)
+        {
+            return transform.rotation;
+        }
+
+        return owner.rotation;
+    }
+
     void FixedUpdate()
     {
         if (!isActive || owner == null)

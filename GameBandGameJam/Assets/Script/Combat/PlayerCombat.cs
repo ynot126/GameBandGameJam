@@ -31,6 +31,9 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField, Min(0f)] float cameraShakeStrength = 0.3f;
     [SerializeField, Min(0f)] float cameraShakeFrequency = 25f;
 
+    [Header("VFX")]
+    [SerializeField] ImpactFrameParticleConfig? impactFrameParticleConfig;
+
     [Header("Auto Lock")]
     [SerializeField] float lockConeDegrees = 90f;
     [SerializeField] float lockSnapMargin = 0.75f;
@@ -527,6 +530,21 @@ public class PlayerCombat : MonoBehaviour
         cameraShakeArmed = false;
     }
 
+    public void EndCombatCameraZoom()
+    {
+        GameCameraController.Instance.EndZoom();
+    }
+
+    public void PlayImpactFrameParticle()
+    {
+        if (impactFrameParticleConfig == null)
+        {
+            return;
+        }
+
+        impactFrameParticleConfig.PlayRandomAt(hitbox.GetWorldCenter(), hitbox.GetOwnerRotation());
+    }
+
     public void OpenCancelWindow()
     {
         if (!isAttackPlaying || !isBusy)
@@ -537,6 +555,7 @@ public class PlayerCombat : MonoBehaviour
         isBusy = false;
         hitbox.DisableHitbox();
         ClearCameraShakeOnHit();
+        EndCombatCameraZoom();
 
         if (hardBreakRecovery)
         {
@@ -828,6 +847,7 @@ public class PlayerCombat : MonoBehaviour
         queuedFollowUp = null;
         activeAttack = null;
         ClearCameraShakeOnHit();
+        EndCombatCameraZoom();
         autoLock.Clear();
         inputBuffer.Clear();
         hitbox.EndSwing();

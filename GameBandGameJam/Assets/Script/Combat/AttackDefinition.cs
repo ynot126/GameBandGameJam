@@ -22,7 +22,7 @@ public class AttackDefinition
     /// Per-attack combo input window after cancel opens. &lt;= 0 uses config defaultComboResetWindow.
     /// </summary>
     public float comboInputWindow;
-    public float hitboxRadius = 0.6f;
+    public float hitboxRadius = 1f;
     public Vector3 hitboxLocalOffset = new(0f, 0.8f, 0.7f);
     public bool triggersChaseSequence;
     /// <summary>Dash along current WASD / camera-planar move input instead of facing forward.</summary>

@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -98,7 +98,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -114,7 +114,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -130,7 +130,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.70000005
     attackLockoutDuration: 0
     comboInputWindow: 0.7
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -146,7 +146,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -162,7 +162,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -178,7 +178,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.75
     attackLockoutDuration: 0
     comboInputWindow: 0.7
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -194,7 +194,7 @@ MonoBehaviour:
     recoveryHoldDuration: 1
     attackLockoutDuration: 0.65
     comboInputWindow: 0.5
-    hitboxRadius: 0.9
+    hitboxRadius: 1.5
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
     triggersChaseSequence: 1
     useMoveInputDirection: 0
@@ -210,7 +210,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.75
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -226,7 +226,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.65000004
     attackLockoutDuration: 0
     comboInputWindow: 0.7
-    hitboxRadius: 0.75
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -242,7 +242,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.75
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -258,7 +258,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.70000005
     attackLockoutDuration: 0
     comboInputWindow: 0.7
-    hitboxRadius: 0.75
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -274,7 +274,7 @@ MonoBehaviour:
     recoveryHoldDuration: 1
     attackLockoutDuration: 0.65
     comboInputWindow: 0.5
-    hitboxRadius: 0.9
+    hitboxRadius: 1.5
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
     triggersChaseSequence: 1
     useMoveInputDirection: 0
@@ -290,7 +290,7 @@ MonoBehaviour:
     recoveryHoldDuration: 1
     attackLockoutDuration: 0.65
     comboInputWindow: 0.5
-    hitboxRadius: 0.85
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.75, z: 0.9}
     triggersChaseSequence: 1
     useMoveInputDirection: 0
@@ -306,7 +306,7 @@ MonoBehaviour:
     recoveryHoldDuration: 1
     attackLockoutDuration: 0.65
     comboInputWindow: 0.5
-    hitboxRadius: 0.95
+    hitboxRadius: 1.5
     hitboxLocalOffset: {x: 0, y: 0.85, z: 1.15}
     triggersChaseSequence: 1
     useMoveInputDirection: 0
@@ -322,7 +322,7 @@ MonoBehaviour:
     recoveryHoldDuration: 1
     attackLockoutDuration: 0.65
     comboInputWindow: 0.5
-    hitboxRadius: 0.85
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.5, z: 1}
     triggersChaseSequence: 1
     useMoveInputDirection: 0
@@ -338,7 +338,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.3
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.65
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.75}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -354,7 +354,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.35
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 1
@@ -370,7 +370,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -386,7 +386,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -402,7 +402,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.6
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -418,7 +418,7 @@ MonoBehaviour:
     recoveryHoldDuration: 1
     attackLockoutDuration: 0.65
     comboInputWindow: 0.5
-    hitboxRadius: 0.9
+    hitboxRadius: 1.5
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
     triggersChaseSequence: 1
     useMoveInputDirection: 0
@@ -434,7 +434,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.75
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -450,7 +450,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.75
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -466,7 +466,7 @@ MonoBehaviour:
     recoveryHoldDuration: 0.55
     attackLockoutDuration: 0
     comboInputWindow: 0.5
-    hitboxRadius: 0.75
+    hitboxRadius: 1
     hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
     triggersChaseSequence: 0
     useMoveInputDirection: 0
@@ -482,7 +482,7 @@ MonoBehaviour:
     recoveryHoldDuration: 1
     attackLockoutDuration: 0.65
     comboInputWindow: 0.5
-    hitboxRadius: 0.9
+    hitboxRadius: 1.5
     hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
     triggersChaseSequence: 1
     useMoveInputDirection: 0

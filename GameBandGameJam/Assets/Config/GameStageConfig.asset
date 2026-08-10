@@ -16,3 +16,5 @@ MonoBehaviour:
     pairs:
     - key: 100
       value: GameStageSceneBase
+    - key: 200
+      value: TonyTestingScene

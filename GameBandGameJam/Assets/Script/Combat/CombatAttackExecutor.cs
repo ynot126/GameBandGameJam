@@ -469,6 +469,7 @@ public sealed class CombatAttackExecutor
     public void ResetToNavigation()
     {
         phaseMachine.EnterIdle();
+        sequencer.SnapChaseToGround();
         onResetNavigationExtras?.Invoke();
         onClearQueuedFollowUp?.Invoke();
         activeAttack = null;

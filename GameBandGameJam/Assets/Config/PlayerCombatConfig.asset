@@ -218,14 +218,14 @@ MonoBehaviour:
         comboInputWindow: 0.5
         hitboxRadius: 1
         hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
-        triggersChaseSequence: 1
+        triggersChaseSequence: 0
         useMoveInputDirection: 0
         skipHitbox: 0
         payload:
           damage: 20
           hitStunDuration: 0.24000001
-          knockbackType: 1
-          launchDistance: 4
+          knockbackType: 0
+          launchDistance: 2
     - key: 23
       value:
         name: Heavy3
@@ -256,13 +256,13 @@ MonoBehaviour:
         comboInputWindow: 0
         hitboxRadius: 1
         hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
-        triggersChaseSequence: 0
+        triggersChaseSequence: 1
         useMoveInputDirection: 0
         skipHitbox: 0
         payload:
           damage: 10
           hitStunDuration: 0.15
-          knockbackType: 0
+          knockbackType: 1
           launchDistance: 1
     - key: 25
       value:

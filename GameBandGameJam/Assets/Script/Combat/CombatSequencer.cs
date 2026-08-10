@@ -65,6 +65,12 @@ public sealed class CombatSequencer
     public void CancelPendingChase()
     {
         awaitingChase = false;
+        chaseTeleport.SnapToGround();
+    }
+
+    public void SnapChaseToGround()
+    {
+        chaseTeleport.SnapToGround();
     }
 
     static Transform? ResolveTransform(IHitable hitable)

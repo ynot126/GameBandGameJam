@@ -41,7 +41,7 @@ public class Player : MonoBehaviour, IHitable
 
         body.isKinematic = false;
         body.useGravity = false;
-        body.constraints = RigidbodyConstraints.FreezeRotation;
+        body.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
 
         var animator = GetComponentInChildren<Animator>();
         animationController.Initialize(animator);

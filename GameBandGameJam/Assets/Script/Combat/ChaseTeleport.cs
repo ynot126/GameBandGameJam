@@ -10,7 +10,7 @@ public sealed class ChaseTeleport
     Collider[] playerColliders = Array.Empty<Collider>();
     float offsetDistance = 1.5f;
     float chaseDuration = 0.35f;
-    float arcHeight = 1.75f;
+    float groundedY;
 
     public void Initialize(
         Rigidbody playerBody,
@@ -23,7 +23,26 @@ public sealed class ChaseTeleport
         playerColliders = colliders;
         offsetDistance = chaseOffset;
         chaseDuration = duration;
-        arcHeight = height;
+        groundedY = playerBody.position.y;
+        // height kept for call-site compatibility; chase stays planar so hitboxes remain valid.
+        _ = height;
+    }
+
+    public void SnapToGround()
+    {
+        if (body == null)
+        {
+            return;
+        }
+
+        var position = body.position;
+        if (Mathf.Approximately(position.y, groundedY))
+        {
+            return;
+        }
+
+        position.y = groundedY;
+        body.MovePosition(position);
     }
 
     public async UniTask ChaseBehindAsync(Transform target, CancellationToken cancellationToken)
@@ -38,7 +57,7 @@ public sealed class ChaseTeleport
         forward.Normalize();
 
         var destination = target.position - forward * offsetDistance;
-        destination.y = body.position.y;
+        destination.y = groundedY;
 
         var lookDirection = target.position - destination;
         lookDirection.y = 0f;
@@ -49,17 +68,18 @@ public sealed class ChaseTeleport
         SetCollidersEnabled(false);
         try
         {
-            await KinematicMover.MoveAlongArcAsync(
+            SnapToGround();
+            await KinematicMover.MoveToAsync(
                 body,
                 destination,
                 chaseDuration,
-                arcHeight,
                 cancellationToken);
 
             body.MoveRotation(targetRotation);
         }
         finally
         {
+            SnapToGround();
             SetCollidersEnabled(true);
         }
     }

@@ -65,6 +65,20 @@ public sealed class CombatAutoLock
         return Mathf.Max(0f, comboData.hitboxLocalOffset.z) + Mathf.Max(0f, comboData.hitboxRadius);
     }
 
+    public static float ComputeHitboxAlignedDashDistance(
+        Vector3 ownerPosition,
+        Vector3 targetPosition,
+        float hitboxLocalOffsetZ,
+        float maxDashDistance)
+    {
+        var toTarget = targetPosition - ownerPosition;
+        toTarget.y = 0f;
+        var distance = toTarget.magnitude;
+        var idealRange = Mathf.Max(0f, hitboxLocalOffsetZ);
+        var needed = distance - idealRange;
+        return Mathf.Clamp(needed, 0f, maxDashDistance);
+    }
+
     /// <summary>
     /// Keeps the current lock if still valid for combo retention; otherwise acquires a new target.
     /// Returns false when a previously locked target was lost to range+LOS (combo should break).

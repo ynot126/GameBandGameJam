@@ -15,518 +15,537 @@ MonoBehaviour:
   defaultComboResetWindow: 0.5
   simultaneousInputWindow: 0.05
   consecutiveInvalidThreshold: 2
-  recipes:
+  combos:
     pairs:
     - key: 0
       value:
         name: 
         sequence: 
+        dashDistance: 0.5
+        dashDuration: 0.08
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 10
+          hitStunDuration: 0.15
+          knockbackType: 0
+          launchDistance: 1
     - key: 1
       value:
         name: Light
         sequence: 00000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 10
+          hitStunDuration: 0.12
+          knockbackType: 0
+          launchDistance: 0.75
     - key: 2
       value:
         name: Light1
         sequence: 0000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 10
+          hitStunDuration: 0.14
+          knockbackType: 0
+          launchDistance: 0.9
     - key: 3
       value:
         name: Light2
         sequence: 000000000000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.0805
+        recoveryHoldDuration: 0.70000005
+        attackLockoutDuration: 0
+        comboInputWindow: 0.7
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 13
+          hitStunDuration: 0.19999999
+          knockbackType: 0
+          launchDistance: 1.05
     - key: 4
       value:
         name: Light3
         sequence: 00000000000000000000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 11
+          hitStunDuration: 0.17999999
+          knockbackType: 0
+          launchDistance: 1.2
     - key: 5
       value:
         name: Light4
         sequence: 0000000000000000000000000000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 12
+          hitStunDuration: 0.19999999
+          knockbackType: 0
+          launchDistance: 1.35
     - key: 6
       value:
         name: Light5
         sequence: 000000000000000000000000000000000000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.08400001
+        recoveryHoldDuration: 0.75
+        attackLockoutDuration: 0
+        comboInputWindow: 0.7
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 14
+          hitStunDuration: 0.28
+          knockbackType: 0
+          launchDistance: 1.5
     - key: 7
       value:
         name: Light Finisher
         sequence: 00000000000000000000000000000000000000000000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 1
+        attackLockoutDuration: 0.65
+        comboInputWindow: 0.5
+        hitboxRadius: 1.5
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 2.1}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 13
+          hitStunDuration: 0.35
+          knockbackType: 1
+          launchDistance: 6
     - key: 20
       value:
         name: Heavy
         sequence: 01000000
+        dashDistance: 2
+        dashDuration: 0.1
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 18
+          hitStunDuration: 0.2
+          knockbackType: 0
+          launchDistance: 1.5
     - key: 21
       value:
         name: Heavy1
         sequence: 0100000001000000
+        dashDistance: 2
+        dashDuration: 0.1
+        recoveryHoldDuration: 0.65000004
+        attackLockoutDuration: 0
+        comboInputWindow: 0.7
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 19
+          hitStunDuration: 0.22
+          knockbackType: 0
+          launchDistance: 1.65
     - key: 22
       value:
         name: Heavy2
         sequence: 010000000100000001000000
+        dashDistance: 2
+        dashDuration: 0.1
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 20
+          hitStunDuration: 0.24000001
+          knockbackType: 0
+          launchDistance: 1.8
     - key: 23
       value:
         name: Heavy3
         sequence: 01000000010000000100000001000000
+        dashDistance: 2
+        dashDuration: 0.11000001
+        recoveryHoldDuration: 0.70000005
+        attackLockoutDuration: 0
+        comboInputWindow: 0.7
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 21
+          hitStunDuration: 0.26
+          knockbackType: 0
+          launchDistance: 1.95
     - key: 24
       value:
         name: Heavy4
-        sequence: 0100000001000000010000000100000001000000
+        sequence: 
+        dashDistance: 0.5
+        dashDuration: 0.08
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 10
+          hitStunDuration: 0.15
+          knockbackType: 0
+          launchDistance: 1
     - key: 25
       value:
         name: Heavy5
         sequence: 
+        dashDistance: 0.5
+        dashDuration: 0.08
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 10
+          hitStunDuration: 0.15
+          knockbackType: 0
+          launchDistance: 1
     - key: 26
       value:
         name: Heavy Finisher
         sequence: 0100000001000000010000000100000001000000
+        dashDistance: 2
+        dashDuration: 0.1
+        recoveryHoldDuration: 1
+        attackLockoutDuration: 0.65
+        comboInputWindow: 0.5
+        hitboxRadius: 1.5
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 2.1}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 22
+          hitStunDuration: 0.35
+          knockbackType: 1
+          launchDistance: 6
     - key: 40
       value:
         name: Light Break Kick
         sequence: 00000000000000000000000001000000
+        dashDistance: 0.75
+        dashDuration: 0.09
+        recoveryHoldDuration: 1
+        attackLockoutDuration: 0.65
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.75, z: 1.9}
+        triggersChaseSequence: 1
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 22
+          hitStunDuration: 0.35
+          knockbackType: 1
+          launchDistance: 5
     - key: 41
       value:
         name: Light Heavy Finisher
         sequence: 00000000000000000000000000000000000000000000000001000000
+        dashDistance: 1
+        dashDuration: 0.1
+        recoveryHoldDuration: 1
+        attackLockoutDuration: 0.65
+        comboInputWindow: 0.5
+        hitboxRadius: 1.5
+        hitboxLocalOffset: {x: 0, y: 0.85, z: 2.15}
+        triggersChaseSequence: 1
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 18
+          hitStunDuration: 0.4
+          knockbackType: 1
+          launchDistance: 6.5
     - key: 42
       value:
         name: Heavy Sweep Kick
         sequence: 010000000100000000000000
+        dashDistance: 1.5
+        dashDuration: 0.09
+        recoveryHoldDuration: 1
+        attackLockoutDuration: 0.65
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.5, z: 2}
+        triggersChaseSequence: 1
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 24
+          hitStunDuration: 0.38
+          knockbackType: 1
+          launchDistance: 5.5
     - key: 43
       value:
         name: Heavy Light Ender
         sequence: 0100000001000000010000000100000000000000
+        dashDistance: 0.6
+        dashDuration: 0.06
+        recoveryHoldDuration: 0.3
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.75}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 12
+          hitStunDuration: 0.18
+          knockbackType: 0
+          launchDistance: 1.2
     - key: 101
       value:
         name: Dash
         sequence: 02000000
+        dashDistance: 3
+        dashDuration: 0.12
+        recoveryHoldDuration: 0.35
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 1
+        skipHitbox: 1
+        payload:
+          damage: 0
+          hitStunDuration: 0
+          knockbackType: 0
+          launchDistance: 0
     - key: 102
       value:
         name: Dash Light
         sequence: 0200000000000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 10
+          hitStunDuration: 0.12
+          knockbackType: 0
+          launchDistance: 0.75
     - key: 103
       value:
         name: Dash Light1
         sequence: 020000000000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 10
+          hitStunDuration: 0.14
+          knockbackType: 0
+          launchDistance: 0.9
     - key: 104
       value:
         name: Dash Light2
         sequence: 02000000000000000000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 11
+          hitStunDuration: 0.16
+          knockbackType: 0
+          launchDistance: 1.05
     - key: 106
       value:
         name: Dash Light Finisher
         sequence: 0200000000000000000000000000000000000000
+        dashDistance: 0.5
+        dashDuration: 0.07
+        recoveryHoldDuration: 1
+        attackLockoutDuration: 0.65
+        comboInputWindow: 0.5
+        hitboxRadius: 1.5
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 2.1}
+        triggersChaseSequence: 1
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 11
+          hitStunDuration: 0.35
+          knockbackType: 1
+          launchDistance: 6
     - key: 121
       value:
         name: Dash Heavy
         sequence: 0200000001000000
+        dashDistance: 2
+        dashDuration: 0.1
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 18
+          hitStunDuration: 0.2
+          knockbackType: 0
+          launchDistance: 1.5
     - key: 122
       value:
         name: Dash Heavy1
         sequence: 020000000100000001000000
+        dashDistance: 2
+        dashDuration: 0.1
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 19
+          hitStunDuration: 0.22
+          knockbackType: 0
+          launchDistance: 1.65
     - key: 123
       value:
         name: Dash Heavy2
         sequence: 02000000010000000100000001000000
+        dashDistance: 2
+        dashDuration: 0.1
+        recoveryHoldDuration: 0.55
+        attackLockoutDuration: 0
+        comboInputWindow: 0.5
+        hitboxRadius: 1
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
+        triggersChaseSequence: 0
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 20
+          hitStunDuration: 0.24000001
+          knockbackType: 0
+          launchDistance: 1.8
     - key: 125
       value:
         name: Dash Heavy Finisher
         sequence: 0200000001000000010000000100000001000000
-  attacks:
-  - comboType: 1
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 10
-      hitStunDuration: 0.12
-      knockbackType: 0
-      launchDistance: 0.75
-  - comboType: 2
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 11
-      hitStunDuration: 0.14
-      knockbackType: 0
-      launchDistance: 0.9
-  - comboType: 3
-    dashDistance: 0.5
-    dashDuration: 0.0805
-    recoveryHoldDuration: 0.7
-    attackLockoutDuration: 0
-    comboInputWindow: 0.7
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 1
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 13
-      hitStunDuration: 0.19999999
-      knockbackType: 1
-      launchDistance: 4
-  - comboType: 4
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 11
-      hitStunDuration: 0.17999999
-      knockbackType: 0
-      launchDistance: 1.2
-  - comboType: 5
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 12
-      hitStunDuration: 0.19999999
-      knockbackType: 0
-      launchDistance: 1.35
-  - comboType: 6
-    dashDistance: 0.5
-    dashDuration: 0.08400001
-    recoveryHoldDuration: 0.75
-    attackLockoutDuration: 0
-    comboInputWindow: 0.7
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 14
-      hitStunDuration: 0.28
-      knockbackType: 0
-      launchDistance: 1.5
-  - comboType: 7
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 1
-    attackLockoutDuration: 0.65
-    comboInputWindow: 0.5
-    hitboxRadius: 1.5
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 13
-      hitStunDuration: 0.35
-      knockbackType: 1
-      launchDistance: 4
-  - comboType: 20
-    dashDistance: 2
-    dashDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 18
-      hitStunDuration: 0.2
-      knockbackType: 0
-      launchDistance: 1.5
-  - comboType: 21
-    dashDistance: 2
-    dashDuration: 0.1
-    recoveryHoldDuration: 0.65000004
-    attackLockoutDuration: 0
-    comboInputWindow: 0.7
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 19
-      hitStunDuration: 0.22
-      knockbackType: 0
-      launchDistance: 1.65
-  - comboType: 22
-    dashDistance: 2
-    dashDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 1
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 20
-      hitStunDuration: 0.24000001
-      knockbackType: 1
-      launchDistance: 4
-  - comboType: 23
-    dashDistance: 2
-    dashDuration: 0.11000001
-    recoveryHoldDuration: 0.70000005
-    attackLockoutDuration: 0
-    comboInputWindow: 0.7
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 21
-      hitStunDuration: 0.26
-      knockbackType: 0
-      launchDistance: 1.95
-  - comboType: 26
-    dashDistance: 2
-    dashDuration: 0.1
-    recoveryHoldDuration: 1
-    attackLockoutDuration: 0.65
-    comboInputWindow: 0.5
-    hitboxRadius: 1.5
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 22
-      hitStunDuration: 0.35
-      knockbackType: 1
-      launchDistance: 6
-  - comboType: 40
-    dashDistance: 0.75
-    dashDuration: 0.09
-    recoveryHoldDuration: 1
-    attackLockoutDuration: 0.65
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.75, z: 0.9}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 22
-      hitStunDuration: 0.35
-      knockbackType: 0
-      launchDistance: 5
-  - comboType: 41
-    dashDistance: 1
-    dashDuration: 0.1
-    recoveryHoldDuration: 1
-    attackLockoutDuration: 0.65
-    comboInputWindow: 0.5
-    hitboxRadius: 1.5
-    hitboxLocalOffset: {x: 0, y: 0.85, z: 1.15}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 18
-      hitStunDuration: 0.4
-      knockbackType: 0
-      launchDistance: 6.5
-  - comboType: 42
-    dashDistance: 1.5
-    dashDuration: 0.09
-    recoveryHoldDuration: 1
-    attackLockoutDuration: 0.65
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.5, z: 1}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 24
-      hitStunDuration: 0.38
-      knockbackType: 0
-      launchDistance: 5.5
-  - comboType: 43
-    dashDistance: 0.6
-    dashDuration: 0.06
-    recoveryHoldDuration: 0.3
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.75}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 12
-      hitStunDuration: 0.18
-      knockbackType: 0
-      launchDistance: 1.2
-  - comboType: 101
-    dashDistance: 3
-    dashDuration: 0.12
-    recoveryHoldDuration: 0.35
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 1
-    skipHitbox: 1
-    payload:
-      damage: 0
-      hitStunDuration: 0
-      knockbackType: 0
-      launchDistance: 0
-  - comboType: 102
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 10
-      hitStunDuration: 0.12
-      knockbackType: 0
-      launchDistance: 0.75
-  - comboType: 103
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 10
-      hitStunDuration: 0.14
-      knockbackType: 0
-      launchDistance: 0.9
-  - comboType: 104
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.7}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 11
-      hitStunDuration: 0.16
-      knockbackType: 0
-      launchDistance: 1.05
-  - comboType: 106
-    dashDistance: 0.5
-    dashDuration: 0.07
-    recoveryHoldDuration: 1
-    attackLockoutDuration: 0.65
-    comboInputWindow: 0.5
-    hitboxRadius: 1.5
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
-    triggersChaseSequence: 1
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 11
-      hitStunDuration: 0.35
-      knockbackType: 1
-      launchDistance: 6
-  - comboType: 121
-    dashDistance: 2
-    dashDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 18
-      hitStunDuration: 0.2
-      knockbackType: 0
-      launchDistance: 1.5
-  - comboType: 122
-    dashDistance: 2
-    dashDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 19
-      hitStunDuration: 0.22
-      knockbackType: 0
-      launchDistance: 1.65
-  - comboType: 123
-    dashDistance: 2
-    dashDuration: 0.1
-    recoveryHoldDuration: 0.55
-    attackLockoutDuration: 0
-    comboInputWindow: 0.5
-    hitboxRadius: 1
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 0.3}
-    triggersChaseSequence: 0
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 20
-      hitStunDuration: 0.24000001
-      knockbackType: 0
-      launchDistance: 1.8
-  - comboType: 125
-    dashDistance: 2
-    dashDuration: 0.1
-    recoveryHoldDuration: 1
-    attackLockoutDuration: 0.65
-    comboInputWindow: 0.5
-    hitboxRadius: 1.5
-    hitboxLocalOffset: {x: 0, y: 0.8, z: 1.1}
-    triggersChaseSequence: 1
-    useMoveInputDirection: 0
-    skipHitbox: 0
-    payload:
-      damage: 21
-      hitStunDuration: 0.35
-      knockbackType: 1
-      launchDistance: 6
+        dashDistance: 2
+        dashDuration: 0.1
+        recoveryHoldDuration: 1
+        attackLockoutDuration: 0.65
+        comboInputWindow: 0.5
+        hitboxRadius: 1.5
+        hitboxLocalOffset: {x: 0, y: 0.8, z: 2.1}
+        triggersChaseSequence: 1
+        useMoveInputDirection: 0
+        skipHitbox: 0
+        payload:
+          damage: 21
+          hitStunDuration: 0.35
+          knockbackType: 1
+          launchDistance: 6

@@ -301,6 +301,14 @@ public sealed class CombatAttackExecutor
             ? definition.recoveryHoldDuration
             : 0.55f);
         var dashDistance = definition.dashDistance * dashDistanceMultiplier;
+        if (alignToLock && !definition.skipHitbox && autoLock.LockedTarget != null)
+        {
+            dashDistance = CombatAutoLock.ComputeHitboxAlignedDashDistance(
+                owner.position,
+                autoLock.LockedTarget.Transform.position,
+                definition.hitboxLocalOffset.z,
+                dashDistance);
+        }
         var dashDuration = ScaleDuration(definition.dashDuration);
 
         try

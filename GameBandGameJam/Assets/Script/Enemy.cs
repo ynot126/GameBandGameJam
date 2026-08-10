@@ -7,7 +7,10 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 {
+    [Header("Config")]
     [SerializeField] int maxHealth = 100;
+    
+    [Header("Components")]
     [SerializeField] LayerMask wallMask;
     [SerializeField] BaseEnemyAI enemyAiPrefab = null!;
 
@@ -16,29 +19,46 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     [SerializeField, Min(0f)] float standardKnockbackArcHeight = 0.35f;
     [SerializeField, Min(0.01f)] float launchKnockbackDuration = 0.18f;
     [SerializeField, Min(0f)] float launchKnockbackArcHeight = 1.25f;
-
+    
+    // Reference
     readonly LaunchMotor launchMotor = new();
-    CancellationTokenSource? launchCts;
     Rigidbody body = null!;
     BaseEnemyAI enemyAi = null!;
+    
+    // States
     int currentHealth;
     float hitStunUntil;
     float groundedY;
     int knockbackGeneration;
     bool isKnockbackActive;
     bool isDead;
-
+    
+    // public fields reference
     public Transform Transform => transform;
     public bool IsLockable => !isDead && currentHealth > 0;
     public float RemainingHealthNormalized =>
         maxHealth <= 0 ? 0f : Mathf.Clamp01((float)currentHealth / maxHealth);
-    /// <summary>Stub until enemy attack AI exposes mid-attack state.</summary>
+
     public bool IsThreatening => false;
+    
+    // CTS
+    CancellationTokenSource? launchCts;
+
+    #region Life Cycle
 
     public void Initialize()
     {
         currentHealth = maxHealth;
         isDead = false;
+
+        InitializeBody();
+        InitializeWallMask();
+        InitializeKnockback();
+        InitializeAI();
+    }
+    
+    void InitializeBody()
+    {
         body = GetComponent<Rigidbody>();
         body.isKinematic = false;
         body.useGravity = false;
@@ -47,37 +67,54 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         body.linearVelocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
         groundedY = body.position.y;
+    }
 
+    void InitializeWallMask()
+    {
         if (wallMask.value == 0)
         {
             // Everything except Entity (layer 6).
             wallMask = ~(1 << 6);
         }
+    }
 
+    void InitializeKnockback()
+    {
         launchMotor.Initialize(body, wallMask, groundedY, launchKnockbackDuration, launchKnockbackArcHeight);
         knockbackGeneration = 0;
         hitStunUntil = 0f;
         isKnockbackActive = false;
+    }
 
+    void InitializeAI()
+    {
         enemyAi = Instantiate(enemyAiPrefab, transform);
         enemyAi.Initialize();
     }
-
+    
     void Update()
     {
-        if (isDead|| !isKnockbackActive && Time.time >= hitStunUntil)
+        if (isDead || isKnockbackActive || Time.time < hitStunUntil)
         {
             return;
         }
 
         enemyAi.UpdateAIMovement();
     }
-    
+
+    #endregion
+
+    #region Presentation
+
     public async UniTask SpawnAnimation()
     {
         transform.localScale = Vector3.zero;
         await transform.DOScale(1f, 1f);
     }
+
+    #endregion
+
+    #region Damage And Stun
 
     public void TryDamage(int damage)
     {
@@ -103,6 +140,22 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         hitStunUntil = Time.time + stunDuration;
     }
 
+    void Death()
+    {
+        if (isDead)
+        {
+            return;
+        }
+
+        isDead = true;
+        CancelActiveKnockback();
+        Destroy(gameObject);
+    }
+
+    #endregion
+
+    #region Knockback
+
     public UniTask TryKnockback(
         KnockbackType knockbackType,
         float launchDistance,
@@ -125,36 +178,24 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
     async UniTask LaunchAsync(Vector3 direction, float distance, CancellationToken cancellationToken)
     {
-        var generation = ++knockbackGeneration;
-        CancelActiveKnockback();
-        isKnockbackActive = true;
-        launchCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        var token = launchCts.Token;
+        var (generation, token) = BeginKnockback(cancellationToken);
 
         try
         {
             await launchMotor.LaunchAsync(direction, distance, token);
         }
-        catch (System.OperationCanceledException)
+        catch (OperationCanceledException)
         {
         }
         finally
         {
-            if (generation == knockbackGeneration)
-            {
-                StopBodyMotion();
-                isKnockbackActive = false;
-            }
+            CompleteKnockback(generation);
         }
     }
 
     async UniTaskVoid ApplyStandardKnockback(Vector3 direction, float distance)
     {
-        var generation = ++knockbackGeneration;
-        CancelActiveKnockback();
-        isKnockbackActive = true;
-        launchCts = new CancellationTokenSource();
-        var token = launchCts.Token;
+        var (generation, token) = BeginKnockback(CancellationToken.None);
 
         try
         {
@@ -170,29 +211,33 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
                 standardKnockbackArcHeight,
                 token);
         }
-        catch (System.OperationCanceledException)
+        catch (OperationCanceledException)
         {
         }
         finally
         {
-            if (generation == knockbackGeneration)
-            {
-                StopBodyMotion();
-                isKnockbackActive = false;
-            }
+            CompleteKnockback(generation);
         }
     }
 
-    void Death()
+    (int Generation, CancellationToken Token) BeginKnockback(CancellationToken cancellationToken)
     {
-        if (isDead)
+        var generation = ++knockbackGeneration;
+        CancelActiveKnockback();
+        isKnockbackActive = true;
+        launchCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        return (generation, launchCts.Token);
+    }
+
+    void CompleteKnockback(int generation)
+    {
+        if (generation != knockbackGeneration)
         {
             return;
         }
 
-        isDead = true;
-        CancelActiveKnockback();
-        Destroy(gameObject);
+        StopBodyMotion();
+        isKnockbackActive = false;
     }
 
     void CancelActiveKnockback()
@@ -207,6 +252,10 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         body.linearVelocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
     }
+
+    #endregion
+
+    #region Physics Helpers
 
     float ClampTravelAgainstWalls(Vector3 origin, Vector3 direction, float desiredDistance)
     {
@@ -235,4 +284,6 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
         return direction.normalized;
     }
+
+    #endregion
 }

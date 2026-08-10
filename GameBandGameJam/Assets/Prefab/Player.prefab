@@ -42,6 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2755140125711119704}
   - component: {fileID: 1404482955530246748}
+  - component: {fileID: 7890123456789012346}
   - component: {fileID: 4109264221245626821}
   - component: {fileID: 6172849501728341001}
   - component: {fileID: 6172849501728341002}
@@ -88,6 +89,7 @@ MonoBehaviour:
   body: {fileID: 8936354506429449023}
   playerController: {fileID: 4109264221245626821}
   playerCombat: {fileID: 6172849501728341001}
+  playerStamina: {fileID: 7890123456789012346}
   combatHitbox: {fileID: 6172849501728341002}
   animationController: {fileID: 6172849501728341003}
   collisionDetector: {fileID: 5627855489857298626}
@@ -96,6 +98,24 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &7890123456789012346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4430133676654217348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3c2f1e9b7d6543a2b1c0d9e8f76543, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStamina: 1000
+  lightCost: 10
+  heavyCost: 20
+  dashCost: 15
+  regenDelay: 1
+  regenPerSecond: 50
 --- !u!114 &4109264221245626821
 MonoBehaviour:
   m_ObjectHideFlags: 0

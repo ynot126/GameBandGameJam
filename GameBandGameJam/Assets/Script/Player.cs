@@ -10,6 +10,7 @@ public class Player : MonoBehaviour, IHitable
     [SerializeField] Rigidbody body = null!;
     [SerializeField] PlayerController playerController = null!;
     [SerializeField] PlayerCombat playerCombat = null!;
+    [SerializeField] PlayerStamina playerStamina = null!;
     [SerializeField] CombatHitbox combatHitbox = null!;
     [SerializeField] PlayerAnimationController animationController = null!;
     [SerializeField] CollisionDetector collisionDetector = null!;
@@ -30,6 +31,7 @@ public class Player : MonoBehaviour, IHitable
     float dashDistanceMultiplier = 1f;
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
+    public PlayerStamina Stamina => playerStamina;
 
     public void Initialize(PlayerData aPlayerData)
     {
@@ -46,6 +48,8 @@ public class Player : MonoBehaviour, IHitable
 
         playerController.Initialize(playerData.speed, body);
 
+        playerStamina.Initialize();
+
         playerCombat.Initialize(
             combatConfig,
             playerController,
@@ -53,7 +57,8 @@ public class Player : MonoBehaviour, IHitable
             combatHitbox,
             animationController,
             damageNumberPrefab,
-            layerMask);
+            layerMask,
+            playerStamina);
 
         UpdateSkillMultipliersAndEffects();
     }

@@ -46,6 +46,9 @@ public class GameStageDrive : MonoBehaviour
         var gameView = Instantiate(gameViewPrefab);
         gameView.UpdateHealthText(player.CurrentHealth, player.MaxHealth);
         player.OnHealthChanged += () => gameView.UpdateHealthText(player.CurrentHealth, player.MaxHealth);
+        gameView.UpdateStaminaText(player.Stamina.CurrentStamina, player.Stamina.MaxStamina);
+        player.Stamina.OnStaminaChanged += () =>
+            gameView.UpdateStaminaText(player.Stamina.CurrentStamina, player.Stamina.MaxStamina);
         ViewManager.Instance.PushView(gameView);
         
         // start Camera

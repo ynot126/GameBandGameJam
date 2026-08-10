@@ -61,6 +61,7 @@ public class PlayerCombat : MonoBehaviour
     readonly Dictionary<ComboType, AttackDefinition> attackMap = new();
 
     PlayerCombatConfig? combatConfig;
+    PlayerStamina? stamina;
     float activeComboInputWindow = 0.5f;
     int consecutiveInvalidThreshold = 2;
     float attackLockoutUntil;
@@ -82,7 +83,8 @@ public class PlayerCombat : MonoBehaviour
         CombatHitbox combatHitbox,
         PlayerAnimationController animController,
         DamageNumberVisual? numberPrefab,
-        LayerMask entityMask)
+        LayerMask entityMask,
+        PlayerStamina playerStamina)
     {
         if (!config.HasAuthoredRecipes() || config.attacks.Length == 0)
         {
@@ -91,6 +93,7 @@ public class PlayerCombat : MonoBehaviour
         }
 
         combatConfig = config;
+        stamina = playerStamina;
         playerController = controller;
         hitbox = combatHitbox;
         animationController = animController;
@@ -239,6 +242,11 @@ public class PlayerCombat : MonoBehaviour
 
     bool CanAcceptCombatInput(AttackInputType input)
     {
+        if (stamina != null && !stamina.CanAfford(input))
+        {
+            return false;
+        }
+
         if (input == AttackInputType.Dash)
         {
             return true;
@@ -286,11 +294,6 @@ public class PlayerCombat : MonoBehaviour
     {
         if (!CanAcceptCombatInput(input))
         {
-            if (input != AttackInputType.Dash)
-            {
-                RegisterInvalidInput();
-            }
-
             return;
         }
 
@@ -318,6 +321,7 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
+        stamina?.NotifySpend(input);
         attackExecutor.ExecuteAttack(definition, attackId).Forget();
     }
 

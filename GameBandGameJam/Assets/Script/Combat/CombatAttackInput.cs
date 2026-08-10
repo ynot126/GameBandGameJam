@@ -65,14 +65,14 @@ public sealed class CombatAttackInput
 
         if (pendingDashTime.HasValue)
         {
-            input = AttackInputType.D;
+            input = AttackInputType.Dash;
             ClearPending();
             return true;
         }
 
         if (pendingHeavyTime.HasValue)
         {
-            input = AttackInputType.H;
+            input = AttackInputType.Heavy;
             ClearPending();
             return true;
         }
@@ -84,7 +84,7 @@ public sealed class CombatAttackInput
                 return false;
             }
 
-            input = AttackInputType.L;
+            input = AttackInputType.Light;
             pendingLightTime = null;
             return true;
         }

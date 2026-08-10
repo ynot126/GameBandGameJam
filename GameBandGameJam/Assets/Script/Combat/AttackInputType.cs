@@ -2,7 +2,7 @@
 
 public enum AttackInputType
 {
-    L = 0,
-    H = 1,
-    D = 2
+    Light = 0,
+    Heavy = 1,
+    Dash = 2
 }

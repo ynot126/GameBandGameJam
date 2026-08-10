@@ -201,7 +201,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (!CanAcceptCombatInput(input))
         {
-            if (input != AttackInputType.D)
+            if (input != AttackInputType.Dash)
             {
                 RegisterInvalidInput();
             }
@@ -209,7 +209,7 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        if (input == AttackInputType.D)
+        if (input == AttackInputType.Dash)
         {
             TryCommitComboInput(input);
             return;
@@ -239,7 +239,7 @@ public class PlayerCombat : MonoBehaviour
 
     bool CanAcceptCombatInput(AttackInputType input)
     {
-        if (input == AttackInputType.D)
+        if (input == AttackInputType.Dash)
         {
             return true;
         }
@@ -256,7 +256,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (!CanAcceptCombatInput(input))
         {
-            if (input != AttackInputType.D)
+            if (input != AttackInputType.Dash)
             {
                 RegisterInvalidInput();
             }
@@ -286,7 +286,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (!CanAcceptCombatInput(input))
         {
-            if (input != AttackInputType.D)
+            if (input != AttackInputType.Dash)
             {
                 RegisterInvalidInput();
             }
@@ -300,7 +300,7 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        if (input == AttackInputType.D)
+        if (input == AttackInputType.Dash)
         {
             autoLock.Clear();
         }
@@ -348,7 +348,7 @@ public class PlayerCombat : MonoBehaviour
         attackId = AttackId.None;
         var time = Time.time;
 
-        if (input == AttackInputType.D)
+        if (input == AttackInputType.Dash)
         {
             inputBuffer.ReplaceWith(input, time);
             return comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out attackId);

@@ -28,41 +28,41 @@ public static class PlayerCombatConfigDefaults
     {
         return new[]
         {
-            CreateRecipe("Light", AttackId.Light, Repeat(AttackInputType.L, 1)),
-            CreateRecipe("Light1", AttackId.Light1, Repeat(AttackInputType.L, 2)),
-            CreateRecipe("Light2", AttackId.Light2, Repeat(AttackInputType.L, 3)),
-            CreateRecipe("Light3", AttackId.Light3, Repeat(AttackInputType.L, 4)),
-            CreateRecipe("Light4", AttackId.Light4, Repeat(AttackInputType.L, 5)),
-            CreateRecipe("Light5", AttackId.Light5, Repeat(AttackInputType.L, 6)),
-            CreateRecipe("Light Finisher", AttackId.LightFinisher, Repeat(AttackInputType.L, 7)),
+            CreateRecipe("Light", AttackId.Light, Repeat(AttackInputType.Light, 1)),
+            CreateRecipe("Light1", AttackId.Light1, Repeat(AttackInputType.Light, 2)),
+            CreateRecipe("Light2", AttackId.Light2, Repeat(AttackInputType.Light, 3)),
+            CreateRecipe("Light3", AttackId.Light3, Repeat(AttackInputType.Light, 4)),
+            CreateRecipe("Light4", AttackId.Light4, Repeat(AttackInputType.Light, 5)),
+            CreateRecipe("Light5", AttackId.Light5, Repeat(AttackInputType.Light, 6)),
+            CreateRecipe("Light Finisher", AttackId.LightFinisher, Repeat(AttackInputType.Light, 7)),
 
-            CreateRecipe("Heavy", AttackId.Heavy, Repeat(AttackInputType.H, 1)),
-            CreateRecipe("Heavy1", AttackId.Heavy1, Repeat(AttackInputType.H, 2)),
-            CreateRecipe("Heavy2", AttackId.Heavy2, Repeat(AttackInputType.H, 3)),
-            CreateRecipe("Heavy3", AttackId.Heavy3, Repeat(AttackInputType.H, 4)),
-            CreateRecipe("Heavy Finisher", AttackId.HeavyFinisher, Repeat(AttackInputType.H, 5)),
+            CreateRecipe("Heavy", AttackId.Heavy, Repeat(AttackInputType.Heavy, 1)),
+            CreateRecipe("Heavy1", AttackId.Heavy1, Repeat(AttackInputType.Heavy, 2)),
+            CreateRecipe("Heavy2", AttackId.Heavy2, Repeat(AttackInputType.Heavy, 3)),
+            CreateRecipe("Heavy3", AttackId.Heavy3, Repeat(AttackInputType.Heavy, 4)),
+            CreateRecipe("Heavy Finisher", AttackId.HeavyFinisher, Repeat(AttackInputType.Heavy, 5)),
 
             CreateRecipe("Light Break Kick", AttackId.LightBreakKick,
-                AttackInputType.L, AttackInputType.L, AttackInputType.L, AttackInputType.H),
+                AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy),
             CreateRecipe("Light Heavy Finisher", AttackId.LightHeavyFinisher,
-                AttackInputType.L, AttackInputType.L, AttackInputType.L,
-                AttackInputType.L, AttackInputType.L, AttackInputType.L, AttackInputType.H),
+                AttackInputType.Light, AttackInputType.Light, AttackInputType.Light,
+                AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy),
             CreateRecipe("Heavy Sweep Kick", AttackId.HeavySweepKick,
-                AttackInputType.H, AttackInputType.H, AttackInputType.L),
+                AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light),
             CreateRecipe("Heavy Light Ender", AttackId.HeavyLightEnder,
-                AttackInputType.H, AttackInputType.H, AttackInputType.H, AttackInputType.H, AttackInputType.L),
+                AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light),
 
-            CreateRecipe("Dash", AttackId.Dash, AttackInputType.D),
+            CreateRecipe("Dash", AttackId.Dash, AttackInputType.Dash),
 
-            CreateRecipe("Dash Light", AttackId.DashLight, DashThen(AttackInputType.L, 1)),
-            CreateRecipe("Dash Light1", AttackId.DashLight1, DashThen(AttackInputType.L, 2)),
-            CreateRecipe("Dash Light2", AttackId.DashLight2, DashThen(AttackInputType.L, 3)),
-            CreateRecipe("Dash Light Finisher", AttackId.DashLightFinisher, DashThen(AttackInputType.L, 4)),
+            CreateRecipe("Dash Light", AttackId.DashLight, DashThen(AttackInputType.Light, 1)),
+            CreateRecipe("Dash Light1", AttackId.DashLight1, DashThen(AttackInputType.Light, 2)),
+            CreateRecipe("Dash Light2", AttackId.DashLight2, DashThen(AttackInputType.Light, 3)),
+            CreateRecipe("Dash Light Finisher", AttackId.DashLightFinisher, DashThen(AttackInputType.Light, 4)),
 
-            CreateRecipe("Dash Heavy", AttackId.DashHeavy, DashThen(AttackInputType.H, 1)),
-            CreateRecipe("Dash Heavy1", AttackId.DashHeavy1, DashThen(AttackInputType.H, 2)),
-            CreateRecipe("Dash Heavy2", AttackId.DashHeavy2, DashThen(AttackInputType.H, 3)),
-            CreateRecipe("Dash Heavy Finisher", AttackId.DashHeavyFinisher, DashThen(AttackInputType.H, 4))
+            CreateRecipe("Dash Heavy", AttackId.DashHeavy, DashThen(AttackInputType.Heavy, 1)),
+            CreateRecipe("Dash Heavy1", AttackId.DashHeavy1, DashThen(AttackInputType.Heavy, 2)),
+            CreateRecipe("Dash Heavy2", AttackId.DashHeavy2, DashThen(AttackInputType.Heavy, 3)),
+            CreateRecipe("Dash Heavy Finisher", AttackId.DashHeavyFinisher, DashThen(AttackInputType.Heavy, 4))
         };
     }
 
@@ -409,7 +409,7 @@ public static class PlayerCombatConfigDefaults
     static AttackInputType[] DashThen(AttackInputType input, int count)
     {
         var sequence = new AttackInputType[count + 1];
-        sequence[0] = AttackInputType.D;
+        sequence[0] = AttackInputType.Dash;
         for (var i = 0; i < count; i++)
         {
             sequence[i + 1] = input;

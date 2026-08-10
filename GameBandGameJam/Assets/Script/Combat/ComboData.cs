@@ -3,9 +3,10 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class AttackDefinition
+public class ComboData
 {
-    public ComboType comboType = ComboType.None;
+    public string name = string.Empty;
+    public AttackInputType[] sequence = Array.Empty<AttackInputType>();
     public float dashDistance = 0.5f;
     public float dashDuration = 0.08f;
     /// <summary>

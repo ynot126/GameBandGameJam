@@ -33,11 +33,11 @@ public sealed class CombatAttackExecutor
 
     CancellationTokenSource? attackCts;
     int attackGeneration;
-    AttackDefinition? activeAttack;
+    ComboData? activeAttack;
     bool cameraShakeArmed;
 
     Action<ComboType>? onAttackExecuted;
-    Action<AttackDefinition>? onApplyComboInputWindow;
+    Action<ComboData>? onApplyComboInputWindow;
     Action? onTryConsumeQueuedFollowUp;
     Action? onClearQueuedFollowUp;
     Action? onResetNavigationExtras;
@@ -45,7 +45,7 @@ public sealed class CombatAttackExecutor
     Action? onClearAttackLockout;
     Action? onRestoreDefaultComboWindow;
 
-    public AttackDefinition? ActiveAttack => activeAttack;
+    public ComboData? ActiveAttack => activeAttack;
 
     public void Initialize(
         Transform ownerTransform,
@@ -65,7 +65,7 @@ public sealed class CombatAttackExecutor
         float shakeStrength,
         float shakeFrequency,
         Action<ComboType>? attackExecuted,
-        Action<AttackDefinition>? applyComboInputWindow,
+        Action<ComboData>? applyComboInputWindow,
         Action? tryConsumeQueuedFollowUp,
         Action? clearQueuedFollowUp,
         Action? resetNavigationExtras,
@@ -238,7 +238,7 @@ public sealed class CombatAttackExecutor
         ResolveLaunch(hitable, hitDirection, payload.LaunchDistance).Forget();
     }
 
-    public async UniTaskVoid ExecuteAttack(AttackDefinition definition, ComboType comboType)
+    public async UniTaskVoid ExecuteAttack(ComboData definition, ComboType comboType)
     {
         RestartAttackToken(out var token, out var generation);
 

@@ -4,35 +4,35 @@ using System.Collections.Generic;
 
 public sealed class ComboEvaluator
 {
-    (ComboType attackId, ComboRecipe recipe)[] recipes = Array.Empty<(ComboType, ComboRecipe)>();
+    (ComboType attackId, ComboData combo)[] combos = Array.Empty<(ComboType, ComboData)>();
 
-    public void Initialize(EnumDictionary<ComboType, ComboRecipe> comboRecipes)
+    public void Initialize(EnumDictionary<ComboType, ComboData> comboData)
     {
-        if (comboRecipes == null || comboRecipes.Count == 0)
+        if (comboData == null || comboData.Count == 0)
         {
-            recipes = Array.Empty<(ComboType, ComboRecipe)>();
+            combos = Array.Empty<(ComboType, ComboData)>();
             return;
         }
 
-        var authored = new List<(ComboType attackId, ComboRecipe recipe)>(comboRecipes.Count);
-        foreach (var pair in comboRecipes)
+        var authored = new List<(ComboType attackId, ComboData combo)>(comboData.Count);
+        foreach (var pair in comboData)
         {
             if (pair.Key == ComboType.None)
             {
                 continue;
             }
 
-            var recipe = pair.Value;
-            if (recipe?.sequence == null || recipe.sequence.Length == 0)
+            var data = pair.Value;
+            if (data?.sequence == null || data.sequence.Length == 0)
             {
                 continue;
             }
 
-            authored.Add((pair.Key, recipe));
+            authored.Add((pair.Key, data));
         }
 
-        recipes = authored.ToArray();
-        Array.Sort(recipes, (a, b) => b.recipe.sequence.Length.CompareTo(a.recipe.sequence.Length));
+        combos = authored.ToArray();
+        Array.Sort(combos, (a, b) => b.combo.sequence.Length.CompareTo(a.combo.sequence.Length));
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public sealed class ComboEvaluator
     public bool TryResolve(IReadOnlyList<AttackInputType> buffer, bool forceCommit, out ComboType comboType)
     {
         comboType = ComboType.None;
-        if (buffer.Count == 0 || recipes.Length == 0)
+        if (buffer.Count == 0 || combos.Length == 0)
         {
             return false;
         }
@@ -51,10 +51,10 @@ public sealed class ComboEvaluator
         ComboType? exactMatch = null;
         var isPrefixOfLonger = false;
 
-        for (var i = 0; i < recipes.Length; i++)
+        for (var i = 0; i < combos.Length; i++)
         {
-            var entry = recipes[i];
-            var sequence = entry.recipe.sequence;
+            var entry = combos[i];
+            var sequence = entry.combo.sequence;
 
             if (IsExactMatch(buffer, sequence))
             {

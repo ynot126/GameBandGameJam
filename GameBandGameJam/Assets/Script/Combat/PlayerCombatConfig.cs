@@ -7,12 +7,11 @@ public class PlayerCombatConfig : ScriptableObject
     public float defaultComboResetWindow = 0.5f;
     public float simultaneousInputWindow = 0.05f;
     public int consecutiveInvalidThreshold = 2;
-    public EnumDictionary<ComboType, ComboRecipe> recipes = new();
-    public AttackDefinition[] attacks = System.Array.Empty<AttackDefinition>();
+    public EnumDictionary<ComboType, ComboData> combos = new();
 
-    public bool HasAuthoredRecipes()
+    public bool HasAuthoredCombos()
     {
-        foreach (var pair in recipes)
+        foreach (var pair in combos)
         {
             if (pair.Key == ComboType.None)
             {
@@ -31,7 +30,7 @@ public class PlayerCombatConfig : ScriptableObject
 #if UNITY_EDITOR
     void OnValidate()
     {
-        if (!HasAuthoredRecipes() && (attacks == null || attacks.Length == 0))
+        if (!HasAuthoredCombos())
         {
             PlayerCombatConfigDefaults.ApplyTo(this);
         }

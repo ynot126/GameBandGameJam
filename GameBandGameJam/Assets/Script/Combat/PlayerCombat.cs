@@ -58,8 +58,6 @@ public class PlayerCombat : MonoBehaviour
     readonly CombatFacing facing = new();
     readonly CombatAttackInput attackInput = new();
     readonly CombatAttackExecutor attackExecutor = new();
-    readonly Dictionary<ComboType, AttackDefinition> attackMap = new();
-
     PlayerCombatConfig? combatConfig;
     PlayerStamina? stamina;
     float activeComboInputWindow = 0.5f;
@@ -86,9 +84,9 @@ public class PlayerCombat : MonoBehaviour
         LayerMask entityMask,
         PlayerStamina playerStamina)
     {
-        if (!config.HasAuthoredRecipes() || config.attacks.Length == 0)
+        if (!config.HasAuthoredCombos())
         {
-            Debug.LogError("PlayerCombat.Initialize: PlayerCombatConfig has no recipes or attacks.", config);
+            Debug.LogError("PlayerCombat.Initialize: PlayerCombatConfig has no authored combos.", config);
             return;
         }
 
@@ -108,7 +106,7 @@ public class PlayerCombat : MonoBehaviour
         consecutiveInvalidThreshold = config.consecutiveInvalidThreshold;
 
         inputBuffer.Initialize(activeComboInputWindow);
-        comboEvaluator.Initialize(config.recipes);
+        comboEvaluator.Initialize(config.combos);
         attackDash.Initialize(ownerBody);
         chaseTeleport.Initialize(ownerBody, playerColliders, chaseOffset, chaseDuration, chaseArcHeight);
         sequencer.Initialize(chaseTeleport, chaseDelay);
@@ -159,12 +157,6 @@ public class PlayerCombat : MonoBehaviour
         var indicator = attackDetector != null ? attackDetector.SphereIndicator : null;
         hitbox.Initialize(transform, hitMask, indicator);
         animationEventReceiver.Initialize(this, hitbox);
-
-        attackMap.Clear();
-        for (var i = 0; i < config.attacks.Length; i++)
-        {
-            attackMap[config.attacks[i].comboType] = config.attacks[i];
-        }
 
         hitbox.OnHitConfirmed += attackExecutor.HandleHitConfirmed;
         sequencer.OnSequenceReset += HandleSequenceReset;
@@ -315,29 +307,29 @@ public class PlayerCombat : MonoBehaviour
         consecutiveInvalidCount = 0;
         attackInput.ClearQueuedFollowUp();
 
-        if (!attackMap.TryGetValue(attackId, out var definition))
+        if (combatConfig == null || !combatConfig.combos.TryGetValue(attackId, out var comboData) || comboData == null)
         {
-            Debug.LogWarning($"No AttackDefinition for {attackId}");
+            Debug.LogWarning($"No ComboData for {attackId}");
             return;
         }
 
         stamina?.NotifySpend(input);
-        attackExecutor.ExecuteAttack(definition, attackId).Forget();
+        attackExecutor.ExecuteAttack(comboData, attackId).Forget();
     }
 
     bool PrepareAutoLockForAttack(ComboType comboType)
     {
-        if (!attackMap.TryGetValue(comboType, out var definition))
+        if (combatConfig == null || !combatConfig.combos.TryGetValue(comboType, out var comboData) || comboData == null)
         {
             return true;
         }
 
-        if (definition.useMoveInputDirection || definition.skipHitbox)
+        if (comboData.useMoveInputDirection || comboData.skipHitbox)
         {
             return true;
         }
 
-        var reach = CombatAutoLock.ComputeAttackReach(definition);
+        var reach = CombatAutoLock.ComputeAttackReach(comboData);
         if (!autoLock.TrySelectOrRetain(reach, out var lostPersistedTarget) && lostPersistedTarget)
         {
             TriggerHardComboBreak();
@@ -444,19 +436,19 @@ public class PlayerCombat : MonoBehaviour
         attackLockoutUntil = 0f;
     }
 
-    float ResolveComboInputWindow(AttackDefinition definition)
+    float ResolveComboInputWindow(ComboData comboData)
     {
-        if (definition.comboInputWindow > 0f)
+        if (comboData.comboInputWindow > 0f)
         {
-            return definition.comboInputWindow;
+            return comboData.comboInputWindow;
         }
 
         return combatConfig != null ? combatConfig.defaultComboResetWindow : 0.5f;
     }
 
-    void ApplyComboInputWindow(AttackDefinition definition)
+    void ApplyComboInputWindow(ComboData comboData)
     {
-        activeComboInputWindow = ResolveComboInputWindow(definition);
+        activeComboInputWindow = ResolveComboInputWindow(comboData);
         attackInput.SetComboInputWindow(activeComboInputWindow);
         inputBuffer.SetResetWindow(activeComboInputWindow);
     }

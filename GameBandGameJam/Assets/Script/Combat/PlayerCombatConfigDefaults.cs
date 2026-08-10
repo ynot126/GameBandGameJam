@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Builds the default recipe and attack tables for <see cref="PlayerCombatConfig"/>.
+/// Builds the default combo table for <see cref="PlayerCombatConfig"/>.
 /// Editor-only population; runtime reads the ScriptableObject asset.
 /// Hitbox / cancel frame windows are authored on Animation Events, not here.
 /// Animator state names live in <see cref="PlayerAnimationClips"/>.
@@ -20,86 +20,81 @@ public static class PlayerCombatConfigDefaults
         config.defaultComboResetWindow = NormalComboWindow;
         config.simultaneousInputWindow = 0.05f;
         config.consecutiveInvalidThreshold = 2;
-        config.recipes = BuildRecipes();
-        config.attacks = BuildAttacks();
+        config.combos = BuildCombos();
     }
 
-    public static EnumDictionary<ComboType, ComboRecipe> BuildRecipes()
+    public static EnumDictionary<ComboType, ComboData> BuildCombos()
     {
-        var recipes = new EnumDictionary<ComboType, ComboRecipe>();
-        SetRecipe(recipes, ComboType.Light, "Light", Repeat(AttackInputType.Light, 1));
-        SetRecipe(recipes, ComboType.Light1, "Light1", Repeat(AttackInputType.Light, 2));
-        SetRecipe(recipes, ComboType.Light2, "Light2", Repeat(AttackInputType.Light, 3));
-        SetRecipe(recipes, ComboType.Light3, "Light3", Repeat(AttackInputType.Light, 4));
-        SetRecipe(recipes, ComboType.Light4, "Light4", Repeat(AttackInputType.Light, 5));
-        SetRecipe(recipes, ComboType.Light5, "Light5", Repeat(AttackInputType.Light, 6));
-        SetRecipe(recipes, ComboType.LightFinisher, "Light Finisher", Repeat(AttackInputType.Light, 7));
+        var combos = new EnumDictionary<ComboType, ComboData>();
 
-        SetRecipe(recipes, ComboType.Heavy, "Heavy", Repeat(AttackInputType.Heavy, 1));
-        SetRecipe(recipes, ComboType.Heavy1, "Heavy1", Repeat(AttackInputType.Heavy, 2));
-        SetRecipe(recipes, ComboType.Heavy2, "Heavy2", Repeat(AttackInputType.Heavy, 3));
-        SetRecipe(recipes, ComboType.Heavy3, "Heavy3", Repeat(AttackInputType.Heavy, 4));
-        SetRecipe(recipes, ComboType.HeavyFinisher, "Heavy Finisher", Repeat(AttackInputType.Heavy, 5));
+        SetCombo(combos, ComboType.Light, "Light", Repeat(AttackInputType.Light, 1),
+            BuildLightAttack(step: 0, anchor: LightAnchorKind.None));
+        SetCombo(combos, ComboType.Light1, "Light1", Repeat(AttackInputType.Light, 2),
+            BuildLightAttack(step: 1, anchor: LightAnchorKind.None));
+        SetCombo(combos, ComboType.Light2, "Light2", Repeat(AttackInputType.Light, 3),
+            BuildLightAttack(step: 2, anchor: LightAnchorKind.First));
+        SetCombo(combos, ComboType.Light3, "Light3", Repeat(AttackInputType.Light, 4),
+            BuildLightAttack(step: 3, anchor: LightAnchorKind.None));
+        SetCombo(combos, ComboType.Light4, "Light4", Repeat(AttackInputType.Light, 5),
+            BuildLightAttack(step: 4, anchor: LightAnchorKind.None));
+        SetCombo(combos, ComboType.Light5, "Light5", Repeat(AttackInputType.Light, 6),
+            BuildLightAttack(step: 5, anchor: LightAnchorKind.Big));
+        SetCombo(combos, ComboType.LightFinisher, "Light Finisher", Repeat(AttackInputType.Light, 7),
+            BuildLightAttack(step: 6, anchor: LightAnchorKind.None, isFinisher: true));
 
-        SetRecipe(recipes, ComboType.LightBreakKick, "Light Break Kick",
-            AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy);
-        SetRecipe(recipes, ComboType.LightHeavyFinisher, "Light Heavy Finisher",
-            AttackInputType.Light, AttackInputType.Light, AttackInputType.Light,
-            AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy);
-        SetRecipe(recipes, ComboType.HeavySweepKick, "Heavy Sweep Kick",
-            AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light);
-        SetRecipe(recipes, ComboType.HeavyLightEnder, "Heavy Light Ender",
-            AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light);
+        SetCombo(combos, ComboType.Heavy, "Heavy", Repeat(AttackInputType.Heavy, 1),
+            BuildHeavyAttack(step: 0, anchor: HeavyAnchorKind.None));
+        SetCombo(combos, ComboType.Heavy1, "Heavy1", Repeat(AttackInputType.Heavy, 2),
+            BuildHeavyAttack(step: 1, anchor: HeavyAnchorKind.First));
+        SetCombo(combos, ComboType.Heavy2, "Heavy2", Repeat(AttackInputType.Heavy, 3),
+            BuildHeavyAttack(step: 2, anchor: HeavyAnchorKind.None));
+        SetCombo(combos, ComboType.Heavy3, "Heavy3", Repeat(AttackInputType.Heavy, 4),
+            BuildHeavyAttack(step: 3, anchor: HeavyAnchorKind.Big));
+        SetCombo(combos, ComboType.HeavyFinisher, "Heavy Finisher", Repeat(AttackInputType.Heavy, 5),
+            BuildHeavyAttack(step: 4, anchor: HeavyAnchorKind.None, isFinisher: true));
 
-        SetRecipe(recipes, ComboType.Dash, "Dash", AttackInputType.Dash);
+        SetCombo(combos, ComboType.LightBreakKick, "Light Break Kick",
+            new[] { AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy },
+            BuildLightBreakKick());
+        SetCombo(combos, ComboType.LightHeavyFinisher, "Light Heavy Finisher",
+            new[]
+            {
+                AttackInputType.Light, AttackInputType.Light, AttackInputType.Light,
+                AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy
+            },
+            BuildLightHeavyFinisher());
+        SetCombo(combos, ComboType.HeavySweepKick, "Heavy Sweep Kick",
+            new[] { AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light },
+            BuildHeavySweepKick());
+        SetCombo(combos, ComboType.HeavyLightEnder, "Heavy Light Ender",
+            new[]
+            {
+                AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy,
+                AttackInputType.Heavy, AttackInputType.Light
+            },
+            BuildHeavyLightEnder());
 
-        SetRecipe(recipes, ComboType.DashLight, "Dash Light", DashThen(AttackInputType.Light, 1));
-        SetRecipe(recipes, ComboType.DashLight1, "Dash Light1", DashThen(AttackInputType.Light, 2));
-        SetRecipe(recipes, ComboType.DashLight2, "Dash Light2", DashThen(AttackInputType.Light, 3));
-        SetRecipe(recipes, ComboType.DashLightFinisher, "Dash Light Finisher", DashThen(AttackInputType.Light, 4));
+        SetCombo(combos, ComboType.Dash, "Dash", new[] { AttackInputType.Dash }, BuildDashAttack());
 
-        SetRecipe(recipes, ComboType.DashHeavy, "Dash Heavy", DashThen(AttackInputType.Heavy, 1));
-        SetRecipe(recipes, ComboType.DashHeavy1, "Dash Heavy1", DashThen(AttackInputType.Heavy, 2));
-        SetRecipe(recipes, ComboType.DashHeavy2, "Dash Heavy2", DashThen(AttackInputType.Heavy, 3));
-        SetRecipe(recipes, ComboType.DashHeavyFinisher, "Dash Heavy Finisher", DashThen(AttackInputType.Heavy, 4));
-        return recipes;
-    }
+        SetCombo(combos, ComboType.DashLight, "Dash Light", DashThen(AttackInputType.Light, 1),
+            BuildDashChainAttack(LightBaseDamage, step: 0, isHeavy: false, isFinisher: false));
+        SetCombo(combos, ComboType.DashLight1, "Dash Light1", DashThen(AttackInputType.Light, 2),
+            BuildDashChainAttack(LightBaseDamage, step: 1, isHeavy: false, isFinisher: false));
+        SetCombo(combos, ComboType.DashLight2, "Dash Light2", DashThen(AttackInputType.Light, 3),
+            BuildDashChainAttack(LightBaseDamage, step: 2, isHeavy: false, isFinisher: false));
+        SetCombo(combos, ComboType.DashLightFinisher, "Dash Light Finisher", DashThen(AttackInputType.Light, 4),
+            BuildDashChainAttack(LightBaseDamage, step: 3, isHeavy: false, isFinisher: true));
 
-    public static AttackDefinition[] BuildAttacks()
-    {
-        return new[]
-        {
-            BuildLightAttack(ComboType.Light, step: 0, anchor: LightAnchorKind.None),
-            BuildLightAttack(ComboType.Light1, step: 1, anchor: LightAnchorKind.None),
-            BuildLightAttack(ComboType.Light2, step: 2, anchor: LightAnchorKind.First),
-            BuildLightAttack(ComboType.Light3, step: 3, anchor: LightAnchorKind.None),
-            BuildLightAttack(ComboType.Light4, step: 4, anchor: LightAnchorKind.None),
-            BuildLightAttack(ComboType.Light5, step: 5, anchor: LightAnchorKind.Big),
-            BuildLightAttack(ComboType.LightFinisher, step: 6, anchor: LightAnchorKind.None, isFinisher: true),
+        SetCombo(combos, ComboType.DashHeavy, "Dash Heavy", DashThen(AttackInputType.Heavy, 1),
+            BuildDashChainAttack(HeavyBaseDamage, step: 0, isHeavy: true, isFinisher: false));
+        SetCombo(combos, ComboType.DashHeavy1, "Dash Heavy1", DashThen(AttackInputType.Heavy, 2),
+            BuildDashChainAttack(HeavyBaseDamage, step: 1, isHeavy: true, isFinisher: false));
+        SetCombo(combos, ComboType.DashHeavy2, "Dash Heavy2", DashThen(AttackInputType.Heavy, 3),
+            BuildDashChainAttack(HeavyBaseDamage, step: 2, isHeavy: true, isFinisher: false));
+        SetCombo(combos, ComboType.DashHeavyFinisher, "Dash Heavy Finisher", DashThen(AttackInputType.Heavy, 4),
+            BuildDashChainAttack(HeavyBaseDamage, step: 3, isHeavy: true, isFinisher: true));
 
-            BuildHeavyAttack(ComboType.Heavy, step: 0, anchor: HeavyAnchorKind.None),
-            BuildHeavyAttack(ComboType.Heavy1, step: 1, anchor: HeavyAnchorKind.First),
-            BuildHeavyAttack(ComboType.Heavy2, step: 2, anchor: HeavyAnchorKind.None),
-            BuildHeavyAttack(ComboType.Heavy3, step: 3, anchor: HeavyAnchorKind.Big),
-            BuildHeavyAttack(ComboType.HeavyFinisher, step: 4, anchor: HeavyAnchorKind.None, isFinisher: true),
-
-            BuildLightBreakKick(),
-            BuildLightHeavyFinisher(),
-            BuildHeavySweepKick(),
-            BuildHeavyLightEnder(),
-
-            BuildDashAttack(),
-
-            BuildDashChainAttack(ComboType.DashLight, LightBaseDamage, step: 0, isHeavy: false, isFinisher: false),
-            BuildDashChainAttack(ComboType.DashLight1, LightBaseDamage, step: 1, isHeavy: false, isFinisher: false),
-            BuildDashChainAttack(ComboType.DashLight2, LightBaseDamage, step: 2, isHeavy: false, isFinisher: false),
-            BuildDashChainAttack(ComboType.DashLightFinisher, LightBaseDamage, step: 3, isHeavy: false, isFinisher: true),
-
-            BuildDashChainAttack(ComboType.DashHeavy, HeavyBaseDamage, step: 0, isHeavy: true, isFinisher: false),
-            BuildDashChainAttack(ComboType.DashHeavy1, HeavyBaseDamage, step: 1, isHeavy: true, isFinisher: false),
-            BuildDashChainAttack(ComboType.DashHeavy2, HeavyBaseDamage, step: 2, isHeavy: true, isFinisher: false),
-            BuildDashChainAttack(ComboType.DashHeavyFinisher, HeavyBaseDamage, step: 3, isHeavy: true, isFinisher: true)
-        };
+        return combos;
     }
 
     enum LightAnchorKind
@@ -116,8 +111,7 @@ public static class PlayerCombatConfigDefaults
         Big
     }
 
-    static AttackDefinition BuildLightAttack(
-        ComboType comboType,
+    static ComboData BuildLightAttack(
         int step,
         LightAnchorKind anchor,
         bool isFinisher = false)
@@ -161,9 +155,8 @@ public static class PlayerCombatConfigDefaults
             comboWindow = AnchorComboWindow;
         }
 
-        return new AttackDefinition
+        return new ComboData
         {
-            comboType = comboType,
             dashDistance = 0.5f,
             dashDuration = dashDuration,
             recoveryHoldDuration = recovery,
@@ -184,8 +177,7 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static AttackDefinition BuildHeavyAttack(
-        ComboType comboType,
+    static ComboData BuildHeavyAttack(
         int step,
         HeavyAnchorKind anchor,
         bool isFinisher = false)
@@ -210,9 +202,8 @@ public static class PlayerCombatConfigDefaults
             comboWindow = AnchorComboWindow;
         }
 
-        return new AttackDefinition
+        return new ComboData
         {
-            comboType = comboType,
             dashDistance = 2f,
             dashDuration = dashDuration,
             recoveryHoldDuration = recovery,
@@ -233,11 +224,10 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static AttackDefinition BuildLightBreakKick()
+    static ComboData BuildLightBreakKick()
     {
-        return new AttackDefinition
+        return new ComboData
         {
-            comboType = ComboType.LightBreakKick,
             dashDistance = 0.75f,
             dashDuration = 0.09f,
             recoveryHoldDuration = 1f,
@@ -256,11 +246,10 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static AttackDefinition BuildLightHeavyFinisher()
+    static ComboData BuildLightHeavyFinisher()
     {
-        return new AttackDefinition
+        return new ComboData
         {
-            comboType = ComboType.LightHeavyFinisher,
             dashDistance = 1f,
             dashDuration = 0.1f,
             recoveryHoldDuration = 1f,
@@ -279,11 +268,10 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static AttackDefinition BuildHeavySweepKick()
+    static ComboData BuildHeavySweepKick()
     {
-        return new AttackDefinition
+        return new ComboData
         {
-            comboType = ComboType.HeavySweepKick,
             dashDistance = 1.5f,
             dashDuration = 0.09f,
             recoveryHoldDuration = 1f,
@@ -302,11 +290,10 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static AttackDefinition BuildHeavyLightEnder()
+    static ComboData BuildHeavyLightEnder()
     {
-        return new AttackDefinition
+        return new ComboData
         {
-            comboType = ComboType.HeavyLightEnder,
             dashDistance = 0.6f,
             dashDuration = 0.06f,
             recoveryHoldDuration = 0.3f,
@@ -325,11 +312,10 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static AttackDefinition BuildDashAttack()
+    static ComboData BuildDashAttack()
     {
-        return new AttackDefinition
+        return new ComboData
         {
-            comboType = ComboType.Dash,
             dashDistance = 3f,
             dashDuration = 0.12f,
             recoveryHoldDuration = 0.35f,
@@ -347,8 +333,7 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static AttackDefinition BuildDashChainAttack(
-        ComboType comboType,
+    static ComboData BuildDashChainAttack(
         int baseDamage,
         int step,
         bool isHeavy,
@@ -359,9 +344,8 @@ public static class PlayerCombatConfigDefaults
         var hitStun = (isHeavy ? 0.2f : 0.12f) + step * 0.02f;
         var launch = (isHeavy ? 1.5f : 0.75f) + step * 0.15f;
 
-        return new AttackDefinition
+        return new ComboData
         {
-            comboType = comboType,
             dashDistance = isHeavy ? 2f : 0.5f,
             dashDuration = isHeavy ? 0.1f : 0.07f,
             recoveryHoldDuration = isFinisher ? 1f : 0.55f,
@@ -384,17 +368,16 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static void SetRecipe(
-        EnumDictionary<ComboType, ComboRecipe> recipes,
+    static void SetCombo(
+        EnumDictionary<ComboType, ComboData> combos,
         ComboType comboType,
         string name,
-        params AttackInputType[] sequence)
+        AttackInputType[] sequence,
+        ComboData data)
     {
-        recipes[comboType] = new ComboRecipe
-        {
-            name = name,
-            sequence = sequence
-        };
+        data.name = name;
+        data.sequence = sequence;
+        combos[comboType] = data;
     }
 
     static AttackInputType[] Repeat(AttackInputType input, int count)

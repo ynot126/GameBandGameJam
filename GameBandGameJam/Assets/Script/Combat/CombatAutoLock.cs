@@ -60,9 +60,9 @@ public sealed class CombatAutoLock
         LockedTarget = target;
     }
 
-    public static float ComputeAttackReach(AttackDefinition definition)
+    public static float ComputeAttackReach(ComboData comboData)
     {
-        return Mathf.Max(0f, definition.hitboxLocalOffset.z) + Mathf.Max(0f, definition.hitboxRadius);
+        return Mathf.Max(0f, comboData.hitboxLocalOffset.z) + Mathf.Max(0f, comboData.hitboxRadius);
     }
 
     /// <summary>

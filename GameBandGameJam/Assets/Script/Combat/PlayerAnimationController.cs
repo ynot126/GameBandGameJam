@@ -49,6 +49,16 @@ public class PlayerAnimationController : MonoBehaviour
         return duration;
     }
 
+    public void SetPlaybackSpeed(float speed)
+    {
+        if (!animator)
+        {
+            return;
+        }
+
+        animator.speed = Mathf.Max(0.01f, speed);
+    }
+
     void PlayState(string stateName)
     {
         if (!animator)

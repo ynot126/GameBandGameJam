@@ -27,6 +27,10 @@ public sealed class CombatAttackExecutor
     float cameraShakeStrength;
     float cameraShakeFrequency;
 
+    float attackSpeedMultiplier = 1f;
+    float damageMultiplier = 1f;
+    float dashDistanceMultiplier = 1f;
+
     CancellationTokenSource? attackCts;
     int attackGeneration;
     AttackDefinition? activeAttack;
@@ -98,6 +102,38 @@ public sealed class CombatAttackExecutor
     public void SetDamageNumberPrefab(DamageNumberVisual? numberPrefab)
     {
         damageNumberPrefab = numberPrefab;
+    }
+
+    public void SetAttackSpeedMultiplier(float multiplier)
+    {
+        attackSpeedMultiplier = Mathf.Max(0.01f, multiplier);
+    }
+
+    public void SetDamageMultiplier(float multiplier)
+    {
+        damageMultiplier = Mathf.Max(0f, multiplier);
+    }
+
+    public void SetDashDistanceMultiplier(float multiplier)
+    {
+        dashDistanceMultiplier = Mathf.Max(0f, multiplier);
+    }
+
+    float ScaleDuration(float duration)
+    {
+        return duration / attackSpeedMultiplier;
+    }
+
+    HitPayload BuildScaledPayload(in HitPayloadData payloadData)
+    {
+        var payload = payloadData.ToPayload();
+        if (payload.Damage <= 0)
+        {
+            return payload;
+        }
+
+        var scaledDamage = Mathf.Max(1, (int)Math.Round(payload.Damage * damageMultiplier, MidpointRounding.AwayFromZero));
+        return new HitPayload(scaledDamage, payload.HitStunDuration, payload.KnockbackType, payload.LaunchDistance);
     }
 
     public void ArmCameraShakeOnHit()
@@ -258,24 +294,26 @@ public sealed class CombatAttackExecutor
         if (!definition.skipHitbox)
         {
             hitbox.ConfigureShape(definition.hitboxRadius, definition.hitboxLocalOffset);
-            hitbox.BeginSwing(definition.payload.ToPayload());
+            hitbox.BeginSwing(BuildScaledPayload(definition.payload));
         }
 
-        var recoveryHold = definition.recoveryHoldDuration > 0f
+        var recoveryHold = ScaleDuration(definition.recoveryHoldDuration > 0f
             ? definition.recoveryHoldDuration
-            : 0.55f;
+            : 0.55f);
+        var dashDistance = definition.dashDistance * dashDistanceMultiplier;
+        var dashDuration = ScaleDuration(definition.dashDuration);
 
         try
         {
             if (alignToLock)
             {
                 await UniTask.WhenAll(
-                    attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token),
-                    facing.AlignToLockDuringStartupAsync(autoLock, definition.dashDuration, token));
+                    attackDash.DashAsync(dashDirection, dashDistance, dashDuration, token),
+                    facing.AlignToLockDuringStartupAsync(autoLock, dashDuration, token));
             }
             else
             {
-                await attackDash.DashAsync(dashDirection, definition.dashDistance, definition.dashDuration, token);
+                await attackDash.DashAsync(dashDirection, dashDistance, dashDuration, token);
             }
 
             phaseMachine.TryEnterActiveAfterStartup();
@@ -325,7 +363,7 @@ public sealed class CombatAttackExecutor
     async UniTask WaitForCancelWindowAsync(AttackId attackId, CancellationToken token)
     {
         var clipDuration = animationController.GetClipDuration(attackId);
-        var safetyTimeout = clipDuration > 0f ? clipDuration : 1.5f;
+        var safetyTimeout = ScaleDuration(clipDuration > 0f ? clipDuration : 1.5f);
         var gate = phaseMachine.CaptureCancelGate();
 
         var cancelOpened = UniTask.WaitUntil(
@@ -349,7 +387,7 @@ public sealed class CombatAttackExecutor
 
         try
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(0.75f), cancellationToken: token);
+            await UniTask.Delay(TimeSpan.FromSeconds(ScaleDuration(0.75f)), cancellationToken: token);
             if (generation != attackGeneration)
             {
                 return;
@@ -370,9 +408,9 @@ public sealed class CombatAttackExecutor
     {
         RestartAttackToken(out var token, out var generation);
 
-        var recoveryHold = activeAttack != null && activeAttack.recoveryHoldDuration > 0f
+        var recoveryHold = ScaleDuration(activeAttack != null && activeAttack.recoveryHoldDuration > 0f
             ? activeAttack.recoveryHoldDuration
-            : 0.55f;
+            : 0.55f);
         var lockoutDuration = activeAttack?.attackLockoutDuration ?? 0f;
 
         phaseMachine.EnterLaunch();

@@ -9,11 +9,13 @@ using UnityEngine;
 public sealed class CombatFacing
 {
     Transform owner = null!;
+    PlayerController playerController = null!;
     float lockRotationSpeed = 720f;
 
-    public void Initialize(Transform ownerTransform, float rotationSpeed)
+    public void Initialize(Transform ownerTransform, PlayerController controller, float rotationSpeed)
     {
         owner = ownerTransform;
+        playerController = controller;
         lockRotationSpeed = rotationSpeed;
     }
 
@@ -105,29 +107,7 @@ public sealed class CombatFacing
 
     bool TryGetHeldMoveInput(out Vector3 planarDirection)
     {
-        planarDirection = default;
-        var horizontal = Input.GetAxisRaw("Horizontal");
-        var vertical = Input.GetAxisRaw("Vertical");
-        if (Mathf.Abs(horizontal) < 0.01f && Mathf.Abs(vertical) < 0.01f)
-        {
-            return false;
-        }
-
-        planarDirection = GetCameraPlanarDirection(horizontal, vertical);
-        return planarDirection.sqrMagnitude > 0.001f;
-    }
-
-    static Vector3 GetCameraPlanarDirection(float horizontal, float vertical)
-    {
-        var cam = Camera.main;
-        if (cam == null)
-        {
-            return Flatten(new Vector3(horizontal, 0f, vertical));
-        }
-
-        var forward = Flatten(cam.transform.forward);
-        var right = Flatten(cam.transform.right);
-        return Flatten(forward * vertical + right * horizontal);
+        return playerController.TryGetMoveInputDirection(out planarDirection);
     }
 
     static bool TryGetFloorAim(out Vector3 point)

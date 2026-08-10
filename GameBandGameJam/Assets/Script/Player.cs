@@ -25,6 +25,9 @@ public class Player : MonoBehaviour, IHitable
     int currentHealth;
     int maxHealth;
     int damageTokenMultipler = 1;
+    float attackSpeedMultiplier = 1f;
+    float damageMultiplier = 1f;
+    float dashDistanceMultiplier = 1f;
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
 
@@ -51,6 +54,15 @@ public class Player : MonoBehaviour, IHitable
             animationController,
             damageNumberPrefab,
             layerMask);
+
+        UpdateSkillMultipliersAndEffects();
+    }
+
+    void UpdateSkillMultipliersAndEffects()
+    {
+        playerCombat.SetAttackSpeedMultiplier(attackSpeedMultiplier);
+        playerCombat.SetDamageMultiplier(damageMultiplier);
+        playerCombat.SetDashDistanceMultiplier(dashDistanceMultiplier);
     }
 
     public void TryDamage(int damage)
@@ -82,6 +94,29 @@ public class Player : MonoBehaviour, IHitable
     public void DoubleTakenDamage()
     {
         damageTokenMultipler++;
+    }
+
+    public void MultiplyAttackSpeed(float factor)
+    {
+        attackSpeedMultiplier *= factor;
+        UpdateSkillMultipliersAndEffects();
+    }
+
+    public void MultiplyDamage(float factor)
+    {
+        damageMultiplier *= factor;
+        playerCombat.SetDamageMultiplier(damageMultiplier);
+    }
+
+    public void InvertMovementAxes()
+    {
+        playerController.InvertMovementAxes();
+    }
+
+    public void MultiplyDashDistance(float factor)
+    {
+        dashDistanceMultiplier *= factor;
+        playerCombat.SetDashDistanceMultiplier(dashDistanceMultiplier);
     }
 
     void Death()

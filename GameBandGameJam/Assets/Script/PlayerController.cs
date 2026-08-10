@@ -5,6 +5,8 @@ public class PlayerController : MonoBehaviour
 {
     float movementSpeed;
     bool movementEnabled = true;
+    bool invertHorizontal;
+    bool invertVertical;
     Rigidbody body = null!;
 
     public void Initialize(int aMovementSpeed, Rigidbody aBody)
@@ -12,11 +14,48 @@ public class PlayerController : MonoBehaviour
         movementSpeed = aMovementSpeed;
         body = aBody;
         movementEnabled = true;
+        invertHorizontal = false;
+        invertVertical = false;
     }
 
     public void SetMovementEnabled(bool val)
     {
         movementEnabled = val;
+    }
+
+    public void InvertMovementAxes()
+    {
+        invertHorizontal = !invertHorizontal;
+        invertVertical = !invertVertical;
+    }
+
+    public bool TryGetMoveInputDirection(out Vector3 planarDirection)
+    {
+        planarDirection = default;
+        if (!TryGetRawMoveAxes(out var horizontalInput, out var verticalInput))
+        {
+            return false;
+        }
+
+        planarDirection = GetCameraPlanarDirection(horizontalInput, verticalInput);
+        return planarDirection.sqrMagnitude > 0.001f;
+    }
+
+    bool TryGetRawMoveAxes(out float horizontalInput, out float verticalInput)
+    {
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+        if (invertHorizontal)
+        {
+            horizontalInput = -horizontalInput;
+        }
+
+        if (invertVertical)
+        {
+            verticalInput = -verticalInput;
+        }
+
+        return !Mathf.Approximately(horizontalInput, 0f) || !Mathf.Approximately(verticalInput, 0f);
     }
 
     void Update()
@@ -26,9 +65,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        var horizontalInput = Input.GetAxisRaw("Horizontal");
-        var verticalInput = Input.GetAxisRaw("Vertical");
-        if (Mathf.Approximately(horizontalInput, 0f) && Mathf.Approximately(verticalInput, 0f))
+        if (!TryGetRawMoveAxes(out var horizontalInput, out var verticalInput))
         {
             return;
         }

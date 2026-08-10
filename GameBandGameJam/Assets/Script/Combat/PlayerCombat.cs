@@ -120,7 +120,7 @@ public class PlayerCombat : MonoBehaviour
             lockScoreDistanceWeight,
             lockScoreThreatWeight,
             lockScoreLowHealthWeight);
-        facing.Initialize(transform, lockRotationSpeed);
+        facing.Initialize(transform, playerController, lockRotationSpeed);
         attackInput.Initialize(
             lightKey,
             heavyKey,
@@ -484,6 +484,22 @@ public class PlayerCombat : MonoBehaviour
         consecutiveInvalidCount = 0;
         attackInput.ClearPending();
         attackExecutor.InterruptFromHit();
+    }
+
+    public void SetAttackSpeedMultiplier(float multiplier)
+    {
+        attackExecutor.SetAttackSpeedMultiplier(multiplier);
+        animationController.SetPlaybackSpeed(multiplier);
+    }
+
+    public void SetDamageMultiplier(float multiplier)
+    {
+        attackExecutor.SetDamageMultiplier(multiplier);
+    }
+
+    public void SetDashDistanceMultiplier(float multiplier)
+    {
+        attackExecutor.SetDashDistanceMultiplier(multiplier);
     }
 
     void HandleSequenceReset()

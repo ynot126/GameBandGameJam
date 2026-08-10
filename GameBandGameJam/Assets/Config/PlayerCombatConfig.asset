@@ -40,7 +40,7 @@ MonoBehaviour:
       value:
         name: Light
         sequence: 00000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -59,7 +59,7 @@ MonoBehaviour:
       value:
         name: Light1
         sequence: 0000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -78,26 +78,26 @@ MonoBehaviour:
       value:
         name: Light2
         sequence: 000000000000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.0805
         recoveryHoldDuration: 0.70000005
         attackLockoutDuration: 0
         comboInputWindow: 0.7
         hitboxRadius: 1
         hitboxLocalOffset: {x: 0, y: 0.8, z: 1.7}
-        triggersChaseSequence: 0
+        triggersChaseSequence: 1
         useMoveInputDirection: 0
         skipHitbox: 0
         payload:
           damage: 13
           hitStunDuration: 0.19999999
-          knockbackType: 0
-          launchDistance: 1.05
+          knockbackType: 1
+          launchDistance: 4
     - key: 4
       value:
         name: Light3
         sequence: 00000000000000000000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -116,7 +116,7 @@ MonoBehaviour:
       value:
         name: Light4
         sequence: 0000000000000000000000000000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -135,7 +135,7 @@ MonoBehaviour:
       value:
         name: Light5
         sequence: 000000000000000000000000000000000000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.08400001
         recoveryHoldDuration: 0.75
         attackLockoutDuration: 0
@@ -154,10 +154,10 @@ MonoBehaviour:
       value:
         name: Light Finisher
         sequence: 00000000000000000000000000000000000000000000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
-        recoveryHoldDuration: 1
-        attackLockoutDuration: 0.65
+        recoveryHoldDuration: 0.7
+        attackLockoutDuration: 0.4
         comboInputWindow: 0.5
         hitboxRadius: 1.5
         hitboxLocalOffset: {x: 0, y: 0.8, z: 2.1}
@@ -165,7 +165,7 @@ MonoBehaviour:
         useMoveInputDirection: 0
         skipHitbox: 0
         payload:
-          damage: 13
+          damage: 30
           hitStunDuration: 0.35
           knockbackType: 1
           launchDistance: 6
@@ -218,14 +218,14 @@ MonoBehaviour:
         comboInputWindow: 0.5
         hitboxRadius: 1
         hitboxLocalOffset: {x: 0, y: 0.8, z: 1.3}
-        triggersChaseSequence: 0
+        triggersChaseSequence: 1
         useMoveInputDirection: 0
         skipHitbox: 0
         payload:
           damage: 20
           hitStunDuration: 0.24000001
-          knockbackType: 0
-          launchDistance: 1.8
+          knockbackType: 1
+          launchDistance: 4
     - key: 23
       value:
         name: Heavy3
@@ -249,7 +249,7 @@ MonoBehaviour:
       value:
         name: Heavy4
         sequence: 
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.08
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -268,7 +268,7 @@ MonoBehaviour:
       value:
         name: Heavy5
         sequence: 
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.08
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -289,8 +289,8 @@ MonoBehaviour:
         sequence: 0100000001000000010000000100000001000000
         dashDistance: 2
         dashDuration: 0.1
-        recoveryHoldDuration: 1
-        attackLockoutDuration: 0.65
+        recoveryHoldDuration: 0.7
+        attackLockoutDuration: 0.4
         comboInputWindow: 0.5
         hitboxRadius: 1.5
         hitboxLocalOffset: {x: 0, y: 0.8, z: 2.1}
@@ -306,7 +306,7 @@ MonoBehaviour:
       value:
         name: Light Break Kick
         sequence: 00000000000000000000000001000000
-        dashDistance: 0.75
+        dashDistance: 2
         dashDuration: 0.09
         recoveryHoldDuration: 1
         attackLockoutDuration: 0.65
@@ -325,7 +325,7 @@ MonoBehaviour:
       value:
         name: Light Heavy Finisher
         sequence: 00000000000000000000000000000000000000000000000001000000
-        dashDistance: 1
+        dashDistance: 2
         dashDuration: 0.1
         recoveryHoldDuration: 1
         attackLockoutDuration: 0.65
@@ -344,40 +344,40 @@ MonoBehaviour:
       value:
         name: Heavy Sweep Kick
         sequence: 010000000100000000000000
-        dashDistance: 1.5
+        dashDistance: 2
         dashDuration: 0.09
-        recoveryHoldDuration: 1
-        attackLockoutDuration: 0.65
+        recoveryHoldDuration: 0.5
+        attackLockoutDuration: 0.4
         comboInputWindow: 0.5
-        hitboxRadius: 1
-        hitboxLocalOffset: {x: 0, y: 0.5, z: 2}
-        triggersChaseSequence: 1
+        hitboxRadius: 4
+        hitboxLocalOffset: {x: 0, y: 0.5, z: 1.7}
+        triggersChaseSequence: 0
         useMoveInputDirection: 0
         skipHitbox: 0
         payload:
           damage: 24
-          hitStunDuration: 0.38
-          knockbackType: 1
+          hitStunDuration: 2
+          knockbackType: 0
           launchDistance: 5.5
     - key: 43
       value:
         name: Heavy Light Ender
         sequence: 0100000001000000010000000100000000000000
-        dashDistance: 0.6
+        dashDistance: 2
         dashDuration: 0.06
         recoveryHoldDuration: 0.3
         attackLockoutDuration: 0
         comboInputWindow: 0.5
         hitboxRadius: 1
         hitboxLocalOffset: {x: 0, y: 0.8, z: 1.75}
-        triggersChaseSequence: 0
+        triggersChaseSequence: 1
         useMoveInputDirection: 0
         skipHitbox: 0
         payload:
           damage: 12
           hitStunDuration: 0.18
-          knockbackType: 0
-          launchDistance: 1.2
+          knockbackType: 1
+          launchDistance: 4
     - key: 101
       value:
         name: Dash
@@ -401,7 +401,7 @@ MonoBehaviour:
       value:
         name: Dash Light
         sequence: 0200000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -420,7 +420,7 @@ MonoBehaviour:
       value:
         name: Dash Light1
         sequence: 020000000000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -439,7 +439,7 @@ MonoBehaviour:
       value:
         name: Dash Light2
         sequence: 02000000000000000000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
         recoveryHoldDuration: 0.55
         attackLockoutDuration: 0
@@ -458,7 +458,7 @@ MonoBehaviour:
       value:
         name: Dash Light Finisher
         sequence: 0200000000000000000000000000000000000000
-        dashDistance: 0.5
+        dashDistance: 2
         dashDuration: 0.07
         recoveryHoldDuration: 1
         attackLockoutDuration: 0.65

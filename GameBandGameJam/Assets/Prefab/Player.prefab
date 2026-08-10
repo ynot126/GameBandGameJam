@@ -166,7 +166,7 @@ MonoBehaviour:
   cameraShakeStrength: 0.3
   cameraShakeFrequency: 25
   impactFrameParticleConfig: {fileID: 11400000, guid: 28b9f8b09ab7f5e46aff8fffb290384b, type: 2}
-  lockConeDegrees: 90
+  lockConeDegrees: 270
   lockSnapMargin: 4
   lockPersistenceRange: 6
   lockRotationSpeed: 720

@@ -35,12 +35,6 @@ public class PlayerCombatConfig : ScriptableObject
             PlayerCombatConfigDefaults.ApplyTo(this);
         }
     }
-
-    [ContextMenu("Apply Default Combat Data")]
-    void ApplyDefaultsInEditor()
-    {
-        PlayerCombatConfigDefaults.ApplyTo(this);
-        UnityEditor.EditorUtility.SetDirty(this);
-    }
+    
 #endif
 }

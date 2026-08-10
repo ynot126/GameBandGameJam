@@ -4,19 +4,35 @@ using System.Collections.Generic;
 
 public sealed class ComboEvaluator
 {
-    ComboRecipe[] recipes = Array.Empty<ComboRecipe>();
+    (ComboType attackId, ComboRecipe recipe)[] recipes = Array.Empty<(ComboType, ComboRecipe)>();
 
-    public void Initialize(ComboRecipe[] comboRecipes)
+    public void Initialize(EnumDictionary<ComboType, ComboRecipe> comboRecipes)
     {
-        if (comboRecipes == null || comboRecipes.Length == 0)
+        if (comboRecipes == null || comboRecipes.Count == 0)
         {
-            recipes = Array.Empty<ComboRecipe>();
+            recipes = Array.Empty<(ComboType, ComboRecipe)>();
             return;
         }
 
-        recipes = new ComboRecipe[comboRecipes.Length];
-        Array.Copy(comboRecipes, recipes, comboRecipes.Length);
-        Array.Sort(recipes, (a, b) => b.sequence.Length.CompareTo(a.sequence.Length));
+        var authored = new List<(ComboType attackId, ComboRecipe recipe)>(comboRecipes.Count);
+        foreach (var pair in comboRecipes)
+        {
+            if (pair.Key == ComboType.None)
+            {
+                continue;
+            }
+
+            var recipe = pair.Value;
+            if (recipe?.sequence == null || recipe.sequence.Length == 0)
+            {
+                continue;
+            }
+
+            authored.Add((pair.Key, recipe));
+        }
+
+        recipes = authored.ToArray();
+        Array.Sort(recipes, (a, b) => b.recipe.sequence.Length.CompareTo(a.recipe.sequence.Length));
     }
 
     /// <summary>
@@ -24,32 +40,29 @@ public sealed class ComboEvaluator
     /// buffer is also a prefix of a longer recipe, returns false so the caller can wait.
     /// Combo cancel-chains should pass <paramref name="forceCommit"/> true so each step fires.
     /// </summary>
-    public bool TryResolve(IReadOnlyList<AttackInputType> buffer, bool forceCommit, out AttackId attackId)
+    public bool TryResolve(IReadOnlyList<AttackInputType> buffer, bool forceCommit, out ComboType comboType)
     {
-        attackId = AttackId.None;
+        comboType = ComboType.None;
         if (buffer.Count == 0 || recipes.Length == 0)
         {
             return false;
         }
 
-        ComboRecipe? exactMatch = null;
+        ComboType? exactMatch = null;
         var isPrefixOfLonger = false;
 
         for (var i = 0; i < recipes.Length; i++)
         {
-            var recipe = recipes[i];
-            if (recipe.sequence == null || recipe.sequence.Length == 0)
+            var entry = recipes[i];
+            var sequence = entry.recipe.sequence;
+
+            if (IsExactMatch(buffer, sequence))
             {
+                exactMatch ??= entry.attackId;
                 continue;
             }
 
-            if (IsExactMatch(buffer, recipe.sequence))
-            {
-                exactMatch ??= recipe;
-                continue;
-            }
-
-            if (IsPrefix(buffer, recipe.sequence))
+            if (IsPrefix(buffer, sequence))
             {
                 isPrefixOfLonger = true;
             }
@@ -65,8 +78,8 @@ public sealed class ComboEvaluator
             return false;
         }
 
-        attackId = exactMatch.attackId;
-        return attackId != AttackId.None;
+        comboType = exactMatch.Value;
+        return comboType != ComboType.None;
     }
 
     static bool IsExactMatch(IReadOnlyList<AttackInputType> buffer, AttackInputType[] recipe)

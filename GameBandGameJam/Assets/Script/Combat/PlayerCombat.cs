@@ -58,7 +58,7 @@ public class PlayerCombat : MonoBehaviour
     readonly CombatFacing facing = new();
     readonly CombatAttackInput attackInput = new();
     readonly CombatAttackExecutor attackExecutor = new();
-    readonly Dictionary<AttackId, AttackDefinition> attackMap = new();
+    readonly Dictionary<ComboType, AttackDefinition> attackMap = new();
 
     PlayerCombatConfig? combatConfig;
     float activeComboInputWindow = 0.5f;
@@ -71,7 +71,7 @@ public class PlayerCombat : MonoBehaviour
     public bool IsAttackLockedOut => Time.time < attackLockoutUntil;
     public bool IsHardBreakRecovery => phaseMachine.IsHardBreak;
 
-    public event Action<AttackId>? OnAttackExecuted;
+    public event Action<ComboType>? OnAttackExecuted;
     public event Action? OnCombatReset;
     public event Action? OnHardComboBreak;
 
@@ -84,7 +84,7 @@ public class PlayerCombat : MonoBehaviour
         DamageNumberVisual? numberPrefab,
         LayerMask entityMask)
     {
-        if (config.recipes.Length == 0 || config.attacks.Length == 0)
+        if (!config.HasAuthoredRecipes() || config.attacks.Length == 0)
         {
             Debug.LogError("PlayerCombat.Initialize: PlayerCombatConfig has no recipes or attacks.", config);
             return;
@@ -160,7 +160,7 @@ public class PlayerCombat : MonoBehaviour
         attackMap.Clear();
         for (var i = 0; i < config.attacks.Length; i++)
         {
-            attackMap[config.attacks[i].attackId] = config.attacks[i];
+            attackMap[config.attacks[i].comboType] = config.attacks[i];
         }
 
         hitbox.OnHitConfirmed += attackExecutor.HandleHitConfirmed;
@@ -321,9 +321,9 @@ public class PlayerCombat : MonoBehaviour
         attackExecutor.ExecuteAttack(definition, attackId).Forget();
     }
 
-    bool PrepareAutoLockForAttack(AttackId attackId)
+    bool PrepareAutoLockForAttack(ComboType comboType)
     {
-        if (!attackMap.TryGetValue(attackId, out var definition))
+        if (!attackMap.TryGetValue(comboType, out var definition))
         {
             return true;
         }
@@ -343,25 +343,25 @@ public class PlayerCombat : MonoBehaviour
         return true;
     }
 
-    bool TryResolveRecipe(AttackInputType input, out AttackId attackId)
+    bool TryResolveRecipe(AttackInputType input, out ComboType comboType)
     {
-        attackId = AttackId.None;
+        comboType = ComboType.None;
         var time = Time.time;
 
         if (input == AttackInputType.Dash)
         {
             inputBuffer.ReplaceWith(input, time);
-            return comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out attackId);
+            return comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out comboType);
         }
 
         inputBuffer.Append(input, time);
-        if (comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out attackId))
+        if (comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out comboType))
         {
             return true;
         }
 
         inputBuffer.ReplaceWith(input, time);
-        return comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out attackId);
+        return comboEvaluator.TryResolve(inputBuffer.Sequence, forceCommit: true, out comboType);
     }
 
     bool TryConsumeQueuedFollowUp()

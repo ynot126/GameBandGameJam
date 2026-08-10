@@ -16,83 +16,121 @@ MonoBehaviour:
   simultaneousInputWindow: 0.05
   consecutiveInvalidThreshold: 2
   recipes:
-  - name: Light
-    sequence: 00000000
-    attackId: 1
-  - name: Light1
-    sequence: 0000000000000000
-    attackId: 2
-  - name: Light2
-    sequence: 000000000000000000000000
-    attackId: 3
-  - name: Light3
-    sequence: 00000000000000000000000000000000
-    attackId: 4
-  - name: Light4
-    sequence: 0000000000000000000000000000000000000000
-    attackId: 5
-  - name: Light5
-    sequence: 000000000000000000000000000000000000000000000000
-    attackId: 6
-  - name: Light Finisher
-    sequence: 00000000000000000000000000000000000000000000000000000000
-    attackId: 7
-  - name: Heavy
-    sequence: 01000000
-    attackId: 20
-  - name: Heavy1
-    sequence: 0100000001000000
-    attackId: 21
-  - name: Heavy2
-    sequence: 010000000100000001000000
-    attackId: 22
-  - name: Heavy3
-    sequence: 01000000010000000100000001000000
-    attackId: 23
-  - name: Heavy Finisher
-    sequence: 0100000001000000010000000100000001000000
-    attackId: 26
-  - name: Light Break Kick
-    sequence: 00000000000000000000000001000000
-    attackId: 40
-  - name: Light Heavy Finisher
-    sequence: 00000000000000000000000000000000000000000000000001000000
-    attackId: 41
-  - name: Heavy Sweep Kick
-    sequence: 010000000100000000000000
-    attackId: 42
-  - name: Heavy Light Ender
-    sequence: 0100000001000000010000000100000000000000
-    attackId: 43
-  - name: Dash
-    sequence: 02000000
-    attackId: 101
-  - name: Dash Light
-    sequence: 0200000000000000
-    attackId: 102
-  - name: Dash Light1
-    sequence: 020000000000000000000000
-    attackId: 103
-  - name: Dash Light2
-    sequence: 02000000000000000000000000000000
-    attackId: 104
-  - name: Dash Light Finisher
-    sequence: 0200000000000000000000000000000000000000
-    attackId: 106
-  - name: Dash Heavy
-    sequence: 0200000001000000
-    attackId: 121
-  - name: Dash Heavy1
-    sequence: 020000000100000001000000
-    attackId: 122
-  - name: Dash Heavy2
-    sequence: 02000000010000000100000001000000
-    attackId: 123
-  - name: Dash Heavy Finisher
-    sequence: 0200000001000000010000000100000001000000
-    attackId: 125
+    pairs:
+    - key: 0
+      value:
+        name: 
+        sequence: 
+    - key: 1
+      value:
+        name: Light
+        sequence: 00000000
+    - key: 2
+      value:
+        name: Light1
+        sequence: 0000000000000000
+    - key: 3
+      value:
+        name: Light2
+        sequence: 000000000000000000000000
+    - key: 4
+      value:
+        name: Light3
+        sequence: 00000000000000000000000000000000
+    - key: 5
+      value:
+        name: Light4
+        sequence: 0000000000000000000000000000000000000000
+    - key: 6
+      value:
+        name: Light5
+        sequence: 000000000000000000000000000000000000000000000000
+    - key: 7
+      value:
+        name: Light Finisher
+        sequence: 00000000000000000000000000000000000000000000000000000000
+    - key: 20
+      value:
+        name: Heavy
+        sequence: 01000000
+    - key: 21
+      value:
+        name: Heavy1
+        sequence: 0100000001000000
+    - key: 22
+      value:
+        name: Heavy2
+        sequence: 010000000100000001000000
+    - key: 23
+      value:
+        name: Heavy3
+        sequence: 01000000010000000100000001000000
+    - key: 24
+      value:
+        name: Heavy4
+        sequence: 0100000001000000010000000100000001000000
+    - key: 25
+      value:
+        name: Heavy5
+        sequence: 
+    - key: 26
+      value:
+        name: Heavy Finisher
+        sequence: 0100000001000000010000000100000001000000
+    - key: 40
+      value:
+        name: Light Break Kick
+        sequence: 00000000000000000000000001000000
+    - key: 41
+      value:
+        name: Light Heavy Finisher
+        sequence: 00000000000000000000000000000000000000000000000001000000
+    - key: 42
+      value:
+        name: Heavy Sweep Kick
+        sequence: 010000000100000000000000
+    - key: 43
+      value:
+        name: Heavy Light Ender
+        sequence: 0100000001000000010000000100000000000000
+    - key: 101
+      value:
+        name: Dash
+        sequence: 02000000
+    - key: 102
+      value:
+        name: Dash Light
+        sequence: 0200000000000000
+    - key: 103
+      value:
+        name: Dash Light1
+        sequence: 020000000000000000000000
+    - key: 104
+      value:
+        name: Dash Light2
+        sequence: 02000000000000000000000000000000
+    - key: 106
+      value:
+        name: Dash Light Finisher
+        sequence: 0200000000000000000000000000000000000000
+    - key: 121
+      value:
+        name: Dash Heavy
+        sequence: 0200000001000000
+    - key: 122
+      value:
+        name: Dash Heavy1
+        sequence: 020000000100000001000000
+    - key: 123
+      value:
+        name: Dash Heavy2
+        sequence: 02000000010000000100000001000000
+    - key: 125
+      value:
+        name: Dash Heavy Finisher
+        sequence: 0200000001000000010000000100000001000000
   attacks:
-  - attackId: 1
+  - comboType: 1
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 0.55
@@ -108,7 +146,7 @@ MonoBehaviour:
       hitStunDuration: 0.12
       knockbackType: 0
       launchDistance: 0.75
-  - attackId: 2
+  - comboType: 2
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 0.55
@@ -124,7 +162,7 @@ MonoBehaviour:
       hitStunDuration: 0.14
       knockbackType: 0
       launchDistance: 0.9
-  - attackId: 3
+  - comboType: 3
     dashDistance: 0.5
     dashDuration: 0.0805
     recoveryHoldDuration: 0.7
@@ -140,7 +178,7 @@ MonoBehaviour:
       hitStunDuration: 0.19999999
       knockbackType: 1
       launchDistance: 4
-  - attackId: 4
+  - comboType: 4
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 0.55
@@ -156,7 +194,7 @@ MonoBehaviour:
       hitStunDuration: 0.17999999
       knockbackType: 0
       launchDistance: 1.2
-  - attackId: 5
+  - comboType: 5
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 0.55
@@ -172,7 +210,7 @@ MonoBehaviour:
       hitStunDuration: 0.19999999
       knockbackType: 0
       launchDistance: 1.35
-  - attackId: 6
+  - comboType: 6
     dashDistance: 0.5
     dashDuration: 0.08400001
     recoveryHoldDuration: 0.75
@@ -188,7 +226,7 @@ MonoBehaviour:
       hitStunDuration: 0.28
       knockbackType: 0
       launchDistance: 1.5
-  - attackId: 7
+  - comboType: 7
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 1
@@ -204,7 +242,7 @@ MonoBehaviour:
       hitStunDuration: 0.35
       knockbackType: 1
       launchDistance: 4
-  - attackId: 20
+  - comboType: 20
     dashDistance: 2
     dashDuration: 0.1
     recoveryHoldDuration: 0.55
@@ -220,7 +258,7 @@ MonoBehaviour:
       hitStunDuration: 0.2
       knockbackType: 0
       launchDistance: 1.5
-  - attackId: 21
+  - comboType: 21
     dashDistance: 2
     dashDuration: 0.1
     recoveryHoldDuration: 0.65000004
@@ -236,7 +274,7 @@ MonoBehaviour:
       hitStunDuration: 0.22
       knockbackType: 0
       launchDistance: 1.65
-  - attackId: 22
+  - comboType: 22
     dashDistance: 2
     dashDuration: 0.1
     recoveryHoldDuration: 0.55
@@ -252,7 +290,7 @@ MonoBehaviour:
       hitStunDuration: 0.24000001
       knockbackType: 1
       launchDistance: 4
-  - attackId: 23
+  - comboType: 23
     dashDistance: 2
     dashDuration: 0.11000001
     recoveryHoldDuration: 0.70000005
@@ -268,7 +306,7 @@ MonoBehaviour:
       hitStunDuration: 0.26
       knockbackType: 0
       launchDistance: 1.95
-  - attackId: 26
+  - comboType: 26
     dashDistance: 2
     dashDuration: 0.1
     recoveryHoldDuration: 1
@@ -284,7 +322,7 @@ MonoBehaviour:
       hitStunDuration: 0.35
       knockbackType: 1
       launchDistance: 6
-  - attackId: 40
+  - comboType: 40
     dashDistance: 0.75
     dashDuration: 0.09
     recoveryHoldDuration: 1
@@ -300,7 +338,7 @@ MonoBehaviour:
       hitStunDuration: 0.35
       knockbackType: 0
       launchDistance: 5
-  - attackId: 41
+  - comboType: 41
     dashDistance: 1
     dashDuration: 0.1
     recoveryHoldDuration: 1
@@ -316,7 +354,7 @@ MonoBehaviour:
       hitStunDuration: 0.4
       knockbackType: 0
       launchDistance: 6.5
-  - attackId: 42
+  - comboType: 42
     dashDistance: 1.5
     dashDuration: 0.09
     recoveryHoldDuration: 1
@@ -332,7 +370,7 @@ MonoBehaviour:
       hitStunDuration: 0.38
       knockbackType: 0
       launchDistance: 5.5
-  - attackId: 43
+  - comboType: 43
     dashDistance: 0.6
     dashDuration: 0.06
     recoveryHoldDuration: 0.3
@@ -348,7 +386,7 @@ MonoBehaviour:
       hitStunDuration: 0.18
       knockbackType: 0
       launchDistance: 1.2
-  - attackId: 101
+  - comboType: 101
     dashDistance: 3
     dashDuration: 0.12
     recoveryHoldDuration: 0.35
@@ -364,7 +402,7 @@ MonoBehaviour:
       hitStunDuration: 0
       knockbackType: 0
       launchDistance: 0
-  - attackId: 102
+  - comboType: 102
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 0.55
@@ -380,7 +418,7 @@ MonoBehaviour:
       hitStunDuration: 0.12
       knockbackType: 0
       launchDistance: 0.75
-  - attackId: 103
+  - comboType: 103
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 0.55
@@ -396,7 +434,7 @@ MonoBehaviour:
       hitStunDuration: 0.14
       knockbackType: 0
       launchDistance: 0.9
-  - attackId: 104
+  - comboType: 104
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 0.55
@@ -412,7 +450,7 @@ MonoBehaviour:
       hitStunDuration: 0.16
       knockbackType: 0
       launchDistance: 1.05
-  - attackId: 106
+  - comboType: 106
     dashDistance: 0.5
     dashDuration: 0.07
     recoveryHoldDuration: 1
@@ -428,7 +466,7 @@ MonoBehaviour:
       hitStunDuration: 0.35
       knockbackType: 1
       launchDistance: 6
-  - attackId: 121
+  - comboType: 121
     dashDistance: 2
     dashDuration: 0.1
     recoveryHoldDuration: 0.55
@@ -444,7 +482,7 @@ MonoBehaviour:
       hitStunDuration: 0.2
       knockbackType: 0
       launchDistance: 1.5
-  - attackId: 122
+  - comboType: 122
     dashDistance: 2
     dashDuration: 0.1
     recoveryHoldDuration: 0.55
@@ -460,7 +498,7 @@ MonoBehaviour:
       hitStunDuration: 0.22
       knockbackType: 0
       launchDistance: 1.65
-  - attackId: 123
+  - comboType: 123
     dashDistance: 2
     dashDuration: 0.1
     recoveryHoldDuration: 0.55
@@ -476,7 +514,7 @@ MonoBehaviour:
       hitStunDuration: 0.24000001
       knockbackType: 0
       launchDistance: 1.8
-  - attackId: 125
+  - comboType: 125
     dashDistance: 2
     dashDuration: 0.1
     recoveryHoldDuration: 1

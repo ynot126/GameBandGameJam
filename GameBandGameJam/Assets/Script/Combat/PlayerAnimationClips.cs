@@ -68,39 +68,39 @@ public static class PlayerAnimationClips
     public const float DashHeavy2Duration = 0.86f;
     public const float DashHeavyFinisherDuration = 1.1f;
 
-    static readonly Dictionary<AttackId, (string Name, float Duration)> ClipsByAttackId = new()
+    static readonly Dictionary<ComboType, (string Name, float Duration)> ClipsByAttackId = new()
     {
-        { AttackId.Light, (Light, LightDuration) },
-        { AttackId.Light1, (Light1, Light1Duration) },
+        { ComboType.Light, (Light, LightDuration) },
+        { ComboType.Light1, (Light1, Light1Duration) },
         // Rhythm anchors: state names must match the Player Animator controller.
-        { AttackId.Light2, (KickPause, KickPauseDuration) },
-        { AttackId.Light3, (Light3, Light3Duration) },
-        { AttackId.Light4, (Light4, Light4Duration) },
-        { AttackId.Light5, (PunchPause, PunchPauseDuration) },
-        { AttackId.LightFinisher, (LightFinisher, LightFinisherDuration) },
-        { AttackId.Heavy, (Heavy, HeavyDuration) },
-        { AttackId.Heavy1, (PunchPause2, PunchPause2Duration) },
-        { AttackId.Heavy2, (Heavy2, Heavy2Duration) },
-        { AttackId.Heavy3, (Heavy3, Heavy3Duration) },
-        { AttackId.HeavyFinisher, (HeavyFinisher, HeavyFinisherDuration) },
-        { AttackId.LightBreakKick, (KickPause, KickPauseDuration) },
-        { AttackId.LightHeavyFinisher, (PunchPause, PunchPauseDuration) },
-        { AttackId.HeavySweepKick, (KickPause, KickPauseDuration) },
-        { AttackId.HeavyLightEnder, (Light, LightDuration) },
-        { AttackId.Dash, (Dash, DashDuration) },
-        { AttackId.DashLight, (DashLight, DashLightDuration) },
-        { AttackId.DashLight1, (DashLight1, DashLight1Duration) },
-        { AttackId.DashLight2, (DashLight2, DashLight2Duration) },
-        { AttackId.DashLightFinisher, (DashLightFinisher, DashLightFinisherDuration) },
-        { AttackId.DashHeavy, (DashHeavy, DashHeavyDuration) },
-        { AttackId.DashHeavy1, (DashHeavy1, DashHeavy1Duration) },
-        { AttackId.DashHeavy2, (DashHeavy2, DashHeavy2Duration) },
-        { AttackId.DashHeavyFinisher, (DashHeavyFinisher, DashHeavyFinisherDuration) },
+        { ComboType.Light2, (KickPause, KickPauseDuration) },
+        { ComboType.Light3, (Light3, Light3Duration) },
+        { ComboType.Light4, (Light4, Light4Duration) },
+        { ComboType.Light5, (PunchPause, PunchPauseDuration) },
+        { ComboType.LightFinisher, (LightFinisher, LightFinisherDuration) },
+        { ComboType.Heavy, (Heavy, HeavyDuration) },
+        { ComboType.Heavy1, (PunchPause2, PunchPause2Duration) },
+        { ComboType.Heavy2, (Heavy2, Heavy2Duration) },
+        { ComboType.Heavy3, (Heavy3, Heavy3Duration) },
+        { ComboType.HeavyFinisher, (HeavyFinisher, HeavyFinisherDuration) },
+        { ComboType.LightBreakKick, (KickPause, KickPauseDuration) },
+        { ComboType.LightHeavyFinisher, (PunchPause, PunchPauseDuration) },
+        { ComboType.HeavySweepKick, (KickPause, KickPauseDuration) },
+        { ComboType.HeavyLightEnder, (Light, LightDuration) },
+        { ComboType.Dash, (Dash, DashDuration) },
+        { ComboType.DashLight, (DashLight, DashLightDuration) },
+        { ComboType.DashLight1, (DashLight1, DashLight1Duration) },
+        { ComboType.DashLight2, (DashLight2, DashLight2Duration) },
+        { ComboType.DashLightFinisher, (DashLightFinisher, DashLightFinisherDuration) },
+        { ComboType.DashHeavy, (DashHeavy, DashHeavyDuration) },
+        { ComboType.DashHeavy1, (DashHeavy1, DashHeavy1Duration) },
+        { ComboType.DashHeavy2, (DashHeavy2, DashHeavy2Duration) },
+        { ComboType.DashHeavyFinisher, (DashHeavyFinisher, DashHeavyFinisherDuration) },
     };
 
-    public static bool TryGetClip(AttackId attackId, out string name, out float duration)
+    public static bool TryGetClip(ComboType comboType, out string name, out float duration)
     {
-        if (ClipsByAttackId.TryGetValue(attackId, out var clip))
+        if (ClipsByAttackId.TryGetValue(comboType, out var clip))
         {
             name = clip.Name;
             duration = clip.Duration;
@@ -109,7 +109,7 @@ public static class PlayerAnimationClips
 
         name = string.Empty;
         duration = 0f;
-        Debug.LogWarning($"No animation clip mapping for AttackId.{attackId}");
+        Debug.LogWarning($"No animation clip mapping for AttackId.{comboType}");
         return false;
     }
 }

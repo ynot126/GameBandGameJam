@@ -24,65 +24,64 @@ public static class PlayerCombatConfigDefaults
         config.attacks = BuildAttacks();
     }
 
-    public static ComboRecipe[] BuildRecipes()
+    public static EnumDictionary<ComboType, ComboRecipe> BuildRecipes()
     {
-        return new[]
-        {
-            CreateRecipe("Light", AttackId.Light, Repeat(AttackInputType.Light, 1)),
-            CreateRecipe("Light1", AttackId.Light1, Repeat(AttackInputType.Light, 2)),
-            CreateRecipe("Light2", AttackId.Light2, Repeat(AttackInputType.Light, 3)),
-            CreateRecipe("Light3", AttackId.Light3, Repeat(AttackInputType.Light, 4)),
-            CreateRecipe("Light4", AttackId.Light4, Repeat(AttackInputType.Light, 5)),
-            CreateRecipe("Light5", AttackId.Light5, Repeat(AttackInputType.Light, 6)),
-            CreateRecipe("Light Finisher", AttackId.LightFinisher, Repeat(AttackInputType.Light, 7)),
+        var recipes = new EnumDictionary<ComboType, ComboRecipe>();
+        SetRecipe(recipes, ComboType.Light, "Light", Repeat(AttackInputType.Light, 1));
+        SetRecipe(recipes, ComboType.Light1, "Light1", Repeat(AttackInputType.Light, 2));
+        SetRecipe(recipes, ComboType.Light2, "Light2", Repeat(AttackInputType.Light, 3));
+        SetRecipe(recipes, ComboType.Light3, "Light3", Repeat(AttackInputType.Light, 4));
+        SetRecipe(recipes, ComboType.Light4, "Light4", Repeat(AttackInputType.Light, 5));
+        SetRecipe(recipes, ComboType.Light5, "Light5", Repeat(AttackInputType.Light, 6));
+        SetRecipe(recipes, ComboType.LightFinisher, "Light Finisher", Repeat(AttackInputType.Light, 7));
 
-            CreateRecipe("Heavy", AttackId.Heavy, Repeat(AttackInputType.Heavy, 1)),
-            CreateRecipe("Heavy1", AttackId.Heavy1, Repeat(AttackInputType.Heavy, 2)),
-            CreateRecipe("Heavy2", AttackId.Heavy2, Repeat(AttackInputType.Heavy, 3)),
-            CreateRecipe("Heavy3", AttackId.Heavy3, Repeat(AttackInputType.Heavy, 4)),
-            CreateRecipe("Heavy Finisher", AttackId.HeavyFinisher, Repeat(AttackInputType.Heavy, 5)),
+        SetRecipe(recipes, ComboType.Heavy, "Heavy", Repeat(AttackInputType.Heavy, 1));
+        SetRecipe(recipes, ComboType.Heavy1, "Heavy1", Repeat(AttackInputType.Heavy, 2));
+        SetRecipe(recipes, ComboType.Heavy2, "Heavy2", Repeat(AttackInputType.Heavy, 3));
+        SetRecipe(recipes, ComboType.Heavy3, "Heavy3", Repeat(AttackInputType.Heavy, 4));
+        SetRecipe(recipes, ComboType.HeavyFinisher, "Heavy Finisher", Repeat(AttackInputType.Heavy, 5));
 
-            CreateRecipe("Light Break Kick", AttackId.LightBreakKick,
-                AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy),
-            CreateRecipe("Light Heavy Finisher", AttackId.LightHeavyFinisher,
-                AttackInputType.Light, AttackInputType.Light, AttackInputType.Light,
-                AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy),
-            CreateRecipe("Heavy Sweep Kick", AttackId.HeavySweepKick,
-                AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light),
-            CreateRecipe("Heavy Light Ender", AttackId.HeavyLightEnder,
-                AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light),
+        SetRecipe(recipes, ComboType.LightBreakKick, "Light Break Kick",
+            AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy);
+        SetRecipe(recipes, ComboType.LightHeavyFinisher, "Light Heavy Finisher",
+            AttackInputType.Light, AttackInputType.Light, AttackInputType.Light,
+            AttackInputType.Light, AttackInputType.Light, AttackInputType.Light, AttackInputType.Heavy);
+        SetRecipe(recipes, ComboType.HeavySweepKick, "Heavy Sweep Kick",
+            AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light);
+        SetRecipe(recipes, ComboType.HeavyLightEnder, "Heavy Light Ender",
+            AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Heavy, AttackInputType.Light);
 
-            CreateRecipe("Dash", AttackId.Dash, AttackInputType.Dash),
+        SetRecipe(recipes, ComboType.Dash, "Dash", AttackInputType.Dash);
 
-            CreateRecipe("Dash Light", AttackId.DashLight, DashThen(AttackInputType.Light, 1)),
-            CreateRecipe("Dash Light1", AttackId.DashLight1, DashThen(AttackInputType.Light, 2)),
-            CreateRecipe("Dash Light2", AttackId.DashLight2, DashThen(AttackInputType.Light, 3)),
-            CreateRecipe("Dash Light Finisher", AttackId.DashLightFinisher, DashThen(AttackInputType.Light, 4)),
+        SetRecipe(recipes, ComboType.DashLight, "Dash Light", DashThen(AttackInputType.Light, 1));
+        SetRecipe(recipes, ComboType.DashLight1, "Dash Light1", DashThen(AttackInputType.Light, 2));
+        SetRecipe(recipes, ComboType.DashLight2, "Dash Light2", DashThen(AttackInputType.Light, 3));
+        SetRecipe(recipes, ComboType.DashLightFinisher, "Dash Light Finisher", DashThen(AttackInputType.Light, 4));
 
-            CreateRecipe("Dash Heavy", AttackId.DashHeavy, DashThen(AttackInputType.Heavy, 1)),
-            CreateRecipe("Dash Heavy1", AttackId.DashHeavy1, DashThen(AttackInputType.Heavy, 2)),
-            CreateRecipe("Dash Heavy2", AttackId.DashHeavy2, DashThen(AttackInputType.Heavy, 3)),
-            CreateRecipe("Dash Heavy Finisher", AttackId.DashHeavyFinisher, DashThen(AttackInputType.Heavy, 4))
-        };
+        SetRecipe(recipes, ComboType.DashHeavy, "Dash Heavy", DashThen(AttackInputType.Heavy, 1));
+        SetRecipe(recipes, ComboType.DashHeavy1, "Dash Heavy1", DashThen(AttackInputType.Heavy, 2));
+        SetRecipe(recipes, ComboType.DashHeavy2, "Dash Heavy2", DashThen(AttackInputType.Heavy, 3));
+        SetRecipe(recipes, ComboType.DashHeavyFinisher, "Dash Heavy Finisher", DashThen(AttackInputType.Heavy, 4));
+        return recipes;
     }
 
     public static AttackDefinition[] BuildAttacks()
     {
         return new[]
         {
-            BuildLightAttack(AttackId.Light, step: 0, anchor: LightAnchorKind.None),
-            BuildLightAttack(AttackId.Light1, step: 1, anchor: LightAnchorKind.None),
-            BuildLightAttack(AttackId.Light2, step: 2, anchor: LightAnchorKind.First),
-            BuildLightAttack(AttackId.Light3, step: 3, anchor: LightAnchorKind.None),
-            BuildLightAttack(AttackId.Light4, step: 4, anchor: LightAnchorKind.None),
-            BuildLightAttack(AttackId.Light5, step: 5, anchor: LightAnchorKind.Big),
-            BuildLightAttack(AttackId.LightFinisher, step: 6, anchor: LightAnchorKind.None, isFinisher: true),
+            BuildLightAttack(ComboType.Light, step: 0, anchor: LightAnchorKind.None),
+            BuildLightAttack(ComboType.Light1, step: 1, anchor: LightAnchorKind.None),
+            BuildLightAttack(ComboType.Light2, step: 2, anchor: LightAnchorKind.First),
+            BuildLightAttack(ComboType.Light3, step: 3, anchor: LightAnchorKind.None),
+            BuildLightAttack(ComboType.Light4, step: 4, anchor: LightAnchorKind.None),
+            BuildLightAttack(ComboType.Light5, step: 5, anchor: LightAnchorKind.Big),
+            BuildLightAttack(ComboType.LightFinisher, step: 6, anchor: LightAnchorKind.None, isFinisher: true),
 
-            BuildHeavyAttack(AttackId.Heavy, step: 0, anchor: HeavyAnchorKind.None),
-            BuildHeavyAttack(AttackId.Heavy1, step: 1, anchor: HeavyAnchorKind.First),
-            BuildHeavyAttack(AttackId.Heavy2, step: 2, anchor: HeavyAnchorKind.None),
-            BuildHeavyAttack(AttackId.Heavy3, step: 3, anchor: HeavyAnchorKind.Big),
-            BuildHeavyAttack(AttackId.HeavyFinisher, step: 4, anchor: HeavyAnchorKind.None, isFinisher: true),
+            BuildHeavyAttack(ComboType.Heavy, step: 0, anchor: HeavyAnchorKind.None),
+            BuildHeavyAttack(ComboType.Heavy1, step: 1, anchor: HeavyAnchorKind.First),
+            BuildHeavyAttack(ComboType.Heavy2, step: 2, anchor: HeavyAnchorKind.None),
+            BuildHeavyAttack(ComboType.Heavy3, step: 3, anchor: HeavyAnchorKind.Big),
+            BuildHeavyAttack(ComboType.HeavyFinisher, step: 4, anchor: HeavyAnchorKind.None, isFinisher: true),
 
             BuildLightBreakKick(),
             BuildLightHeavyFinisher(),
@@ -91,15 +90,15 @@ public static class PlayerCombatConfigDefaults
 
             BuildDashAttack(),
 
-            BuildDashChainAttack(AttackId.DashLight, LightBaseDamage, step: 0, isHeavy: false, isFinisher: false),
-            BuildDashChainAttack(AttackId.DashLight1, LightBaseDamage, step: 1, isHeavy: false, isFinisher: false),
-            BuildDashChainAttack(AttackId.DashLight2, LightBaseDamage, step: 2, isHeavy: false, isFinisher: false),
-            BuildDashChainAttack(AttackId.DashLightFinisher, LightBaseDamage, step: 3, isHeavy: false, isFinisher: true),
+            BuildDashChainAttack(ComboType.DashLight, LightBaseDamage, step: 0, isHeavy: false, isFinisher: false),
+            BuildDashChainAttack(ComboType.DashLight1, LightBaseDamage, step: 1, isHeavy: false, isFinisher: false),
+            BuildDashChainAttack(ComboType.DashLight2, LightBaseDamage, step: 2, isHeavy: false, isFinisher: false),
+            BuildDashChainAttack(ComboType.DashLightFinisher, LightBaseDamage, step: 3, isHeavy: false, isFinisher: true),
 
-            BuildDashChainAttack(AttackId.DashHeavy, HeavyBaseDamage, step: 0, isHeavy: true, isFinisher: false),
-            BuildDashChainAttack(AttackId.DashHeavy1, HeavyBaseDamage, step: 1, isHeavy: true, isFinisher: false),
-            BuildDashChainAttack(AttackId.DashHeavy2, HeavyBaseDamage, step: 2, isHeavy: true, isFinisher: false),
-            BuildDashChainAttack(AttackId.DashHeavyFinisher, HeavyBaseDamage, step: 3, isHeavy: true, isFinisher: true)
+            BuildDashChainAttack(ComboType.DashHeavy, HeavyBaseDamage, step: 0, isHeavy: true, isFinisher: false),
+            BuildDashChainAttack(ComboType.DashHeavy1, HeavyBaseDamage, step: 1, isHeavy: true, isFinisher: false),
+            BuildDashChainAttack(ComboType.DashHeavy2, HeavyBaseDamage, step: 2, isHeavy: true, isFinisher: false),
+            BuildDashChainAttack(ComboType.DashHeavyFinisher, HeavyBaseDamage, step: 3, isHeavy: true, isFinisher: true)
         };
     }
 
@@ -118,7 +117,7 @@ public static class PlayerCombatConfigDefaults
     }
 
     static AttackDefinition BuildLightAttack(
-        AttackId attackId,
+        ComboType comboType,
         int step,
         LightAnchorKind anchor,
         bool isFinisher = false)
@@ -164,7 +163,7 @@ public static class PlayerCombatConfigDefaults
 
         return new AttackDefinition
         {
-            attackId = attackId,
+            comboType = comboType,
             dashDistance = 0.5f,
             dashDuration = dashDuration,
             recoveryHoldDuration = recovery,
@@ -186,7 +185,7 @@ public static class PlayerCombatConfigDefaults
     }
 
     static AttackDefinition BuildHeavyAttack(
-        AttackId attackId,
+        ComboType comboType,
         int step,
         HeavyAnchorKind anchor,
         bool isFinisher = false)
@@ -213,7 +212,7 @@ public static class PlayerCombatConfigDefaults
 
         return new AttackDefinition
         {
-            attackId = attackId,
+            comboType = comboType,
             dashDistance = 2f,
             dashDuration = dashDuration,
             recoveryHoldDuration = recovery,
@@ -238,7 +237,7 @@ public static class PlayerCombatConfigDefaults
     {
         return new AttackDefinition
         {
-            attackId = AttackId.LightBreakKick,
+            comboType = ComboType.LightBreakKick,
             dashDistance = 0.75f,
             dashDuration = 0.09f,
             recoveryHoldDuration = 1f,
@@ -261,7 +260,7 @@ public static class PlayerCombatConfigDefaults
     {
         return new AttackDefinition
         {
-            attackId = AttackId.LightHeavyFinisher,
+            comboType = ComboType.LightHeavyFinisher,
             dashDistance = 1f,
             dashDuration = 0.1f,
             recoveryHoldDuration = 1f,
@@ -284,7 +283,7 @@ public static class PlayerCombatConfigDefaults
     {
         return new AttackDefinition
         {
-            attackId = AttackId.HeavySweepKick,
+            comboType = ComboType.HeavySweepKick,
             dashDistance = 1.5f,
             dashDuration = 0.09f,
             recoveryHoldDuration = 1f,
@@ -307,7 +306,7 @@ public static class PlayerCombatConfigDefaults
     {
         return new AttackDefinition
         {
-            attackId = AttackId.HeavyLightEnder,
+            comboType = ComboType.HeavyLightEnder,
             dashDistance = 0.6f,
             dashDuration = 0.06f,
             recoveryHoldDuration = 0.3f,
@@ -330,7 +329,7 @@ public static class PlayerCombatConfigDefaults
     {
         return new AttackDefinition
         {
-            attackId = AttackId.Dash,
+            comboType = ComboType.Dash,
             dashDistance = 3f,
             dashDuration = 0.12f,
             recoveryHoldDuration = 0.35f,
@@ -349,7 +348,7 @@ public static class PlayerCombatConfigDefaults
     }
 
     static AttackDefinition BuildDashChainAttack(
-        AttackId attackId,
+        ComboType comboType,
         int baseDamage,
         int step,
         bool isHeavy,
@@ -362,7 +361,7 @@ public static class PlayerCombatConfigDefaults
 
         return new AttackDefinition
         {
-            attackId = attackId,
+            comboType = comboType,
             dashDistance = isHeavy ? 2f : 0.5f,
             dashDuration = isHeavy ? 0.1f : 0.07f,
             recoveryHoldDuration = isFinisher ? 1f : 0.55f,
@@ -385,13 +384,16 @@ public static class PlayerCombatConfigDefaults
         };
     }
 
-    static ComboRecipe CreateRecipe(string name, AttackId attackId, params AttackInputType[] sequence)
+    static void SetRecipe(
+        EnumDictionary<ComboType, ComboRecipe> recipes,
+        ComboType comboType,
+        string name,
+        params AttackInputType[] sequence)
     {
-        return new ComboRecipe
+        recipes[comboType] = new ComboRecipe
         {
             name = name,
-            sequence = sequence,
-            attackId = attackId
+            sequence = sequence
         };
     }
 

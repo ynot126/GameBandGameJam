@@ -5,7 +5,7 @@ using UnityEngine;
 [Serializable]
 public class AttackDefinition
 {
-    public AttackId attackId = AttackId.None;
+    public ComboType comboType = ComboType.None;
     public float dashDistance = 0.5f;
     public float dashDuration = 0.08f;
     /// <summary>

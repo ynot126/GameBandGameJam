@@ -36,7 +36,7 @@ public sealed class CombatAttackExecutor
     AttackDefinition? activeAttack;
     bool cameraShakeArmed;
 
-    Action<AttackId>? onAttackExecuted;
+    Action<ComboType>? onAttackExecuted;
     Action<AttackDefinition>? onApplyComboInputWindow;
     Action? onTryConsumeQueuedFollowUp;
     Action? onClearQueuedFollowUp;
@@ -64,7 +64,7 @@ public sealed class CombatAttackExecutor
         float shakeDuration,
         float shakeStrength,
         float shakeFrequency,
-        Action<AttackId>? attackExecuted,
+        Action<ComboType>? attackExecuted,
         Action<AttackDefinition>? applyComboInputWindow,
         Action? tryConsumeQueuedFollowUp,
         Action? clearQueuedFollowUp,
@@ -238,7 +238,7 @@ public sealed class CombatAttackExecutor
         ResolveLaunch(hitable, hitDirection, payload.LaunchDistance).Forget();
     }
 
-    public async UniTaskVoid ExecuteAttack(AttackDefinition definition, AttackId attackId)
+    public async UniTaskVoid ExecuteAttack(AttackDefinition definition, ComboType comboType)
     {
         RestartAttackToken(out var token, out var generation);
 
@@ -277,7 +277,7 @@ public sealed class CombatAttackExecutor
             if (definition.payload.knockbackType == KnockbackType.Standard)
             {
                 Debug.LogError(
-                    $"{attackId}: triggersChaseSequence requires KnockbackToDistance, but knockbackType is Standard. Chase will not be armed.",
+                    $"{comboType}: triggersChaseSequence requires KnockbackToDistance, but knockbackType is Standard. Chase will not be armed.",
                     logContext);
             }
             else
@@ -286,8 +286,8 @@ public sealed class CombatAttackExecutor
             }
         }
 
-        animationController.PlayAttack(attackId);
-        onAttackExecuted?.Invoke(attackId);
+        animationController.PlayAttack(comboType);
+        onAttackExecuted?.Invoke(comboType);
 
         ClearCameraShakeOnHit();
         hitbox.EndSwing();
@@ -326,7 +326,7 @@ public sealed class CombatAttackExecutor
             }
             else
             {
-                await WaitForCancelWindowAsync(attackId, token);
+                await WaitForCancelWindowAsync(comboType, token);
             }
 
             phaseMachine.TryEnterRecovery();
@@ -360,9 +360,9 @@ public sealed class CombatAttackExecutor
         }
     }
 
-    async UniTask WaitForCancelWindowAsync(AttackId attackId, CancellationToken token)
+    async UniTask WaitForCancelWindowAsync(ComboType comboType, CancellationToken token)
     {
-        var clipDuration = animationController.GetClipDuration(attackId);
+        var clipDuration = animationController.GetClipDuration(comboType);
         var safetyTimeout = ScaleDuration(clipDuration > 0f ? clipDuration : 1.5f);
         var gate = phaseMachine.CaptureCancelGate();
 
@@ -375,7 +375,7 @@ public sealed class CombatAttackExecutor
         if (phaseMachine.NeedsCancelFallback(gate))
         {
             Debug.LogWarning(
-                $"No OpenCancelWindow Animation Event for {attackId} within {safetyTimeout:0.##}s — opening cancel as fallback.",
+                $"No OpenCancelWindow Animation Event for {comboType} within {safetyTimeout:0.##}s — opening cancel as fallback.",
                 logContext);
             OpenCancelWindow();
         }

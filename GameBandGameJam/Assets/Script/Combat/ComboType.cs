@@ -1,6 +1,6 @@
 #nullable enable
 
-public enum AttackId
+public enum ComboType
 {
     None = 0,
     Light = 1,

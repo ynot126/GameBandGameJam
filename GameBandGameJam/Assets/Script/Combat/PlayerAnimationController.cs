@@ -14,14 +14,14 @@ public class PlayerAnimationController : MonoBehaviour
         PlayIdle();
     }
 
-    public void PlayAttack(AttackId attackId)
+    public void PlayAttack(ComboType comboType)
     {
         if (!animator)
         {
             return;
         }
 
-        if (!PlayerAnimationClips.TryGetClip(attackId, out var stateName, out _))
+        if (!PlayerAnimationClips.TryGetClip(comboType, out var stateName, out _))
         {
             return;
         }
@@ -39,9 +39,9 @@ public class PlayerAnimationController : MonoBehaviour
         PlayState(PlayerAnimationClips.Idle);
     }
 
-    public float GetClipDuration(AttackId attackId)
+    public float GetClipDuration(ComboType comboType)
     {
-        if (!PlayerAnimationClips.TryGetClip(attackId, out _, out var duration))
+        if (!PlayerAnimationClips.TryGetClip(comboType, out _, out var duration))
         {
             return 0f;
         }

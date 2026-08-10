@@ -9,26 +9,25 @@ public class ComboData
     public AttackInputType[] sequence = Array.Empty<AttackInputType>();
     public float dashDistance = 0.5f;
     public float dashDuration = 0.08f;
-    /// <summary>
-    /// Time after the cancel window opens to keep the attack alive for cancel-into combo.
-    /// Hitbox and cancel timing come from Animation Events, not this field.
-    /// </summary>
+    
+    [Tooltip("Time after the cancel window opens to keep the attack alive for cancel-into combo. " +
+             "Hitbox and cancel timing come from Animation Events, not this field.")]
     public float recoveryHoldDuration = 0.55f;
-    /// <summary>
-    /// After active frames / cancel, block Light/Heavy for this long. Dash is still allowed.
-    /// Use on finishers so spam cannot skip recovery.
-    /// </summary>
+    
+    [Tooltip("After active frames / cancel, block Light/Heavy for this long. " +
+             "Dash is still allowed. Use on finishers so spam cannot skip recovery.")]
     public float attackLockoutDuration;
-    /// <summary>
-    /// Per-attack combo input window after cancel opens. &lt;= 0 uses config defaultComboResetWindow.
-    /// </summary>
+    
+    [Tooltip("Per-attack combo input window after cancel opens. <= 0 uses config defaultComboResetWindow.")]
     public float comboInputWindow;
     public float hitboxRadius = 1f;
     public Vector3 hitboxLocalOffset = new(0f, 0.8f, 0.7f);
     public bool triggersChaseSequence;
-    /// <summary>Dash along current WASD / camera-planar move input instead of facing forward.</summary>
+    
+    [Tooltip("Dash along current WASD / camera-planar move input instead of facing forward.")]
     public bool useMoveInputDirection;
-    /// <summary>Mobility-only move: no hitbox / damage window.</summary>
+    
+    [Tooltip("Mobility-only move: no hitbox / damage window.")]
     public bool skipHitbox;
     public HitPayloadData payload = new()
     {

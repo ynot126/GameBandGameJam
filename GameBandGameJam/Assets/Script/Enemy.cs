@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -8,6 +9,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 {
     [SerializeField] int maxHealth = 100;
     [SerializeField] LayerMask wallMask;
+    [SerializeField] BaseEnemyAI enemyAiPrefab = null!;
 
     [Header("Knockback")]
     [SerializeField, Min(0.01f)] float standardKnockbackDuration = 0.08f;
@@ -18,15 +20,15 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     readonly LaunchMotor launchMotor = new();
     CancellationTokenSource? launchCts;
     Rigidbody body = null!;
+    BaseEnemyAI enemyAi = null!;
     int currentHealth;
     float hitStunUntil;
     float groundedY;
     int knockbackGeneration;
-    bool aiEnabled = true;
+    bool isKnockbackActive;
     bool isDead;
 
     public Transform Transform => transform;
-    public bool IsAiEnabled => aiEnabled && Time.time >= hitStunUntil;
     public bool IsLockable => !isDead && currentHealth > 0;
     public float RemainingHealthNormalized =>
         maxHealth <= 0 ? 0f : Mathf.Clamp01((float)currentHealth / maxHealth);
@@ -53,11 +55,24 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         }
 
         launchMotor.Initialize(body, wallMask, groundedY, launchKnockbackDuration, launchKnockbackArcHeight);
-        aiEnabled = true;
-        hitStunUntil = 0f;
         knockbackGeneration = 0;
+        hitStunUntil = 0f;
+        isKnockbackActive = false;
+
+        enemyAi = Instantiate(enemyAiPrefab, transform);
+        enemyAi.Initialize();
     }
 
+    void Update()
+    {
+        if (isDead|| !isKnockbackActive && Time.time >= hitStunUntil)
+        {
+            return;
+        }
+
+        enemyAi.UpdateAIMovement();
+    }
+    
     public async UniTask SpawnAnimation()
     {
         transform.localScale = Vector3.zero;
@@ -86,7 +101,6 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         }
 
         hitStunUntil = Time.time + stunDuration;
-        SetAiEnabled(false);
     }
 
     public UniTask TryKnockback(
@@ -111,11 +125,11 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
     async UniTask LaunchAsync(Vector3 direction, float distance, CancellationToken cancellationToken)
     {
-        SetAiEnabled(false);
+        var generation = ++knockbackGeneration;
         CancelActiveKnockback();
+        isKnockbackActive = true;
         launchCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var token = launchCts.Token;
-        var generation = ++knockbackGeneration;
 
         try
         {
@@ -129,21 +143,18 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
             if (generation == knockbackGeneration)
             {
                 StopBodyMotion();
-                // AI stays off until stun expires; navigation resumes via IsAiEnabled.
-                if (Time.time >= hitStunUntil)
-                {
-                    SetAiEnabled(true);
-                }
+                isKnockbackActive = false;
             }
         }
     }
 
     async UniTaskVoid ApplyStandardKnockback(Vector3 direction, float distance)
     {
+        var generation = ++knockbackGeneration;
         CancelActiveKnockback();
+        isKnockbackActive = true;
         launchCts = new CancellationTokenSource();
         var token = launchCts.Token;
-        var generation = ++knockbackGeneration;
 
         try
         {
@@ -167,17 +178,9 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
             if (generation == knockbackGeneration)
             {
                 StopBodyMotion();
-                if (Time.time >= hitStunUntil)
-                {
-                    SetAiEnabled(true);
-                }
+                isKnockbackActive = false;
             }
         }
-    }
-
-    void SetAiEnabled(bool val)
-    {
-        aiEnabled = val;
     }
 
     void Death()

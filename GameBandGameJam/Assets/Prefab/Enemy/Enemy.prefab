@@ -51,6 +51,7 @@ MonoBehaviour:
   wallMask:
     serializedVersion: 2
     m_Bits: 0
+  enemyAiPrefab: {fileID: 779646005818731735, guid: 1b94d17ca8c5d3c4f9cc80b4446b1cc5, type: 3}
   standardKnockbackDuration: 0.08
   standardKnockbackArcHeight: 0.35
   launchKnockbackDuration: 0.18

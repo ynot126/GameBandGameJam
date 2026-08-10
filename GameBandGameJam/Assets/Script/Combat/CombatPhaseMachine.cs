@@ -62,7 +62,12 @@ public sealed class CombatPhaseMachine
             return CancelOpenResult.HardBreakAcknowledged;
         }
 
-        if (!TryTransitionFromAny(CombatPhase.CancelWindow, CombatPhase.Startup, CombatPhase.Active))
+        // Launch must also cancel-open so post-chase chains can commit (same as old isBusy).
+        if (!TryTransitionFromAny(
+                CombatPhase.CancelWindow,
+                CombatPhase.Startup,
+                CombatPhase.Active,
+                CombatPhase.Launch))
         {
             return CancelOpenResult.Ignored;
         }
@@ -109,14 +114,17 @@ public sealed class CombatPhaseMachine
         return true;
     }
 
-    bool TryTransitionFromAny(CombatPhase next, CombatPhase fromA, CombatPhase fromB)
+    bool TryTransitionFromAny(CombatPhase next, params CombatPhase[] fromPhases)
     {
-        if (Current != fromA && Current != fromB)
+        for (var i = 0; i < fromPhases.Length; i++)
         {
-            return false;
+            if (Current == fromPhases[i])
+            {
+                Current = next;
+                return true;
+            }
         }
 
-        Current = next;
-        return true;
+        return false;
     }
 }

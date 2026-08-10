@@ -120,14 +120,14 @@ MonoBehaviour:
     useMoveInputDirection: 0
     skipHitbox: 0
     payload:
-      damage: 10
+      damage: 11
       hitStunDuration: 0.14
       knockbackType: 0
       launchDistance: 0.9
   - attackId: 3
     dashDistance: 0.5
     dashDuration: 0.0805
-    recoveryHoldDuration: 0.70000005
+    recoveryHoldDuration: 0.7
     attackLockoutDuration: 0
     comboInputWindow: 0.7
     hitboxRadius: 1

@@ -385,6 +385,24 @@ public sealed class CombatAttackExecutor
         {
             await sequencer.HandleLaunchAndChaseAsync(hitable, hitDirection, launchDistance, token);
 
+            if (generation != attackGeneration)
+            {
+                return;
+            }
+
+            // Anim cancel may already have opened during Launch; otherwise open after chase lands.
+            if (phaseMachine.Current == CombatPhase.Launch)
+            {
+                OpenCancelWindow();
+            }
+
+            if (generation != attackGeneration)
+            {
+                return;
+            }
+
+            phaseMachine.TryEnterRecovery();
+
             if (recoveryHold > 0f)
             {
                 await UniTask.Delay(TimeSpan.FromSeconds(recoveryHold), cancellationToken: token);

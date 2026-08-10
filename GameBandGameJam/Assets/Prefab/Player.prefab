@@ -136,7 +136,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   chaseOffset: 1.5
-  chaseDuration: 0.2
+  chaseDuration: 0.1
   chaseArcHeight: 1
   chaseDelay: 0.1
   lightKey: 106

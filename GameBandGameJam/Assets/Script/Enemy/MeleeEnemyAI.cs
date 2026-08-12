@@ -13,6 +13,7 @@ public class MeleeEnemyAI : BaseEnemyAI
     [SerializeField, Min(0f)] float attackLungeDistance = 0.35f;
     [SerializeField, Min(0.01f)] float attackLungeDuration = 0.08f;
     [SerializeField, Min(0.01f)] float attackReturnDuration = 0.12f;
+    [SerializeField] DamageNumberVisual damageNumberPrefab = null!;
 
     Rigidbody body = null!;
     IHitable playerHitable = null!;
@@ -91,6 +92,7 @@ public class MeleeEnemyAI : BaseEnemyAI
                 token);
 
             playerHitable.TryDamage(damage);
+            ShowDamageNumber();
 
             await KinematicMover.MoveByAsync(
                 body,
@@ -124,6 +126,13 @@ public class MeleeEnemyAI : BaseEnemyAI
         attackCts.Dispose();
         attackCts = null;
         isAttacking = false;
+    }
+
+    void ShowDamageNumber()
+    {
+        var spawnPos = PlayerTransform.position + Vector3.up;
+        var damageNumber = Instantiate(damageNumberPrefab);
+        damageNumber.Initialize(spawnPos, damage);
     }
 
     static Vector3 Flatten(Vector3 direction)

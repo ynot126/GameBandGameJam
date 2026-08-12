@@ -51,3 +51,4 @@ MonoBehaviour:
   attackLungeDistance: 0.35
   attackLungeDuration: 0.08
   attackReturnDuration: 0.12
+  damageNumberPrefab: {fileID: 3421854495893843226, guid: 4b18700542abb3a4382aae20c35a9c46, type: 3}

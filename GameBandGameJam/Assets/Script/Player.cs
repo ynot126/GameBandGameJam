@@ -15,6 +15,7 @@ public class Player : MonoBehaviour, IHitable
     [SerializeField] PlayerAnimationController animationController = null!;
     [SerializeField] CollisionDetector collisionDetector = null!;
     [SerializeField] DamageNumberVisual damageNumberPrefab = null!;
+    [SerializeField] int playerDefaultSpeed = 5;
 
     [Header("Combat Config")]
     [SerializeField] PlayerCombatConfig combatConfig = null!;
@@ -29,6 +30,7 @@ public class Player : MonoBehaviour, IHitable
     float attackSpeedMultiplier = 1f;
     float damageMultiplier = 1f;
     float dashDistanceMultiplier = 1f;
+    float playerSpeedMultiplier = 1f;
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
     public PlayerStamina Stamina => playerStamina;
@@ -46,7 +48,9 @@ public class Player : MonoBehaviour, IHitable
         var animator = GetComponentInChildren<Animator>();
         animationController.Initialize(animator);
 
-        playerController.Initialize(playerData.speed, body);
+        playerController.Initialize(GetEffectiveMovementSpeed(), body);
+        playerController.OnLocomotionStarted += animationController.PlayRun;
+        playerController.OnLocomotionStopped += animationController.PlayIdle;
 
         playerStamina.Initialize();
 
@@ -68,6 +72,12 @@ public class Player : MonoBehaviour, IHitable
         playerCombat.SetAttackSpeedMultiplier(attackSpeedMultiplier);
         playerCombat.SetDamageMultiplier(damageMultiplier);
         playerCombat.SetDashDistanceMultiplier(dashDistanceMultiplier);
+        playerController.SetMovementSpeed(GetEffectiveMovementSpeed());
+    }
+
+    float GetEffectiveMovementSpeed()
+    {
+        return playerDefaultSpeed * playerSpeedMultiplier;
     }
 
     public void TryDamage(int damage)
@@ -122,6 +132,12 @@ public class Player : MonoBehaviour, IHitable
     {
         dashDistanceMultiplier *= factor;
         playerCombat.SetDashDistanceMultiplier(dashDistanceMultiplier);
+    }
+
+    public void MultiplySpeed(float factor)
+    {
+        playerSpeedMultiplier *= factor;
+        playerController.SetMovementSpeed(GetEffectiveMovementSpeed());
     }
 
     void Death()

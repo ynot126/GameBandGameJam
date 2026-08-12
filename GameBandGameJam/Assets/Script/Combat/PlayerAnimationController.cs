@@ -34,9 +34,14 @@ public class PlayerAnimationController : MonoBehaviour
         PlayIdle();
     }
 
-    void PlayIdle()
+    public void PlayIdle()
     {
         PlayState(PlayerAnimationClips.Idle);
+    }
+
+    public void PlayRun()
+    {
+        PlayState(PlayerAnimationClips.Run);
     }
 
     public float GetClipDuration(ComboType comboType)

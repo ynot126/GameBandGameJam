@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -7,20 +8,38 @@ public class PlayerController : MonoBehaviour
     bool movementEnabled = true;
     bool invertHorizontal;
     bool invertVertical;
+    bool isLocomoting;
     Rigidbody body = null!;
 
-    public void Initialize(int aMovementSpeed, Rigidbody aBody)
+    public event Action? OnLocomotionStarted;
+    public event Action? OnLocomotionStopped;
+
+    public void Initialize(float aMovementSpeed, Rigidbody aBody)
     {
         movementSpeed = aMovementSpeed;
         body = aBody;
         movementEnabled = true;
         invertHorizontal = false;
         invertVertical = false;
+        isLocomoting = false;
+    }
+
+    public void SetMovementSpeed(float speed)
+    {
+        movementSpeed = Mathf.Max(0f, speed);
     }
 
     public void SetMovementEnabled(bool val)
     {
         movementEnabled = val;
+        if (!val)
+        {
+            // Leave attack animations alone; do not emit stop / play idle here.
+            isLocomoting = false;
+            return;
+        }
+
+        SyncLocomotionState(TryResolveMoveDirection(out _));
     }
 
     public void InvertMovementAxes()
@@ -58,6 +77,18 @@ public class PlayerController : MonoBehaviour
         return !Mathf.Approximately(horizontalInput, 0f) || !Mathf.Approximately(verticalInput, 0f);
     }
 
+    bool TryResolveMoveDirection(out Vector3 movement)
+    {
+        movement = Vector3.zero;
+        if (!TryGetRawMoveAxes(out var horizontalInput, out var verticalInput))
+        {
+            return false;
+        }
+
+        movement = GetCameraPlanarDirection(horizontalInput, verticalInput);
+        return movement != Vector3.zero;
+    }
+
     void Update()
     {
         if (!movementEnabled)
@@ -65,19 +96,39 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (!TryGetRawMoveAxes(out var horizontalInput, out var verticalInput))
+        var hasMove = TryResolveMoveDirection(out var movement);
+        SyncLocomotionState(hasMove);
+
+        if (!hasMove)
         {
             return;
         }
 
-        var movement = GetCameraPlanarDirection(horizontalInput, verticalInput);
-        if (movement == Vector3.zero)
+        body.MovePosition(transform.position + movement * (movementSpeed * Time.deltaTime));
+        transform.rotation = Quaternion.LookRotation(movement, Vector3.up);
+    }
+
+    void SyncLocomotionState(bool hasMove)
+    {
+        if (hasMove)
+        {
+            if (isLocomoting)
+            {
+                return;
+            }
+
+            isLocomoting = true;
+            OnLocomotionStarted?.Invoke();
+            return;
+        }
+
+        if (!isLocomoting)
         {
             return;
         }
-        
-        body.MovePosition(transform.position + movement * (movementSpeed * Time.deltaTime));
-        transform.rotation = Quaternion.LookRotation(movement, Vector3.up);
+
+        isLocomoting = false;
+        OnLocomotionStopped?.Invoke();
     }
 
     static Vector3 GetCameraPlanarDirection(float horizontal, float vertical)

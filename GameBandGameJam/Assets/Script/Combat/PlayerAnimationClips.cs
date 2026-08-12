@@ -9,6 +9,7 @@ using UnityEngine;
 public static class PlayerAnimationClips
 {
     public const string Idle = "Idle";
+    public const string Run = "Run";
 
     public const string Light = "Light";
     public const string Light1 = "Light1";
@@ -39,6 +40,7 @@ public static class PlayerAnimationClips
     public const string DashHeavyFinisher = "DashHeavyFinisher";
 
     public const float IdleDuration = 2.9666667f;
+    public const float RunDuration = 0.6f;
 
     public const float LightDuration = 0.55f;
     public const float Light1Duration = 0.58f;

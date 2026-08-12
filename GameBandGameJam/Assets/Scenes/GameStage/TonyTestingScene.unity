@@ -212,6 +212,7 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 300331291}
   stageDoor: {fileID: 284446639}
+  skillConfig: {fileID: 0}
 --- !u!4 &707662344
 Transform:
   m_ObjectHideFlags: 0

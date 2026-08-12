@@ -19,6 +19,9 @@ public class GameStageDrive : MonoBehaviour
     [Header("Stage Component")]
     [SerializeField] StageDoor stageDoor = null!;
 
+    [Header("Skill")]
+    [SerializeField] SkillConfig skillConfig = null!;
+
     Player player = null!;
     List<Enemy> enemies =  new List<Enemy>();
     public void Start()
@@ -76,14 +79,17 @@ public class GameStageDrive : MonoBehaviour
 
     void ApplySkill()
     {
-        foreach (var skill in GameDataManager.Instance.GetPlayerData().skills)
+        foreach (var skillType in GameDataManager.Instance.GetPlayerData().skills)
         {
-            var s =SkillLibrary.Instance.GetSkill(skill);
-            if (s!= null)
+            var skillPrefab = skillConfig.GetSkill(skillType);
+            if (skillPrefab == null)
             {
-                s.Initialize(player);
-                s.ApplySkill();
+                continue;
             }
+
+            var skillInstance = Instantiate(skillPrefab);
+            skillInstance.Initialize(player);
+            skillInstance.ApplySkill();
         }
     }
     #region TwoHandView

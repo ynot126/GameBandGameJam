@@ -67,7 +67,7 @@ public class GameStageDrive : MonoBehaviour
 
     async UniTask SpawnEnemy(SpawnPoint spawnPoint)
     {
-        var enemy = await spawnPoint.Spawn();
+        var enemy = await spawnPoint.Spawn(player.transform);
         enemies.Add(enemy);
     }
 

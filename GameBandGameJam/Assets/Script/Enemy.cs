@@ -46,7 +46,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
     #region Life Cycle
 
-    public void Initialize()
+    public void Initialize(Transform playerTransform)
     {
         currentHealth = maxHealth;
         isDead = false;
@@ -54,7 +54,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         InitializeBody();
         InitializeWallMask();
         InitializeKnockback();
-        InitializeAI();
+        InitializeAI(playerTransform);
     }
     
     void InitializeBody()
@@ -86,10 +86,10 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         isKnockbackActive = false;
     }
 
-    void InitializeAI()
+    void InitializeAI(Transform playerTransform)
     {
         enemyAi = Instantiate(enemyAiPrefab, transform);
-        enemyAi.Initialize();
+        enemyAi.Initialize(playerTransform);
     }
     
     void Update()

@@ -10,6 +10,10 @@ public abstract class BaseEnemyAI : MonoBehaviour
         PlayerTransform = playerTransform;
     }
 
+    public virtual void CancelPendingActions()
+    {
+    }
+
     public virtual void UpdateAIMovement()
     {
     }

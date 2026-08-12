@@ -149,6 +149,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
         isDead = true;
         CancelActiveKnockback();
+        enemyAi.CancelPendingActions();
         Destroy(gameObject);
     }
 
@@ -224,6 +225,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     {
         var generation = ++knockbackGeneration;
         CancelActiveKnockback();
+        enemyAi.CancelPendingActions();
         isKnockbackActive = true;
         launchCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         return (generation, launchCts.Token);

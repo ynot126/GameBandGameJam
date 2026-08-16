@@ -127,16 +127,6 @@ public static class PlayerCombatConfigDefaults
         }
 
         var damage = Mathf.Max(1, (int)Math.Round(LightBaseDamage * damageMultiplier, MidpointRounding.AwayFromZero));
-        var hitStun = 0.12f + step * 0.02f;
-        if (anchor == LightAnchorKind.First)
-        {
-            hitStun += 0.04f;
-        }
-        else if (anchor == LightAnchorKind.Big)
-        {
-            hitStun += 0.06f;
-        }
-
         var launch = 0.75f + step * 0.15f;
         var dashDuration = 0.07f;
         var recovery = isFinisher ? 1f : 0.55f;
@@ -170,7 +160,7 @@ public static class PlayerCombatConfigDefaults
             payload = new HitPayloadData
             {
                 damage = damage,
-                hitStunDuration = isFinisher ? Mathf.Max(hitStun, 0.35f) : hitStun,
+                hitStunDuration = 1f,
                 knockbackType = isFinisher ? KnockbackType.KnockbackToDistance : KnockbackType.Standard,
                 launchDistance = isFinisher ? 6f : launch
             }
@@ -184,7 +174,6 @@ public static class PlayerCombatConfigDefaults
     {
         var damageMultiplier = 1f + step * 0.05f;
         var damage = Mathf.Max(1, (int)Math.Round(HeavyBaseDamage * damageMultiplier, MidpointRounding.AwayFromZero));
-        var hitStun = 0.2f + step * 0.02f;
         var launch = 1.5f + step * 0.15f;
         var dashDuration = 0.1f;
         var recovery = isFinisher ? 1f : 0.55f;
@@ -217,7 +206,7 @@ public static class PlayerCombatConfigDefaults
             payload = new HitPayloadData
             {
                 damage = damage,
-                hitStunDuration = isFinisher ? Mathf.Max(hitStun, 0.35f) : hitStun,
+                hitStunDuration = 1f,
                 knockbackType = isFinisher ? KnockbackType.KnockbackToDistance : KnockbackType.Standard,
                 launchDistance = isFinisher ? 6f : launch
             }
@@ -239,7 +228,7 @@ public static class PlayerCombatConfigDefaults
             payload = new HitPayloadData
             {
                 damage = 22,
-                hitStunDuration = 0.35f,
+                hitStunDuration = 1f,
                 knockbackType = KnockbackType.KnockbackToDistance,
                 launchDistance = 5f
             }
@@ -261,7 +250,7 @@ public static class PlayerCombatConfigDefaults
             payload = new HitPayloadData
             {
                 damage = 18,
-                hitStunDuration = 0.4f,
+                hitStunDuration = 1f,
                 knockbackType = KnockbackType.KnockbackToDistance,
                 launchDistance = 6.5f
             }
@@ -283,7 +272,7 @@ public static class PlayerCombatConfigDefaults
             payload = new HitPayloadData
             {
                 damage = 24,
-                hitStunDuration = 0.38f,
+                hitStunDuration = 1f,
                 knockbackType = KnockbackType.KnockbackToDistance,
                 launchDistance = 5.5f
             }
@@ -305,7 +294,7 @@ public static class PlayerCombatConfigDefaults
             payload = new HitPayloadData
             {
                 damage = 12,
-                hitStunDuration = 0.18f,
+                hitStunDuration = 1f,
                 knockbackType = KnockbackType.Standard,
                 launchDistance = 1.2f
             }
@@ -326,7 +315,7 @@ public static class PlayerCombatConfigDefaults
             payload = new HitPayloadData
             {
                 damage = 0,
-                hitStunDuration = 0f,
+                hitStunDuration = 1f,
                 knockbackType = KnockbackType.Standard,
                 launchDistance = 0f
             }
@@ -341,7 +330,6 @@ public static class PlayerCombatConfigDefaults
     {
         var damageMultiplier = 1f + step * 0.05f;
         var damage = Mathf.Max(1, (int)Math.Round(baseDamage * damageMultiplier, MidpointRounding.AwayFromZero));
-        var hitStun = (isHeavy ? 0.2f : 0.12f) + step * 0.02f;
         var launch = (isHeavy ? 1.5f : 0.75f) + step * 0.15f;
 
         return new ComboData
@@ -361,7 +349,7 @@ public static class PlayerCombatConfigDefaults
             payload = new HitPayloadData
             {
                 damage = damage,
-                hitStunDuration = isFinisher ? Mathf.Max(hitStun, 0.35f) : hitStun,
+                hitStunDuration = 1f,
                 knockbackType = isFinisher ? KnockbackType.KnockbackToDistance : KnockbackType.Standard,
                 launchDistance = isFinisher ? 6f : launch
             }

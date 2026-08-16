@@ -32,7 +32,7 @@ public class ComboData
     public HitPayloadData payload = new()
     {
         damage = 10,
-        hitStunDuration = 0.15f,
+        hitStunDuration = 1f,
         knockbackType = KnockbackType.Standard,
         launchDistance = 1f
     };

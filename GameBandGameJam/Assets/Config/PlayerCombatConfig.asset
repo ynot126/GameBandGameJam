@@ -33,7 +33,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 10
-          hitStunDuration: 0.15
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1
     - key: 1
@@ -52,7 +52,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 10
-          hitStunDuration: 0.12
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 0.75
     - key: 2
@@ -71,7 +71,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 10
-          hitStunDuration: 0.14
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 0.9
     - key: 3
@@ -90,7 +90,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 13
-          hitStunDuration: 0.19999999
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 4
     - key: 4
@@ -109,7 +109,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 11
-          hitStunDuration: 0.17999999
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.2
     - key: 5
@@ -128,7 +128,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 12
-          hitStunDuration: 0.19999999
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.35
     - key: 6
@@ -147,7 +147,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 14
-          hitStunDuration: 0.28
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.5
     - key: 7
@@ -166,7 +166,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 30
-          hitStunDuration: 0.35
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 6
     - key: 20
@@ -185,7 +185,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 18
-          hitStunDuration: 0.2
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.5
     - key: 21
@@ -204,7 +204,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 19
-          hitStunDuration: 0.22
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.65
     - key: 22
@@ -223,7 +223,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 20
-          hitStunDuration: 0.24000001
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 2
     - key: 23
@@ -242,7 +242,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 21
-          hitStunDuration: 0.26
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.95
     - key: 24
@@ -261,7 +261,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 10
-          hitStunDuration: 0.15
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 1
     - key: 25
@@ -280,7 +280,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 10
-          hitStunDuration: 0.15
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1
     - key: 26
@@ -299,7 +299,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 22
-          hitStunDuration: 0.35
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 6
     - key: 40
@@ -318,7 +318,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 22
-          hitStunDuration: 0.35
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 5
     - key: 41
@@ -337,7 +337,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 18
-          hitStunDuration: 0.4
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 6.5
     - key: 42
@@ -356,7 +356,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 24
-          hitStunDuration: 2
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 5.5
     - key: 43
@@ -375,7 +375,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 12
-          hitStunDuration: 0.18
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 4
     - key: 101
@@ -394,7 +394,7 @@ MonoBehaviour:
         skipHitbox: 1
         payload:
           damage: 0
-          hitStunDuration: 0
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 0
     - key: 102
@@ -413,7 +413,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 10
-          hitStunDuration: 0.12
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 0.75
     - key: 103
@@ -432,7 +432,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 10
-          hitStunDuration: 0.14
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 0.9
     - key: 104
@@ -451,7 +451,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 11
-          hitStunDuration: 0.16
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.05
     - key: 106
@@ -470,7 +470,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 11
-          hitStunDuration: 0.35
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 6
     - key: 121
@@ -489,7 +489,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 18
-          hitStunDuration: 0.2
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.5
     - key: 122
@@ -508,7 +508,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 19
-          hitStunDuration: 0.22
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.65
     - key: 123
@@ -527,7 +527,7 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 20
-          hitStunDuration: 0.24000001
+          hitStunDuration: 1
           knockbackType: 0
           launchDistance: 1.8
     - key: 125
@@ -546,6 +546,6 @@ MonoBehaviour:
         skipHitbox: 0
         payload:
           damage: 21
-          hitStunDuration: 0.35
+          hitStunDuration: 1
           knockbackType: 1
           launchDistance: 6

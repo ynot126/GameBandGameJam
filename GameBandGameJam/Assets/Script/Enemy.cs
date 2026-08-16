@@ -132,12 +132,13 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
     public void TryStun(float stunDuration)
     {
-        if (isDead)
+        if (isDead || stunDuration <= 0f)
         {
             return;
         }
 
-        hitStunUntil = Time.time + stunDuration;
+        hitStunUntil = Mathf.Max(hitStunUntil, Time.time + stunDuration);
+        enemyAi.CancelPendingActions();
     }
 
     void Death()
@@ -179,7 +180,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
     async UniTask LaunchAsync(Vector3 direction, float distance, CancellationToken cancellationToken)
     {
-        var (generation, token) = BeginKnockback(cancellationToken);
+        var (generation, token) = BeginKnockback(cancellationToken, launchKnockbackDuration);
 
         try
         {
@@ -196,7 +197,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
 
     async UniTaskVoid ApplyStandardKnockback(Vector3 direction, float distance)
     {
-        var (generation, token) = BeginKnockback(CancellationToken.None);
+        var (generation, token) = BeginKnockback(CancellationToken.None, standardKnockbackDuration);
 
         try
         {
@@ -221,11 +222,13 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         }
     }
 
-    (int Generation, CancellationToken Token) BeginKnockback(CancellationToken cancellationToken)
+    (int Generation, CancellationToken Token) BeginKnockback(
+        CancellationToken cancellationToken,
+        float stunDuration)
     {
         var generation = ++knockbackGeneration;
         CancelActiveKnockback();
-        enemyAi.CancelPendingActions();
+        TryStun(stunDuration);
         isKnockbackActive = true;
         launchCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         return (generation, launchCts.Token);

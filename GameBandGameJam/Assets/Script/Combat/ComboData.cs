@@ -29,6 +29,10 @@ public class ComboData
     
     [Tooltip("Mobility-only move: no hitbox / damage window.")]
     public bool skipHitbox;
+
+    [Tooltip("When enabled, hits near the map edge ring out using config boundary proximity and launch distance.")]
+    public bool killNearBoundary;
+
     public HitPayloadData payload = new()
     {
         damage = 10,

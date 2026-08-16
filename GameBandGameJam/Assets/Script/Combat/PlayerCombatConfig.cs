@@ -7,6 +7,11 @@ public class PlayerCombatConfig : ScriptableObject
     public float defaultComboResetWindow = 0.5f;
     public float simultaneousInputWindow = 0.05f;
     public int consecutiveInvalidThreshold = 2;
+
+    [Header("Boundary Ring Out")]
+    [Min(0.1f)] public float boundaryKillProximity = 3f;
+    [Min(1f)] public float boundaryKillLaunchDistance = 40f;
+
     public EnumDictionary<ComboType, ComboData> combos = new();
 
     public bool HasAuthoredCombos()

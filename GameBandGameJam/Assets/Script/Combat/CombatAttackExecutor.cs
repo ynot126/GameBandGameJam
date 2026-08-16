@@ -44,8 +44,14 @@ public sealed class CombatAttackExecutor
     Action<float>? onBeginAttackLockout;
     Action? onClearAttackLockout;
     Action? onRestoreDefaultComboWindow;
+    Func<IHitable, bool>? shouldSkipLaunchAndChase;
 
     public ComboData? ActiveAttack => activeAttack;
+
+    public void SetShouldSkipLaunchAndChase(Func<IHitable, bool>? predicate)
+    {
+        shouldSkipLaunchAndChase = predicate;
+    }
 
     public void Initialize(
         Transform ownerTransform,
@@ -227,6 +233,12 @@ public sealed class CombatAttackExecutor
 
         if (payload.KnockbackType != KnockbackType.KnockbackToDistance)
         {
+            return;
+        }
+
+        if (shouldSkipLaunchAndChase != null && shouldSkipLaunchAndChase(hitable))
+        {
+            sequencer.CancelPendingChase();
             return;
         }
 

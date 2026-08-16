@@ -102,6 +102,14 @@ public class PlayerCombat : MonoBehaviour
             wallMask = ~entityMask;
         }
 
+        // Map walls live on the Wall layer; keep them in the mask even if the prefab
+        // was authored with Default-only (which never hits those colliders).
+        var wallLayer = LayerMask.NameToLayer("Wall");
+        if (wallLayer >= 0)
+        {
+            wallMask |= 1 << wallLayer;
+        }
+
         activeComboInputWindow = config.defaultComboResetWindow;
         consecutiveInvalidThreshold = config.consecutiveInvalidThreshold;
 
@@ -156,6 +164,8 @@ public class PlayerCombat : MonoBehaviour
 
         var indicator = attackDetector != null ? attackDetector.SphereIndicator : null;
         hitbox.Initialize(transform, hitMask, indicator);
+        hitbox.TryInterceptHit = TryInterceptBoundaryHit;
+        attackExecutor.SetShouldSkipLaunchAndChase(ShouldSkipLaunchForRingOut);
         animationEventReceiver.Initialize(this, hitbox);
 
         hitbox.OnHitConfirmed += attackExecutor.HandleHitConfirmed;
@@ -501,6 +511,56 @@ public class PlayerCombat : MonoBehaviour
     void HandleSequenceReset()
     {
         OnCombatReset?.Invoke();
+    }
+
+    bool TryInterceptBoundaryHit(IHitable hitable, HitPayload payload, Vector3 hitDirection)
+    {
+        if (combatConfig == null || !IsActiveComboBoundaryKillEnabled())
+        {
+            return false;
+        }
+
+        if (hitable is not Enemy enemy)
+        {
+            return false;
+        }
+
+        if (!MapBoundary.IsNearBoundary(
+                enemy.transform.position,
+                combatConfig.boundaryKillProximity,
+                wallMask))
+        {
+            return false;
+        }
+
+        var outward = MapBoundary.ResolveOutwardDirection(enemy.transform.position);
+        enemy.RingOutAndKill(outward, combatConfig.boundaryKillLaunchDistance);
+        sequencer.CancelPendingChase();
+        return true;
+    }
+
+    bool ShouldSkipLaunchForRingOut(IHitable hitable)
+    {
+        if (combatConfig == null || !IsActiveComboBoundaryKillEnabled())
+        {
+            return false;
+        }
+
+        if (hitable is not Component component)
+        {
+            return false;
+        }
+
+        return MapBoundary.IsNearBoundary(
+            component.transform.position,
+            combatConfig.boundaryKillProximity,
+            wallMask);
+    }
+
+    bool IsActiveComboBoundaryKillEnabled()
+    {
+        var activeAttack = attackExecutor.ActiveAttack;
+        return activeAttack != null && activeAttack.killNearBoundary;
     }
 }
 

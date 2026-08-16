@@ -19,6 +19,10 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     [SerializeField, Min(0f)] float standardKnockbackArcHeight = 0.35f;
     [SerializeField, Min(0.01f)] float launchKnockbackDuration = 0.18f;
     [SerializeField, Min(0f)] float launchKnockbackArcHeight = 1.25f;
+
+    const float RingOutDuration = 0.35f;
+    const float RingOutArcHeight = 8f;
+    const float RingOutWaterY = -2f;
     
     // Reference
     readonly LaunchMotor launchMotor = new();
@@ -259,6 +263,87 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     {
         body.linearVelocity = Vector3.zero;
         body.angularVelocity = Vector3.zero;
+    }
+
+    #endregion
+
+    #region Boundary Ring Out
+
+    public void RingOutAndKill(Vector3 outwardDirection, float launchDistance)
+    {
+        RingOutAndKillAsync(outwardDirection, launchDistance).Forget();
+    }
+
+    async UniTaskVoid RingOutAndKillAsync(Vector3 outwardDirection, float launchDistance)
+    {
+        if (isDead)
+        {
+            return;
+        }
+
+        var (generation, token) = BeginKnockback(CancellationToken.None, RingOutDuration);
+        enemyAi.CancelPendingActions();
+
+        body.isKinematic = true;
+        body.detectCollisions = false;
+        StopBodyMotion();
+        DisableAllColliders();
+
+        try
+        {
+            var flat = Flatten(outwardDirection);
+            var origin = body.position;
+            var end = origin + flat * launchDistance;
+            end.y = RingOutWaterY;
+
+            await MoveRingOutArcAsync(end, token);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            if (generation == knockbackGeneration)
+            {
+                Death();
+            }
+        }
+    }
+
+    void DisableAllColliders()
+    {
+        var colliders = GetComponentsInChildren<Collider>(true);
+        for (var i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].enabled = false;
+        }
+    }
+
+    async UniTask MoveRingOutArcAsync(Vector3 worldEnd, CancellationToken cancellationToken)
+    {
+        // Direct position writes so walls cannot stop the fly-off even if a collider remains.
+        if (RingOutDuration <= 0f)
+        {
+            body.position = worldEnd;
+            return;
+        }
+
+        var start = body.position;
+        var elapsed = 0f;
+
+        while (elapsed < RingOutDuration)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            elapsed += Time.fixedDeltaTime;
+            var t = Mathf.Clamp01(elapsed / RingOutDuration);
+            var grounded = Vector3.Lerp(start, worldEnd, t);
+            var peak = RingOutArcHeight * 4f * t * (1f - t);
+            grounded.y += peak;
+            body.position = grounded;
+            await UniTask.Yield(PlayerLoopTiming.FixedUpdate, cancellationToken);
+        }
+
+        body.position = worldEnd;
     }
 
     #endregion

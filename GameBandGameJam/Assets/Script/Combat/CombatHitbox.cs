@@ -23,6 +23,8 @@ public class CombatHitbox : MonoBehaviour
 
     public event Action<IHitable, HitPayload, Vector3>? OnHitConfirmed;
 
+    public Func<IHitable, HitPayload, Vector3, bool>? TryInterceptHit { get; set; }
+
     public void Initialize(Transform ownerTransform, LayerMask mask, Transform? indicator = null)
     {
         owner = ownerTransform;
@@ -140,7 +142,12 @@ public class CombatHitbox : MonoBehaviour
                 continue;
             }
 
-            damageable.ApplyHit(in activePayload, hitDirection);
+            var intercepted = TryInterceptHit != null && TryInterceptHit(damageable, activePayload, hitDirection);
+            if (!intercepted)
+            {
+                damageable.ApplyHit(in activePayload, hitDirection);
+            }
+
             OnHitConfirmed?.Invoke(damageable, activePayload, hitDirection);
         }
     }

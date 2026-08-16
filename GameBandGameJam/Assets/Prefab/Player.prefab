@@ -155,7 +155,7 @@ MonoBehaviour:
     m_Bits: 64
   wallMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 128
   chaseOffset: 1.5
   chaseDuration: 0.1
   chaseArcHeight: 1

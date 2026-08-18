@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DoubleDamageTokenSkill : BaseSkill
+public class DoubleDealDamageTokenSkill : BaseSkill
 {
     public override string SkillName=> "Fragile";
     public override string SkillDescription => "Player will take double amount of damage";
@@ -8,5 +8,6 @@ public class DoubleDamageTokenSkill : BaseSkill
     public override void ApplySkill()
     {
         player.DoubleTakenDamage();
+        player.MultiplyDamage(2);
     }
 }

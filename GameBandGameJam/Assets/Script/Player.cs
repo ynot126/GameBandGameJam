@@ -140,6 +140,25 @@ public class Player : MonoBehaviour, IHitable
         playerController.SetMovementSpeed(GetEffectiveMovementSpeed());
     }
 
+    public void MultiplyMaxHealth(float factor)
+    {
+        maxHealth = Mathf.Max(1, Mathf.RoundToInt(maxHealth * factor));
+        currentHealth = Mathf.Min(currentHealth, maxHealth);
+        OnHealthChanged?.Invoke();
+    }
+
+    public void ScaleCurrentHealth(float factor)
+    {
+        currentHealth = Mathf.Clamp(Mathf.RoundToInt(currentHealth * factor), 1, maxHealth);
+        OnHealthChanged?.Invoke();
+    }
+
+    public void RestoreHealthToMax()
+    {
+        currentHealth = maxHealth;
+        OnHealthChanged?.Invoke();
+    }
+
     void Death()
     {
         Debug.Log("Player is dead");

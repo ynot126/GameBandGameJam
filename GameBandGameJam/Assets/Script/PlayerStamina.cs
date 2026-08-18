@@ -33,6 +33,14 @@ public class PlayerStamina : MonoBehaviour
         OnStaminaChanged?.Invoke();
     }
 
+    public void MultiplyMaxStamina(float factor)
+    {
+        maxStamina = Mathf.Max(1, Mathf.RoundToInt(maxStamina * factor));
+        currentStamina = Mathf.Min(currentStamina, maxStamina);
+        displayedStamina = Mathf.RoundToInt(currentStamina);
+        OnStaminaChanged?.Invoke();
+    }
+
     public int GetCost(AttackInputType input)
     {
         return input switch

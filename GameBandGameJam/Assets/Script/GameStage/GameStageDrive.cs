@@ -85,9 +85,8 @@ public class GameStageDrive : MonoBehaviour
     
     void HandleStageDoorEnter()
     {
-        LoadStage(GameStageType.GameScene);
-        // var twoHandView = CreateTwoHandView();
-        // ViewManager.Instance.PushView(twoHandView);
+        var twoHandView = CreateTwoHandView();
+        ViewManager.Instance.PushView(twoHandView);
     }
 
     void ApplySkill()
@@ -110,15 +109,16 @@ public class GameStageDrive : MonoBehaviour
     TwoHandChooseView CreateTwoHandView()
     {
         var view = Instantiate(twoHandChooseViewPrefab);
-        view.Initialize();
+        var playerData = GameDataManager.Instance.GetPlayerData();
+        view.Initialize(skillConfig, playerData.skills);
         view.OnSelect += HandleTwoHandleSelect;
         return view;
     }
 
-    void HandleTwoHandleSelect()
+    void HandleTwoHandleSelect(BaseSkill skill)
     {
-        Debug.Log("A hand is selected");
-        ViewManager.Instance.PopView();
+        GameDataManager.Instance.GetPlayerData().skills.Add(skill.Type);
+        LoadStage(GameStageType.GameScene);
     }
     #endregion
     void  LoadStage(GameStageType gameStageType)

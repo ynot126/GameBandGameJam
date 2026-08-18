@@ -4,6 +4,7 @@ using UnityEngine;
 public abstract class BaseSkill : MonoBehaviour
 {
     protected Player player = null!;
+    public abstract SkillType Type { get; }
     public abstract string SkillName { get; }
     public abstract string SkillDescription { get; }
 

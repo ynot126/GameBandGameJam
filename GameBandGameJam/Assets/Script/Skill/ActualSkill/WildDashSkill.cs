@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class WildDashSkill : BaseSkill
 {
+    public override SkillType Type => SkillType.WildDash;
     public override string SkillName => "Wild Dash";
     public override string SkillDescription => "Dash twice as far, but movement axes are inverted.";
 

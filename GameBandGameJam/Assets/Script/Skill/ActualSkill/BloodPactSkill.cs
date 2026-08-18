@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class BloodPactSkill : BaseSkill
 {
+    public override SkillType Type => SkillType.BloodPact;
     public override string SkillName => "Blood Pact";
     public override string SkillDescription => "Deal double damage, but current health is halved.";
 

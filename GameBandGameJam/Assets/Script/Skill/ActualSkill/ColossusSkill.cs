@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ColossusSkill : BaseSkill
 {
+    public override SkillType Type => SkillType.Colossus;
     public override string SkillName => "Colossus";
     public override string SkillDescription => "Double max health, but move at half speed.";
 

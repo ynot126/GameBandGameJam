@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class HollowVitalitySkill : BaseSkill
 {
+    public override SkillType Type => SkillType.HollowVitality;
     public override string SkillName => "Hollow Vitality";
     public override string SkillDescription => "Restore health to full, but max stamina is halved.";
 

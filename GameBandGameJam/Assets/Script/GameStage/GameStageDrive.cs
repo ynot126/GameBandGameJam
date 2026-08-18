@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameStageDrive : MonoBehaviour
 {
@@ -21,6 +22,9 @@ public class GameStageDrive : MonoBehaviour
 
     [Header("Skill")]
     [SerializeField] SkillConfig skillConfig = null!;
+
+    [Header("Config")] 
+    [SerializeField] GameStageConfig gameStageConfig = null!;
 
     Player player = null!;
     List<Enemy> enemies =  new List<Enemy>();
@@ -63,18 +67,27 @@ public class GameStageDrive : MonoBehaviour
         {
             SpawnEnemy(spawn).Forget();
         }
+        stageDoor.gameObject.SetActive(false);
     }
 
     async UniTask SpawnEnemy(SpawnPoint spawnPoint)
     {
         var enemy = await spawnPoint.Spawn(player.transform);
         enemies.Add(enemy);
+        enemy.OnDeath += ()=>HandleEnemyDeath(enemy);
     }
 
+    void HandleEnemyDeath(Enemy enemy)
+    {
+        enemies.Remove(enemy);
+        if(enemies.Count ==0 ) stageDoor.gameObject.SetActive(true);
+    }
+    
     void HandleStageDoorEnter()
     {
-        var twoHandView = CreateTwoHandView();
-        ViewManager.Instance.PushView(twoHandView);
+        LoadStage(GameStageType.GameScene);
+        // var twoHandView = CreateTwoHandView();
+        // ViewManager.Instance.PushView(twoHandView);
     }
 
     void ApplySkill()
@@ -108,4 +121,10 @@ public class GameStageDrive : MonoBehaviour
         ViewManager.Instance.PopView();
     }
     #endregion
+    void  LoadStage(GameStageType gameStageType)
+    {
+        var sceneName = gameStageConfig.gameStages[gameStageType];
+        ViewManager.Instance.ClearStack();
+        SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+    }
 }

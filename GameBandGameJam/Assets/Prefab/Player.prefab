@@ -94,7 +94,7 @@ MonoBehaviour:
   animationController: {fileID: 6172849501728341003}
   collisionDetector: {fileID: 5627855489857298626}
   damageNumberPrefab: {fileID: 3421854495893843226, guid: 4b18700542abb3a4382aae20c35a9c46, type: 3}
-  playerDefaultSpeed: 9
+  playerDefaultSpeed: 30
   combatConfig: {fileID: 11400000, guid: 9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b, type: 2}
   layerMask:
     serializedVersion: 2

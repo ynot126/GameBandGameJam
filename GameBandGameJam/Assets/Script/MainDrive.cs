@@ -44,7 +44,7 @@ public class MainDrive : MonoBehaviour
 
     void HandleTitleViewStartButton()
     {
-        Debug.Log("Start button pressed");
+        LoadStage(GameStageType.GameScene);
     }
 
     void HandleTitleViewShortCutButton()

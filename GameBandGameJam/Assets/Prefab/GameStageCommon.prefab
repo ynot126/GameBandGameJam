@@ -54,6 +54,7 @@ MonoBehaviour:
   - {fileID: 6442716470114063781}
   stageDoor: {fileID: 5468202676521804278}
   skillConfig: {fileID: 11400000, guid: b6488718673e74043b66b65a02cdb829, type: 2}
+  gameStageConfig: {fileID: 11400000, guid: fbe070671fda20e4f84c154636b61cbe, type: 2}
 --- !u!1 &4018465002358836334
 GameObject:
   m_ObjectHideFlags: 0

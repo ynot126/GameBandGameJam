@@ -8,7 +8,7 @@ using UnityEngine;
 public class SpawnPoint : MonoBehaviour
 {
     [SerializeField] Enemy enemyPrefab = null!;
-
+    
     public async UniTask<Enemy> Spawn(Transform playerTransform)
     {
         var enemy = Instantiate(enemyPrefab);

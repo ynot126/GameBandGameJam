@@ -44,6 +44,8 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     // CTS
     CancellationTokenSource? launchCts;
 
+    public event Action? OnDeath;
+
     #region Life Cycle
 
     public void Initialize(Transform playerTransform)
@@ -151,6 +153,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         isDead = true;
         CancelActiveKnockback();
         enemyAi.CancelPendingActions();
+        OnDeath?.Invoke();
         Destroy(gameObject);
     }
 

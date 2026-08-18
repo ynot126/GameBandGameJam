@@ -123,6 +123,7 @@ public class GameStageDrive : MonoBehaviour
     #endregion
     void  LoadStage(GameStageType gameStageType)
     {
+        GameDataManager.Instance.GetPlayerData().currentHealth = player.CurrentHealth;
         var sceneName = gameStageConfig.gameStages[gameStageType];
         ViewManager.Instance.ClearStack();
         SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);

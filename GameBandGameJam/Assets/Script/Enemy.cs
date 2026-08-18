@@ -84,7 +84,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     {
         launchMotor.Initialize(body, wallMask, groundedY, launchKnockbackDuration, launchKnockbackArcHeight);
         knockbackGeneration = 0;
-        hitStunUntil = 0f;
+        hitStunUntil = 5f;
         isKnockbackActive = false;
     }
 

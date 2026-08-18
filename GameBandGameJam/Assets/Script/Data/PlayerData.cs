@@ -5,5 +5,6 @@ using System.Collections.Generic;
 public class PlayerData
 {
     public int maxHealth = 100;
+    public int currentHealth = 100;
     public List<SkillType> skills = new List<SkillType>();
 }

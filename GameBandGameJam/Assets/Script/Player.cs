@@ -38,7 +38,7 @@ public class Player : MonoBehaviour, IHitable
     public void Initialize(PlayerData aPlayerData)
     {
         playerData = aPlayerData;
-        currentHealth = playerData.maxHealth;
+        currentHealth = playerData.currentHealth;
         maxHealth = playerData.maxHealth;
 
         body.isKinematic = false;

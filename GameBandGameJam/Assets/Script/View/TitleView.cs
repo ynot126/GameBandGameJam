@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class TitleView : BaseView
 {
    [SerializeField] TitleScreenButton startButton = null!;
+   [SerializeField] TitleScreenButton continueButton = null!;
    [SerializeField] TitleScreenButton quitButton = null!;
    // [SerializeField] Button shortCutButton = null!;
    public event Action? OnStartButtonPressed;
@@ -14,7 +15,12 @@ public class TitleView : BaseView
 
    public void Initialize()
    {
+      startButton.Initialize();
+      continueButton.Initialize();
+      quitButton.Initialize();
+      
       startButton.OnButtonPressed+=()=>OnStartButtonPressed?.Invoke();
+      continueButton.OnButtonPressed+=()=>OnStartButtonPressed?.Invoke();
       quitButton.OnButtonPressed+=()=>OnQuitButtonPressed?.Invoke();
 
       var titleScreenButtons = GetComponentsInChildren<TitleScreenButton>(true);

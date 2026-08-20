@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Monster_Ambient_occlusion_0: 8479080798535361420
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

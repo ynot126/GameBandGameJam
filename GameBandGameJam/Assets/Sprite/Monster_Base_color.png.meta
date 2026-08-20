@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Monster_Base_color_0: 1488967859683709761
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

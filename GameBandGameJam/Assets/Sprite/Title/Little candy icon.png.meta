@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Little candy icon_0: -4274685315726442662
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

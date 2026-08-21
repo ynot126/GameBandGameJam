@@ -66,6 +66,7 @@ public class ViewManager : Singleton<ViewManager>
             BaseView view = _viewStack.Pop();
             if (view)
                 view.OnDismiss();
+            Destroy(view.gameObject);
         }
         Debug.Log($"[ViewManager] Cleared stack ({clearedCount} view(s)).");
     }

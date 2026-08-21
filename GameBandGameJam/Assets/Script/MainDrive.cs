@@ -89,6 +89,6 @@ public class MainDrive : MonoBehaviour
     {
         var sceneName = gameStageConfig.gameStages[gameStageType];
         ViewManager.Instance.ClearStack();
-        SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 }

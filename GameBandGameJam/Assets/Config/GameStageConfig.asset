@@ -20,3 +20,5 @@ MonoBehaviour:
       value: TonyTestingScene
     - key: 300
       value: GameScene
+    - key: 400
+      value: MainScene

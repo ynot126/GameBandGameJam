@@ -13,6 +13,7 @@ public class GameStageDrive : MonoBehaviour
     [Header("View")]
     [SerializeField] GameView gameViewPrefab = null!;
     [SerializeField] TwoHandChooseView twoHandChooseViewPrefab = null!;
+    [SerializeField] LoseView loseViewPrefab = null!;
     
     [Header("Enemy")]
     [SerializeField] List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
@@ -38,6 +39,11 @@ public class GameStageDrive : MonoBehaviour
     {
         player = Instantiate(playerPrefab, playerSpawnPoint.position, Quaternion.identity);
         player.Initialize(GameDataManager.Instance.GetPlayerData());
+        player.OnDeath += () =>
+        {
+            var loseView = CreateLoseView();
+            ViewManager.Instance.PushView(loseView);
+        };
         
         stageDoor.Initialize();
         stageDoor.OnEnterDoor += HandleStageDoorEnter;
@@ -120,6 +126,23 @@ public class GameStageDrive : MonoBehaviour
         GameDataManager.Instance.GetPlayerData().skills.Add(skill.Type);
         LoadStage(GameStageType.GameScene);
     }
+    #endregion
+
+    #region Lose View
+
+    LoseView CreateLoseView()
+    {
+        var view = Instantiate(loseViewPrefab);
+        view.Initialize();
+        view.OnRestartButtonPressed += HandleLoseViewRestart;
+        return view;
+    }
+
+    void HandleLoseViewRestart()
+    {
+        LoadStage(GameStageType.MainScene);
+    }
+
     #endregion
     void  LoadStage(GameStageType gameStageType)
     {

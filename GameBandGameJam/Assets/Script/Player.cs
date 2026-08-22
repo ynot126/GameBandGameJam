@@ -22,6 +22,7 @@ public class Player : MonoBehaviour, IHitable
     [SerializeField] LayerMask layerMask;
 
     public event Action? OnHealthChanged;
+    public event Action? OnDeath;
 
     PlayerData playerData = null!;
     int currentHealth;
@@ -161,6 +162,6 @@ public class Player : MonoBehaviour, IHitable
 
     void Death()
     {
-        Debug.Log("Player is dead");
+        OnDeath?.Invoke();
     }
 }

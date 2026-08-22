@@ -133,9 +133,18 @@ Shader "Custom/URP/OrbitingSmokePlate"
             {
                 Varyings output;
 
-                output.positionHCS =
-                    TransformObjectToHClip(input.positionOS.xyz);
+                float3 positionOS = input.positionOS.xyz;
 
+                float _WaveFrequency = 3;
+                float _WaveSpeed = 1;
+                float _WaveAmplitude =0.1f;
+                
+                positionOS.y += sin(
+                    positionOS.x * _WaveFrequency +
+                    _Time.y * _WaveSpeed
+                ) * _WaveAmplitude;
+
+                output.positionHCS = TransformObjectToHClip(positionOS);
                 output.uv = input.uv;
 
                 return output;

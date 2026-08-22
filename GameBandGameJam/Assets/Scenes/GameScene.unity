@@ -415,7 +415,6 @@ MonoBehaviour:
   loseViewPrefab: {fileID: 9141426075805264037, guid: ebc158bc589b8ba4588c5b8baa8a4188, type: 3}
   spawnPoints:
   - {fileID: 2111242321816997698}
-  stageDoor: {fileID: 8500183518362280864}
   skillConfig: {fileID: 11400000, guid: b6488718673e74043b66b65a02cdb829, type: 2}
   gameStageConfig: {fileID: 11400000, guid: fbe070671fda20e4f84c154636b61cbe, type: 2}
 --- !u!1001 &4797304905499486691
@@ -687,74 +686,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1001 &8500183518362280863
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 14.63
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2783635285123915509, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4583801314646179463, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-      propertyPath: m_Name
-      value: GameStageDoor
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
---- !u!114 &8500183518362280864 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8805031266356844686, guid: 73614ffde0773dc4083ba08a7a399000, type: 3}
-  m_PrefabInstance: {fileID: 8500183518362280863}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15f3b18659b89ab4fbbda3761154368f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8860913345222746327
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,4 +711,3 @@ SceneRoots:
   - {fileID: 1109088804125382749}
   - {fileID: 7860178013789937110}
   - {fileID: 5660512443259712662}
-  - {fileID: 8500183518362280863}

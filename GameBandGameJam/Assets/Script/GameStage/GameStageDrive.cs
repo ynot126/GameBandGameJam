@@ -17,9 +17,6 @@ public class GameStageDrive : MonoBehaviour
     
     [Header("Enemy")]
     [SerializeField] List<SpawnPoint> spawnPoints = new List<SpawnPoint>();
-    
-    [Header("Stage Component")]
-    [SerializeField] StageDoor stageDoor = null!;
 
     [Header("Skill")]
     [SerializeField] SkillConfig skillConfig = null!;
@@ -44,9 +41,6 @@ public class GameStageDrive : MonoBehaviour
             var loseView = CreateLoseView();
             ViewManager.Instance.PushView(loseView);
         };
-        
-        stageDoor.Initialize();
-        stageDoor.OnEnterDoor += HandleStageDoorEnter;
 
         ApplySkill();
     }
@@ -73,7 +67,6 @@ public class GameStageDrive : MonoBehaviour
         {
             SpawnEnemy(spawn).Forget();
         }
-        stageDoor.gameObject.SetActive(false);
     }
 
     async UniTask SpawnEnemy(SpawnPoint spawnPoint)
@@ -86,11 +79,11 @@ public class GameStageDrive : MonoBehaviour
     void HandleEnemyDeath(Enemy enemy)
     {
         enemies.Remove(enemy);
-        if(enemies.Count ==0 ) stageDoor.gameObject.SetActive(true);
-    }
-    
-    void HandleStageDoorEnter()
-    {
+        if (enemies.Count != 0)
+        {
+            return;
+        }
+
         var twoHandView = CreateTwoHandView();
         ViewManager.Instance.PushView(twoHandView);
     }

@@ -23,6 +23,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     const float RingOutDuration = 0.35f;
     const float RingOutArcHeight = 8f;
     const float RingOutWaterY = -2f;
+    const float StartupIdleDuration = 5f;
     
     // Reference
     readonly LaunchMotor launchMotor = new();
@@ -61,6 +62,7 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
         InitializeWallMask();
         InitializeKnockback();
         InitializeAI(playerTransform);
+        BeginStartupIdle();
     }
     
     void InitializeBody()
@@ -88,8 +90,14 @@ public class Enemy : MonoBehaviour, IHitable, ICombatTarget
     {
         launchMotor.Initialize(body, wallMask, groundedY, launchKnockbackDuration, launchKnockbackArcHeight);
         knockbackGeneration = 0;
-        hitStunUntil = 5f;
+        hitStunUntil = 0f;
         isKnockbackActive = false;
+    }
+
+    void BeginStartupIdle()
+    {
+        hitStunUntil = Time.time + StartupIdleDuration;
+        enemyAi.CancelPendingActions();
     }
 
     void InitializeAI(Transform playerTransform)
